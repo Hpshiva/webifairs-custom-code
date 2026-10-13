@@ -1,0 +1,2967 @@
+(function () {
+  "use strict";
+  if (window.__INSPIRA_LOGIN__) return;
+  window.__INSPIRA_LOGIN__ = true;
+
+  const EVENT = Object.assign({
+    name: "Rede Inspira Virtual College Fairs",
+    start: "2026-10-22T17:00:00-03:00",
+    end: "2026-10-22T20:00:00-03:00",
+    timeZone: "America/Sao_Paulo",
+    timeZoneLabel: "BRT",
+    registerUrl: "/register"
+  }, window.INSPIRA_EVENT_CONFIG || {});
+
+  const START = new Date(EVENT.start).getTime();
+  const END = new Date(EVENT.end).getTime();
+
+  const ICONS = {
+    star: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    booth: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M3 10h18M5 10v11M9 10v11M15 10v11M19 10v11M12 2l10 5H2l10-5z"/></svg>',
+    chat: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    cap: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+    mail: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E05C3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><polyline points="3 7 12 13 21 7"/></svg>'
+  };
+
+  function $(sel, ctx) { return (ctx || document).querySelector(sel); }
+  function $$(sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); }
+  function setText(el, text) { if (el && el.textContent !== text) el.textContent = text; }
+  function setHTML(el, html) {
+    if (!el || (el.__inspiraHTML === html && el.innerHTML === el.__inspiraOut)) return;
+    el.innerHTML = html;
+    el.__inspiraHTML = html;
+    el.__inspiraOut = el.innerHTML;
+  }
+  function clean(s) { return String(s).replace(/\s+/g, " ").trim(); }
+
+  function universityCount() {
+    
+    try { return parseInt(localStorage.getItem("inspira_univ_count"), 10) || 0; } catch (e) { return 0; }
+  }
+
+  function eventDateLabel() {
+    try {
+      const d = new Date(START);
+      const day = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: EVENT.timeZone }).format(d);
+      const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: EVENT.timeZone }).format(d);
+      return clean(day + ", " + time + " " + EVENT.timeZoneLabel).replace(/,\s*,/g, ",");
+    } catch (e) {
+      return "Thu 22 Oct, 5:00 PM BRT";
+    }
+  }
+
+  function phase() {
+    const now = Date.now();
+    if (now < START) return "before";
+    if (now < END) return "live";
+    return "after";
+  }
+
+  function heading(count) {
+    return count
+      ? 'Meet admissions teams from <span class="hero-highlight-word">' + count + " universities</span>"
+      : 'Meet admissions teams from <span class="hero-highlight-word">top universities</span>';
+  }
+
+  function pills(count) {
+    const list = [
+      ICONS.booth + "<span>Live university booths</span>",
+      ICONS.chat + "<span>Chat with admissions teams</span>"
+    ];
+    if (count) list.push(ICONS.cap + "<span>" + count + " universities</span>");
+    return list.map(function (p) { return '<div class="hero-badge-pill">' + p + "</div>"; }).join("");
+  }
+
+  function badge() {
+    const p = phase();
+    if (p === "live") return '<span class="hero-live-dot"></span>Live now';
+    if (p === "after") return "This fair has ended";
+    return eventDateLabel();
+  }
+
+  function heroMarkup(count) {
+    return '' +
+      '<div class="hero-top-brand">' +
+      '<div class="hero-brand-logo">inspira<span>fairs</span></div>' +
+      '<div class="hero-live-badge">' + badge() + "</div>" +
+      "</div>" +
+      '<div class="hero-content-center">' +
+      '<div class="hero-kicker">' + ICONS.star + "<span>" + EVENT.name.toUpperCase() + "</span></div>" +
+      '<h1 class="hero-heading">' + heading(count) + "</h1>" +
+      '<p class="hero-subheading">Explore degrees and scholarships, and talk live with official university representatives.</p>' +
+      '<div class="hero-countdown-strip" role="timer" aria-label="Time until the fair starts">' +
+      unit("Days", "inspiraLoginDays") + sep() + unit("Hours", "inspiraLoginHours") + sep() +
+      unit("Mins", "inspiraLoginMins") + sep() + unit("Secs", "inspiraLoginSecs") +
+      "</div>" +
+      '<div class="hero-pills-row">' + pills(count) + "</div>" +
+      "</div>" +
+      '<div class="hero-bottom-proof">' +
+      '<div class="proof-caption">Hosted by <strong>Rede Inspira</strong>. Powered by WebiFair.</div>' +
+      "</div>";
+
+    function unit(label, id) {
+      return '<div class="countdown-unit"><div class="countdown-val" id="' + id + '">--</div><div class="countdown-lbl">' + label + "</div></div>";
+    }
+    function sep() { return '<div class="countdown-sep" aria-hidden="true">:</div>'; }
+  }
+
+  function enhanceHero(leftCol) {
+    $$("#sliderSection, .logInBlock, .logInBlockInner", leftCol).forEach(function (el) {
+      el.style.setProperty("display", "none", "important");
+    });
+
+    const count = universityCount();
+    let hero = $(".inspira-hero-injected", leftCol);
+    if (!hero) {
+      hero = document.createElement("div");
+      hero.className = "inspira-hero-injected";
+      hero.id = "injectedHeroPane";
+      setHTML(hero, heroMarkup(count));
+      leftCol.appendChild(hero);
+    } else {
+      setHTML($(".hero-heading", hero), heading(count));
+      setHTML($(".hero-pills-row", hero), pills(count));
+    }
+    const badgeEl = $(".hero-live-badge", hero);
+    setHTML(badgeEl, badge());
+    if (badgeEl) badgeEl.classList.toggle("is-live", phase() === "live");
+  }
+
+  let countdownTimer = null;
+  function tickCountdown() {
+    const strip = $(".inspira-hero-injected .hero-countdown-strip");
+    if (!strip) return;
+    const diff = Math.max(0, START - Date.now());
+    if (!diff) {
+      strip.hidden = true;
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      return;
+    }
+    const pad = function (n) { return String(n).padStart(2, "0"); };
+    setText($("#inspiraLoginDays"), pad(Math.floor(diff / 86400000)));
+    setText($("#inspiraLoginHours"), pad(Math.floor(diff / 3600000) % 24));
+    setText($("#inspiraLoginMins"), pad(Math.floor(diff / 60000) % 60));
+    setText($("#inspiraLoginSecs"), pad(Math.floor(diff / 1000) % 60));
+  }
+  function startCountdown() {
+    if (countdownTimer) return;
+    tickCountdown();
+    if (Date.now() < START) countdownTimer = setInterval(tickCountdown, 1000);
+  }
+
+  function enhanceForm(rightCol) {
+    $$(".topBrandText section, .topBrandText .slick-slider, .eventLogoWrapper, .socialButtons", rightCol).forEach(function (el) {
+      el.style.setProperty("display", "none", "important");
+    });
+
+    const path = location.pathname;
+    const isSignUp = path.indexOf("/sign-up") > -1 || !!$("input[name='firstName']", rightCol);
+    const isCode = path.indexOf("/login-with-code") > -1 || !!$("input[name='codeVal'], input[name='code'], input[name='otp']", rightCol);
+
+    if (isSignUp || isCode) {
+      
+      $$(".vip-perk-card, .form-footer-trust, .inspira-form-badge, .inspira-form-subtext, .inspira-input-label", rightCol)
+        .forEach(function (el) { el.remove(); });
+      return;
+    }
+
+    const titleEl = $(".topBrandText h2, .topBrandText h3, .topBrandText .MuiTypography-root", rightCol);
+    if (titleEl) {
+      setText(titleEl, "Welcome to the Fair");
+      if (!$(".inspira-form-badge", rightCol)) {
+        const b = document.createElement("div");
+        b.className = "inspira-form-badge";
+        b.textContent = "Student sign in";
+        titleEl.parentNode.insertBefore(b, titleEl);
+      }
+      let sub = $(".inspira-form-subtext", rightCol);
+      if (!sub) {
+        sub = document.createElement("p");
+        sub.className = "inspira-form-subtext";
+        titleEl.parentNode.appendChild(sub);
+      }
+      setText(sub, "Enter the email you registered with. We will send you a one-time code to sign in.");
+    }
+
+    const form = $("form", rightCol);
+    if (!form || !form.parentElement) return;
+
+    const input = $("input#email, input[name='email']", form);
+    if (input) {
+      if (!input.id) input.id = "inspiraLoginEmail";
+      if (input.getAttribute("autocomplete") !== "email") input.setAttribute("autocomplete", "email");
+    }
+
+    if (!$(".inspira-input-label", rightCol)) {
+      const label = document.createElement("label");
+      label.className = "inspira-input-label";
+      label.textContent = "Email address";
+      if (input) label.htmlFor = input.id;
+      form.parentNode.insertBefore(label, form);
+    }
+
+    if (!$(".vip-perk-card", rightCol)) {
+      const perk = document.createElement("div");
+      perk.className = "vip-perk-card";
+      perk.innerHTML =
+        '<div class="vip-perk-icon">' + ICONS.mail + "</div>" +
+        '<div class="vip-perk-text"><strong>No password needed</strong>' +
+        "Check your inbox for the code after you continue. It can take a minute to arrive.</div>";
+
+      const footer = document.createElement("div");
+      footer.className = "form-footer-trust";
+      footer.innerHTML = '<span>Not registered yet?</span> <a href="' + EVENT.registerUrl + '">Register for the fair</a>';
+
+      form.insertAdjacentElement("afterend", footer);
+      form.insertAdjacentElement("afterend", perk);
+    }
+  }
+
+  function update() {
+    if (location.pathname.indexOf("/register") > -1) return;
+    const leftCol = $(".logInBlockWrapper, [class*='logInBlockWrapper']");
+    const rightCol = $(".loginWrapperTop, [class*='loginWrapperTop']");
+    if (!leftCol && !rightCol) return;
+    try {
+      if (leftCol) { enhanceHero(leftCol); startCountdown(); }
+      if (rightCol) enhanceForm(rightCol);
+    } catch (err) {
+      if (window.console) console.warn("[inspira-login]", err);
+    }
+  }
+
+  let queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }
+
+  const OWN = ".inspira-hero-injected, .vip-perk-card, .form-footer-trust, .inspira-form-badge, .inspira-form-subtext, .inspira-input-label";
+  function isOwn(m) {
+    const t = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentElement);
+    return !!(t && t.closest && t.closest(OWN));
+  }
+
+  function boot() {
+    update();
+    new MutationObserver(function (list) {
+      if (list.every(isOwn)) return;
+      schedule();
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+;
+
+(function () {
+  "use strict";
+  if (window.__INSPIRA_REGISTER__) return;
+  window.__INSPIRA_REGISTER__ = true;
+
+  const EVENT = Object.assign({
+    name: "Rede Inspira Virtual University Fair",
+    start: "2026-10-22T17:00:00-03:00",
+    end: "2026-10-22T20:00:00-03:00",
+    timeZone: "America/Sao_Paulo",
+    timeZoneLabel: "BRT",
+    passImage: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3583_7137_630733001791452515.jpeg"
+  }, window.INSPIRA_EVENT_CONFIG || {});
+
+  const BULLET = "\u2022";
+  const SEP = '<span class="inspira-sep" aria-hidden="true"></span>';
+
+  function setHTML(el, html) {
+    if (!el || (el.__inspiraHTML === html && el.innerHTML === el.__inspiraOut)) return;
+    el.innerHTML = html;
+    el.__inspiraHTML = html;
+    el.__inspiraOut = el.innerHTML;
+  }
+  function setText(el, text) { if (el && el.textContent !== text) el.textContent = text; }
+  function visibleMatch(sel) {
+    return Array.prototype.some.call(document.querySelectorAll(sel), function (el) { return el.getClientRects().length > 0; });
+  }
+
+  function getUniversityCount() {
+    const n = document.querySelectorAll(SELECTORS.cards).length;
+    try {
+      if (n > 0) {
+        if (localStorage.getItem("inspira_univ_count") !== String(n)) localStorage.setItem("inspira_univ_count", String(n));
+        return n;
+      }
+      return parseInt(localStorage.getItem("inspira_univ_count"), 10) || 0;
+    } catch (e) {
+      return n;
+    }
+  }
+
+  function brandSubtitle(count) {
+    return count ? `WebiFairs${SEP}${count} universities` : "WebiFairs";
+  }
+
+  function countryName(country) {
+    const names = { "U.S.": "United States", "U.K.": "United Kingdom", "Global": "International" };
+    return names[country] || country || "";
+  }
+
+  const EUROPE = ["germany", "finland", "netherlands", "belgium", "france", "spain", "italy", "ireland",
+    "switzerland", "austria", "sweden", "norway", "denmark", "portugal", "poland", "hungary", "czech",
+    "greece", "estonia", "latvia", "lithuania", "luxembourg", "malta", "cyprus", "iceland", "croatia",
+    "slovenia", "slovakia", "romania", "bulgaria", "monaco"];
+
+  function inRegion(text, region) {
+    const t = text.toLowerCase();
+    const tag = function (s) { return t.includes(BULLET + " " + s) || t.includes(BULLET + s); };
+    if (region === "u.s.") return tag("u.s.") || t.includes("united states");
+    if (region === "u.k.") return tag("u.k.") || t.includes("united kingdom");
+    if (region === "canada") return tag("canada");
+    if (region === "europe") return EUROPE.some(function (c) { return t.includes(c); });
+    return true;
+  }
+
+  function eventDateParts() {
+    const start = new Date(EVENT.start);
+    const end = new Date(EVENT.end);
+    const tz = EVENT.timeZone;
+    const plain = function (s) { return String(s).replace(/\s+/g, " ").trim(); };
+    try {
+      const date = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: tz }).format(start);
+      const t = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz });
+      return { date: plain(date), time: plain(t.format(start) + " to " + t.format(end) + " " + EVENT.timeZoneLabel) };
+    } catch (e) {
+      return { date: "Thu 22 Oct 2026", time: "5:00 PM to 8:00 PM BRT" };
+    }
+  }
+
+  const SELECTORS = {
+    header: "#headerTop",
+    headerLogoBox: "#headerTop [class*='mui-jx8ode']",
+    universitiesSection: '[id="Participating Universities"]',
+    cardGrid: '[id="Participating Universities"] .MuiGrid-container',
+    cards: '[id="Participating Universities"] .MuiCard-root',
+    cardTitles: '[id="Participating Universities"] .MuiCardContent-root h3',
+    drawer: ".MuiDrawer-root",
+    registerPanel: "#refFormPanel",
+  };
+
+  function removeStickyTabBar() {
+    const stickyEls = document.querySelectorAll(
+      '#headerSticky, [id*="headerSticky"], .headerSticky, [class*="headerSticky"]'
+    );
+    stickyEls.forEach((el) => {
+      el.style.setProperty("display", "none", "important");
+      el.setAttribute("aria-hidden", "true");
+    });
+  }
+
+  function enhanceHeaderBrand() {
+    const logoBox = document.querySelector(SELECTORS.headerLogoBox);
+    if (!logoBox) return;
+
+    const count = getUniversityCount();
+
+    const existingSub = logoBox.querySelector(".inspira-nav-title-sub");
+    if (existingSub) {
+      setHTML(existingSub, brandSubtitle(count));
+      return;
+    }
+
+    logoBox.dataset.inspiraEnhanced = "true";
+    logoBox.innerHTML = `
+      <a href="#" class="inspira-nav-brand" title="Rede Inspira Virtual University Fair" style="text-decoration: none;">
+        <span class="inspira-nav-badge">REDE INSPIRA</span>
+        <div class="inspira-nav-title">
+          <span class="inspira-nav-title-main">Virtual University Fair</span>
+          <span class="inspira-nav-title-sub">${brandSubtitle(count)}</span>
+        </div>
+      </a>
+    `;
+
+    const brandLink = logoBox.querySelector(".inspira-nav-brand");
+    if (brandLink) {
+      brandLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+  }
+
+  function initHeaderScrollListener() {
+    const header = document.querySelector(SELECTORS.header);
+    if (!header || header.dataset.scrollListenerActive) return;
+
+    header.dataset.scrollListenerActive = "true";
+    let isScrolled = false;
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        const scrolled = window.scrollY > 25;
+        if (scrolled !== isScrolled) {
+          isScrolled = scrolled;
+          header.classList.toggle("header-scrolled", isScrolled);
+          document.body.classList.toggle("cmx-scrolled", isScrolled);
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  let _inspiraCountdownInterval = null;
+
+  function enhanceCountdownTimer() {
+    
+    const timerCandidates = document.querySelectorAll(
+      '#description [class*="styleTimerWrapper"], #description [class*="styleTimerComponent"], [class*="styleTimerComponent"], [class*="styleTimerWrapper"], #description > .MuiBox-root:has(> label), [class*="TimerComponent"]'
+    );
+    let timerEl = null;
+    for (const el of timerCandidates) {
+      const text = (el.textContent || "").trim();
+      
+      if (
+        /(?:event starts in|starts in|fair begins in)/i.test(text) ||
+        (/days/i.test(text) && /(?:secs?|seconds?|mins?|minutes?|hours?)/i.test(text))
+      ) {
+        timerEl = el;
+        break;
+      }
+    }
+
+    if (!timerEl) {
+      const desc = document.getElementById("description");
+      if (desc) {
+        const divs = desc.querySelectorAll("div, section");
+        for (const el of divs) {
+          const text = (el.textContent || "").trim();
+          if (/days/i.test(text) && /secs?/i.test(text) && /(?:starts in|\d+\s*(?:days|d))/i.test(text)) {
+            timerEl = el.closest('[class*="styleTimerComponent"], [class*="styleTimerWrapper"]') || el;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!timerEl) return;
+
+    timerEl.style.setProperty("width", "100%", "important");
+    timerEl.style.setProperty("max-width", "100%", "important");
+    timerEl.style.setProperty("box-sizing", "border-box", "important");
+
+    Array.from(timerEl.children).forEach((child) => {
+      if (!child.classList.contains("inspira-enhanced-countdown")) {
+        child.style.setProperty("display", "none", "important");
+      }
+    });
+
+    function extractCountdownNumbers() {
+      const raw = timerEl.textContent || "";
+      let d = raw.match(/(\d+)\s*(?:days?|d\b)/i)?.[1];
+      let h = raw.match(/(\d+)\s*(?:hours?|hrs?|h\b)/i)?.[1];
+      let m = raw.match(/(\d+)\s*(?:minutes?|mins?|m\b)/i)?.[1];
+      let s = raw.match(/(\d+)\s*(?:seconds?|secs?|s\b)/i)?.[1];
+
+      if (!d || !h || !m || !s) {
+        const leafTexts = Array.from(timerEl.querySelectorAll("*"))
+          .filter((el) => el.children.length === 0 && !el.closest(".inspira-enhanced-countdown"))
+          .map((el) => el.textContent.trim());
+
+        for (let i = 0; i < leafTexts.length; i++) {
+          const cur = leafTexts[i];
+          const next = leafTexts[i + 1] || "";
+          if (/^\d+$/.test(cur)) {
+            if (/^days?$/i.test(next) && !d) d = cur;
+            else if (/^(?:hours?|hrs?)$/i.test(next) && !h) h = cur;
+            else if (/^(?:minutes?|mins?)$/i.test(next) && !m) m = cur;
+            else if (/^(?:seconds?|secs?)$/i.test(next) && !s) s = cur;
+          }
+        }
+
+        if (!d || !h || !m || !s) {
+          const pureDigits = leafTexts.filter((t) => /^\d+$/.test(t));
+          if (pureDigits.length >= 4) {
+            if (!d) d = pureDigits[0];
+            if (!h) h = pureDigits[1];
+            if (!m) m = pureDigits[2];
+            if (!s) s = pureDigits[3];
+          }
+        }
+      }
+
+      if (!d || !h || !m || !s) {
+        const seqMatch = raw.match(/(\d{1,3})\s*[:\-\/]\s*(\d{1,2})\s*[:\-\/]\s*(\d{1,2})\s*[:\-\/]\s*(\d{1,2})/);
+        if (seqMatch) {
+          d = seqMatch[1];
+          h = seqMatch[2];
+          m = seqMatch[3];
+          s = seqMatch[4];
+        }
+      }
+
+      if (d == null || h == null || m == null || s == null) return null;
+      return {
+        days: String(d).padStart(2, "0"),
+        hours: String(h).padStart(2, "0"),
+        mins: String(m).padStart(2, "0"),
+        secs: String(s).padStart(2, "0"),
+      };
+    }
+
+    const style = "apple";
+
+    let widget = timerEl.querySelector(".inspira-enhanced-countdown");
+    if (!widget || widget.dataset.inspiraStyle !== style) {
+      if (widget) widget.remove();
+      widget = document.createElement("div");
+      widget.className = "inspira-enhanced-countdown";
+      widget.dataset.inspiraStyle = style;
+
+      {
+        widget.innerHTML = `
+          <div class="inspira-timer-wrap inspira-timer-apple">
+            <div class="inspira-timer-apple-badge">
+              <span class="inspira-timer-apple-dot"></span>
+              <span class="inspira-timer-apple-label">EVENT STARTS IN</span>
+            </div>
+            <div class="inspira-timer-apple-units" role="timer" aria-label="Time until the fair starts">
+              <div class="inspira-timer-apple-unit">
+                <span class="inspira-timer-apple-num" data-unit="days">--</span>
+                <span class="inspira-timer-apple-sub">DAYS</span>
+              </div>
+              <div class="inspira-timer-apple-sep"></div>
+              <div class="inspira-timer-apple-unit">
+                <span class="inspira-timer-apple-num" data-unit="hours">--</span>
+                <span class="inspira-timer-apple-sub">HOURS</span>
+              </div>
+              <div class="inspira-timer-apple-sep"></div>
+              <div class="inspira-timer-apple-unit">
+                <span class="inspira-timer-apple-num" data-unit="mins">--</span>
+                <span class="inspira-timer-apple-sub">MINS</span>
+              </div>
+              <div class="inspira-timer-apple-sep"></div>
+              <div class="inspira-timer-apple-unit inspira-timer-apple-unit-sec">
+                <span class="inspira-timer-apple-num" data-unit="secs">--</span>
+                <span class="inspira-timer-apple-sub">SECS</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      timerEl.appendChild(widget);
+    }
+
+    function updateWidgetValues(values) {
+      if (!values || !widget) return;
+      const { days, hours, mins, secs } = values;
+      const daysEl = widget.querySelector('[data-unit="days"]');
+      const hoursEl = widget.querySelector('[data-unit="hours"]');
+      const minsEl = widget.querySelector('[data-unit="mins"]');
+      const secsEl = widget.querySelector('[data-unit="secs"]');
+
+      if (daysEl && daysEl.textContent !== days) daysEl.textContent = days;
+      if (hoursEl && hoursEl.textContent !== hours) hoursEl.textContent = hours;
+      if (minsEl && minsEl.textContent !== mins) minsEl.textContent = mins;
+      if (secsEl && secsEl.textContent !== secs) secsEl.textContent = secs;
+    }
+
+    const initialValues = extractCountdownNumbers();
+    updateWidgetValues(initialValues);
+
+    if (!timerEl.dataset.timerObserved) {
+      timerEl.dataset.timerObserved = "true";
+      const observer = new MutationObserver(function (mutations) {
+        const isSelf = mutations.every(
+          (m) => m.target && (m.target === widget || (m.target.closest && m.target.closest(".inspira-enhanced-countdown")))
+        );
+        if (!isSelf) {
+          Array.from(timerEl.children).forEach((child) => {
+            if (!child.classList.contains("inspira-enhanced-countdown")) {
+              child.style.setProperty("display", "none", "important");
+            }
+          });
+          const fresh = extractCountdownNumbers();
+          updateWidgetValues(fresh);
+        }
+      });
+      observer.observe(timerEl, { childList: true, characterData: true, subtree: true });
+    }
+
+    if (!_inspiraCountdownInterval) {
+      _inspiraCountdownInterval = setInterval(function () {
+        if (!document.body.contains(timerEl)) {
+          clearInterval(_inspiraCountdownInterval);
+          _inspiraCountdownInterval = null;
+          return;
+        }
+        const currentVals = extractCountdownNumbers();
+        updateWidgetValues(currentVals);
+      }, 1000);
+    }
+  }
+
+  const REAL_WEBSITE_UNIVERSITIES = [
+    {
+      name: "Technology Help Desk",
+      country: "Event Support",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3229_8454_656997001791455840.png",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1913_9109_433953001791455884.png",
+      isSupport: true
+    },
+    {
+      name: "Arizona State University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2870_6298_991499001791441452.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1403_7461_847442001791451733.png"
+    },
+    {
+      name: "Cardiff University",
+      country: "U.K.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4332_8030_291283001791458599.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1931_5835_256308001791459038.png"
+    },
+    {
+      name: "Carleton University",
+      country: "Canada",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2750_7111_967339001791453091.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3502_6982_021225001791454485.png"
+    },
+    {
+      name: "Columbia College Chicago",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4749_8245_516730001791438436.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1910_9789_755265001791450828.jpeg"
+    },
+    {
+      name: "Concordia University Wisconsin - Mequon, WI",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3290_9708_474407001791440985.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3981_6692_253003001791451189.png"
+    },
+    {
+      name: "Creighton University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4806_9352_920827001791442399.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4581_8945_848891001791451954.png"
+    },
+    {
+      name: "Ferris State University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3338_8378_568050001791456682.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4798_5927_150820001791454778.png"
+    },
+    {
+      name: "Full Sail University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2274_5250_548582001791453802.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4228_8447_575055001791454848.png"
+    },
+    {
+      name: "H\u00e4me University of Applied Sciences",
+      country: "Finland",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3371_6023_132088001791442586.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1142_9741_201798001791452003.png"
+    },
+    {
+      name: "Illinois Institute of Technology",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3829_8433_138719001791440473.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3117_7024_001444001791451591.png"
+    },
+    {
+      name: "Kansas State University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4012_8958_666423001791453373.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1519_9684_326733001791454944.png"
+    },
+    {
+      name: "Liverpool John Moores University",
+      country: "U.K.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1736_5679_208486001791439869.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3627_6645_897969001791451415.png"
+    },
+    {
+      name: "New Jersey Institute of Technology",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4800_9377_722120001791442017.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3554_8006_648338001791452746.jpeg"
+    },
+    {
+      name: "North Central College",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4168_5482_127421001791440803.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2913_8291_076982001791452365.jpeg"
+    },
+    {
+      name: "Ohio University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2026_9093_406167001791441547.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2827_9757_141954001791451782.png"
+    },
+    {
+      name: "Pace University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3644_8030_888944001791453250.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2059_9446_364238001791455048.png"
+    },
+    {
+      name: "Portland State University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4886_8140_648182001791456930.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1027_6532_303792001791455417.png"
+    },
+    {
+      name: "Providence College",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2188_9189_391762001791440247.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3751_9143_392835001791452603.jpeg"
+    },
+    {
+      name: "Stony Brook University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2500_5864_681839001791454556.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4608_5094_845637001791455500.png"
+    },
+    {
+      name: "Syracuse University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1952_8692_138286001791453587.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2581_7109_070294001791455559.png"
+    },
+    {
+      name: "Texas Tech University",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2991_8094_162858001791441122.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2302_7287_899615001791452300.jpeg"
+    },
+    {
+      name: "UCLL University of Applied Sciences",
+      country: "Belgium",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2555_7980_476695001791454095.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2730_8012_700790001791456356.png"
+    },
+    {
+      name: "University College Utrecht",
+      country: "Netherlands",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3557_8268_142678001791456203.png",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3770_9480_538265001791456150.png"
+    },
+    {
+      name: "University of Alberta",
+      country: "Canada",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3441_8436_532443001791450016.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2207_9504_317547001791456041.png"
+    },
+    {
+      name: "University of Oklahoma",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3908_7092_254241001791457850.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1544_6008_591898001791455769.png"
+    },
+    {
+      name: "University of Southern Mississippi",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2299_8295_558320001791441156.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4829_7032_537040001791452435.png"
+    },
+    {
+      name: "University of the Highlands and Islands",
+      country: "U.K.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1936_8708_196274001791440758.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3757_8663_965450001791451659.png"
+    },
+    {
+      name: "University of West Florida",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2110_9663_437030001791439302.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3583_7137_630733001791452515.jpeg"
+    },
+    {
+      name: "Washington College",
+      country: "U.S.",
+      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4934_5997_340363001791456894.jpg",
+      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3325_5205_399346001791455675.png"
+    },
+    {
+      name: "WHU \u2013 Otto Beisheim School of Management",
+      country: "Germany",
+      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
+      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
+    },
+    {
+      name: "York St John University",
+      country: "U.K.",
+      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
+      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
+    }
+  ];
+
+  window._inspiraCardViewMode = "style2";
+
+  function formatUniversityCardDetails(rawName, countryHint, isSupportHint) {
+    let displayName = (rawName || "").trim();
+    let campusLocation = "";
+    let displayCountry = countryHint || "Global";
+    const isSupport = isSupportHint || /help desk|support/i.test(displayName);
+
+    if (isSupport) {
+      return {
+        displayName: displayName || "Technology Help Desk",
+        campusLocation: "",
+        subtitle: "Technical help for students",
+        country: "Event Support",
+        isSupport: true
+      };
+    }
+
+    if (/[\-\u2013\u2014]/.test(displayName)) {
+      const parts = displayName.split(/\s*[\-\u2013\u2014]\s*/);
+      const head = parts[0].trim();
+      const tail = parts.slice(1).join(" - ").trim();
+      const isAcademicUnit = /school|college|institute|faculty|department|center|centre|programme/i.test(tail);
+      if (!isAcademicUnit && tail.length > 0) {
+        displayName = head;
+        campusLocation = tail;
+      }
+    }
+
+    let subtitle = escapeHTML(countryName(displayCountry));
+    if (campusLocation) {
+      let cleanCampus = campusLocation;
+      if (!/campus/i.test(cleanCampus)) {
+        cleanCampus = cleanCampus.replace(/,\s*[A-Z]{2}$/, "").trim();
+        cleanCampus = `${cleanCampus} Campus`;
+      }
+      subtitle = `<span class="inspira-campus-tag">${escapeHTML(cleanCampus)}</span>`;
+    }
+
+    return {
+      displayName,
+      campusLocation,
+      subtitle,
+      country: displayCountry,
+      isSupport: false
+    };
+  }
+
+  function enhanceUniversityCards(forceUpdate = false) {
+    const cards = document.querySelectorAll(SELECTORS.cards);
+    if (!cards.length) return;
+
+    cards.forEach((card, index) => {
+      
+      let univName = "";
+      let country = "";
+      let logo = "";
+      let banner = "";
+      let isSupport = false;
+
+      const rawH3 = card.querySelector(".MuiCardContent-root h3, [class*='mui-aqn2jx']");
+      const rawText = rawH3 ? rawH3.textContent.trim() : "";
+      const rawLogoImg = card.querySelector(".mui-1lv1xbc img, [class*='mui-1lv1xbc'] img, .MuiBox-root img:not(.bgImage)");
+      const rawBannerImg = card.querySelector("img.bgImage, img[alt*='BANNER']");
+
+      if (rawText) {
+        if (rawText.includes(" " + BULLET + " ")) {
+          const parts = rawText.split(" " + BULLET + " ");
+          univName = parts[0].trim();
+          country = parts[1].trim();
+        } else if (rawText.includes(" - ")) {
+          const parts = rawText.split(" - ");
+          univName = parts[0].trim();
+          country = parts[1].trim();
+        } else {
+          univName = rawText;
+          country = (rawText.toLowerCase().includes("help desk") || rawText.toLowerCase().includes("support")) ? "Event Support" : "Global";
+        }
+      }
+
+      if (rawLogoImg && rawLogoImg.src) logo = rawLogoImg.src;
+      if (rawBannerImg && rawBannerImg.src) banner = rawBannerImg.src;
+
+      const matched = REAL_WEBSITE_UNIVERSITIES.find(
+        (u) =>
+          univName &&
+          (u.name.toLowerCase() === univName.toLowerCase() ||
+            univName.toLowerCase().includes(u.name.toLowerCase()) ||
+            u.name.toLowerCase().includes(univName.toLowerCase()))
+      );
+
+      let rawFullName = univName;
+      if (matched) {
+        rawFullName = matched.name;
+        if (!country || country === "Global") country = matched.country;
+        if (!logo || logo.includes("exhibitor_default") || logo.includes("placeholder")) logo = matched.logo;
+        if (!banner || banner.includes("exhibitor_cover") || banner.includes("placeholder")) banner = matched.banner;
+        if (matched.isSupport) isSupport = true;
+      } else if (!univName && REAL_WEBSITE_UNIVERSITIES[index]) {
+        const item = REAL_WEBSITE_UNIVERSITIES[index];
+        rawFullName = item.name;
+        country = item.country;
+        logo = item.logo;
+        banner = item.banner;
+        if (item.isSupport) isSupport = true;
+      } else if (!univName) {
+        const fallback = REAL_WEBSITE_UNIVERSITIES[index % REAL_WEBSITE_UNIVERSITIES.length];
+        rawFullName = fallback.name;
+        country = fallback.country;
+        logo = fallback.logo;
+        banner = fallback.banner;
+        if (fallback.isSupport) isSupport = true;
+      }
+
+      const details = formatUniversityCardDetails(rawFullName, country, isSupport);
+      univName = details.displayName;
+      country = details.country;
+      isSupport = details.isSupport;
+      const subtitle = details.subtitle;
+      const boothTag = isSupport ? "Help Desk" : "Official Booth";
+      const boothIconPath = isSupport
+        ? '<path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>'
+        : '<path d="M3 21h18M3 10h18M5 10v11M9 10v11M15 10v11M19 10v11M12 2l10 5H2l10-5z"></path>';
+
+      card.querySelectorAll(".inspira-card-chat-frosted, .inspira-card-chat-circle, .inspira-card-fav-btn, .inspira-card-fav-circle, [class*='chat-circle'], [class*='chat-frosted']").forEach((el) => el.remove());
+      card.querySelectorAll(".inspira-card-tags-row-dark span, .inspira-card-tags-row span, [class*='inspira-tag']").forEach((tag) => {
+        if (/undergrad|grad|live support/i.test(tag.textContent)) {
+          tag.remove();
+        }
+      });
+
+      const hasOldChat = card.querySelector(".inspira-card-chat-circle, .inspira-card-chat-frosted, [class*='chat-circle']");
+      const hasNewBrandRow = card.querySelector(".inspira-card-brand-row");
+      const isUpToDate = card.dataset.renderedStyle === "style2" && card.dataset.cardVersion === "v9" && hasNewBrandRow && !hasOldChat;
+
+      if (!forceUpdate && isUpToDate && card.querySelector(".inspira-card-view")) {
+        return;
+      }
+      card.dataset.renderedStyle = "style2";
+      card.dataset.cardVersion = "v9";
+
+      card.querySelectorAll(".inspira-card-view").forEach((el) => el.remove());
+
+      const cardHtml = `
+        <div class="inspira-card-view inspira-view-split">
+          <div class="inspira-card-split-media">
+            <img src="${banner}" class="inspira-card-split-img" alt="${escapeHTML(univName)}" loading="lazy" />
+            <span class="inspira-split-badge inspira-location-badge">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="11" r="2.5"></circle>
+              </svg>
+              ${escapeHTML(country)}
+            </span>
+          </div>
+          <div class="inspira-card-split-content">
+            <div class="inspira-card-brand-row">
+              <div class="inspira-card-logo-box">
+                ${logo ? `<img src="${logo}" class="inspira-card-brand-logo" alt="${escapeHTML(univName)} logo" loading="lazy" />` : `
+                  <div class="inspira-card-logo-fallback">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                  </div>`}
+              </div>
+              <div class="inspira-card-info-col">
+                <h3 class="inspira-card-name-dark" title="${escapeHTML(univName)}">${escapeHTML(univName)}</h3>
+                <span class="inspira-card-desc-muted">${subtitle}</span>
+              </div>
+            </div>
+            <div class="inspira-card-tags-row-dark">
+              <span class="inspira-tag-item-dark" title="${isSupport ? 'Support Desk' : 'Booth Verification'}">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  ${boothIconPath}
+                </svg>
+                ${escapeHTML(boothTag)}
+              </span>
+            </div>
+            <div class="inspira-card-split-btn-group">
+              <button type="button" class="inspira-card-cta-btn inspira-cta-dark">
+                Explore Booth
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      card.insertAdjacentHTML("beforeend", cardHtml);
+
+      const exploreBtn = card.querySelector(".inspira-card-cta-btn");
+      if (exploreBtn) {
+        exploreBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          card.click();
+        });
+      }
+    });
+  }
+
+  function initDirectorySearchAndFilter() {
+    const section = document.querySelector(SELECTORS.universitiesSection);
+    const grid = document.querySelector(SELECTORS.cardGrid);
+    if (!section || !grid) return;
+
+    const cardColumns = Array.from(grid.children).filter(c => !c.classList.contains("univ-empty-state"));
+    if (!cardColumns.length) return;
+
+    let filterContainer = section.querySelector(".univ-filter-container");
+    if (filterContainer) {
+      updateFilterCounts(cardColumns, filterContainer);
+      return;
+    }
+
+    const allCount = cardColumns.length;
+    filterContainer = document.createElement("div");
+    filterContainer.className = "univ-filter-container";
+    filterContainer.innerHTML = `
+      <div class="univ-search-wrapper">
+        <svg class="univ-search-icon" viewBox="0 0 24 24">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input 
+          type="text" 
+          id="univSearchInput" 
+          class="univ-search-input" 
+          placeholder="Search by university or country" 
+          aria-label="Search participating universities"
+        />
+      </div>
+      <div class="univ-country-filters" role="group" aria-label="Filter universities by region">
+        <button type="button" class="univ-filter-pill active" data-filter="all">All <span class="univ-filter-count">(${allCount})</span></button>
+        <button type="button" class="univ-filter-pill" data-filter="u.s.">U.S. <span class="univ-filter-count"></span></button>
+        <button type="button" class="univ-filter-pill" data-filter="u.k.">U.K. <span class="univ-filter-count"></span></button>
+        <button type="button" class="univ-filter-pill" data-filter="canada">Canada <span class="univ-filter-count"></span></button>
+        <button type="button" class="univ-filter-pill" data-filter="europe">Europe <span class="univ-filter-count"></span></button>
+      </div>
+    `;
+
+    grid.parentNode.insertBefore(filterContainer, grid);
+
+    updateFilterCounts(cardColumns, filterContainer);
+
+    const searchInput = filterContainer.querySelector("#univSearchInput");
+    const pills = filterContainer.querySelectorAll(".univ-filter-pill");
+
+    let currentFilter = "all";
+    let searchQuery = "";
+
+    function applyFilter() {
+      let visibleCount = 0;
+      const q = searchQuery.toLowerCase().trim();
+
+      cardColumns.forEach((col) => {
+        const text = col.textContent.toLowerCase();
+        const matchesCountry = inRegion(text, currentFilter);
+
+        const matchesSearch = !q || text.includes(q);
+
+        if (matchesCountry && matchesSearch) {
+          col.style.display = "";
+          visibleCount++;
+        } else {
+          col.style.display = "none";
+        }
+      });
+
+      let emptyMsg = grid.querySelector(".univ-empty-state");
+      if (visibleCount === 0) {
+        if (!emptyMsg) {
+          emptyMsg = document.createElement("div");
+          emptyMsg.className = "univ-empty-state";
+          emptyMsg.innerHTML = `
+            <p class="univ-empty-title">No universities match your search.</p>
+            <button type="button" id="resetUnivFilterBtn" class="univ-empty-reset">Show all ${cardColumns.length} universities</button>
+          `;
+          grid.appendChild(emptyMsg);
+          emptyMsg.querySelector("#resetUnivFilterBtn").addEventListener("click", () => {
+            searchInput.value = "";
+            searchQuery = "";
+            currentFilter = "all";
+            pills.forEach((p) => p.classList.toggle("active", p.dataset.filter === "all"));
+            applyFilter();
+          });
+        }
+        emptyMsg.style.display = "block";
+      } else if (emptyMsg) {
+        emptyMsg.style.display = "none";
+      }
+    }
+
+    searchInput.addEventListener("input", function (e) {
+      searchQuery = e.target.value;
+      applyFilter();
+    });
+
+    pills.forEach((pill) => {
+      pill.addEventListener("click", function () {
+        pills.forEach((p) => p.classList.remove("active"));
+        this.classList.add("active");
+        currentFilter = this.dataset.filter;
+        applyFilter();
+      });
+    });
+  }
+
+  function updateFilterCounts(columns, container) {
+    let us = 0, uk = 0, canada = 0, europe = 0;
+    columns.forEach((col) => {
+      const text = col.textContent.toLowerCase();
+      if (inRegion(text, "u.s.")) us++;
+      if (inRegion(text, "u.k.")) uk++;
+      if (inRegion(text, "canada")) canada++;
+      if (inRegion(text, "europe")) europe++;
+    });
+
+    const allPill = container.querySelector('[data-filter="all"] .univ-filter-count');
+    const usCount = container.querySelector('[data-filter="u.s."] .univ-filter-count');
+    const ukCount = container.querySelector('[data-filter="u.k."] .univ-filter-count');
+    const canCount = container.querySelector('[data-filter="canada"] .univ-filter-count');
+    const eurCount = container.querySelector('[data-filter="europe"] .univ-filter-count');
+
+    if (allPill) allPill.textContent = `(${columns.length})`;
+    if (usCount) usCount.textContent = `(${us})`;
+    if (ukCount) ukCount.textContent = `(${uk})`;
+    if (canCount) canCount.textContent = `(${canada})`;
+    if (eurCount) eurCount.textContent = `(${europe})`;
+  }
+
+  function initCardInteractionTracking() {
+    if (window._inspiraTrackingInitialized) return;
+    window._inspiraTrackingInitialized = true;
+
+    document.addEventListener("click", function (e) {
+      const card = e.target.closest(SELECTORS.cards);
+      if (card) {
+        document.querySelectorAll(SELECTORS.cards).forEach((c) => c.classList.remove("card-selected"));
+        card.classList.add("card-selected");
+      }
+    });
+  }
+
+  function getActiveModalPopup() {
+    const papers = document.querySelectorAll(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle']");
+    for (const paper of papers) {
+      if (paper.offsetWidth > 0 || paper.offsetHeight > 0) {
+        return paper.closest(".MuiDrawer-root, .MuiModal-root, .MuiDialog-root, [role='presentation'], body") || paper;
+      }
+    }
+
+    const roots = document.querySelectorAll(".MuiDrawer-root, .MuiModal-root, .MuiDialog-root, [role='dialog']");
+    for (const root of roots) {
+      if (root.getAttribute("aria-hidden") === "true") continue;
+      const style = window.getComputedStyle(root);
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      if (root.offsetWidth > 0 || root.offsetHeight > 0) {
+        return root;
+      }
+    }
+    return null;
+  }
+
+  function findModalCloseButton() {
+    
+    const demoClose = document.getElementById("demoCloseBtn");
+    if (demoClose && demoClose.offsetParent !== null) return demoClose;
+
+    const modalClose = document.querySelector(
+      ".MuiModal-root:not(.MuiDrawer-root) button:has(path[d*='205.66']), " +
+      ".MuiModal-root:not(.MuiDrawer-root) button.mui-1e6be0u, " +
+      ".MuiModal-root:not(.MuiDrawer-root) .mui-f0uyk5 > button, " +
+      ".MuiModal-root:not(.MuiDrawer-root) [class*='mui-f0uyk5'] button, " +
+      ".MuiModal-root:not(.MuiDrawer-root) button"
+    );
+    if (modalClose && (modalClose.offsetWidth > 0 || modalClose.offsetHeight > 0 || modalClose.offsetParent !== null)) {
+      return modalClose;
+    }
+
+    const drawerBtn = document.querySelector(".MuiDrawer-paper > button, .MuiDrawer-paper > .MuiIconButton-root, .MuiDrawer-paper button.mui-cysavz, .MuiDrawer-paper [class*='mui-cysavz']");
+    if (drawerBtn && (drawerBtn.offsetWidth > 0 || drawerBtn.offsetHeight > 0 || drawerBtn.offsetParent !== null)) return drawerBtn;
+
+    const openPapers = document.querySelectorAll(
+      ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], .MuiModal-root [role='dialog'], .MuiModal-root .MuiBox-root[tabindex='-1']"
+    );
+
+    for (const paper of openPapers) {
+      if (paper.offsetWidth === 0 && paper.offsetHeight === 0) continue;
+      
+      if (paper.closest(".MuiCard-root, .MuiAccordion-root, #refFormPanel")) continue;
+
+      const directBtn = paper.querySelector(":scope > button, :scope > .MuiIconButton-root, button.mui-cysavz, [class*='mui-cysavz']");
+      if (directBtn) return directBtn;
+
+      const injected = paper.querySelector("#inspiraInjectedCloseBtn, button.inspira-modal-close-btn");
+      if (injected) return injected;
+
+      const closeSvgBtn = paper.querySelector(
+        "button:has(path[d*='205.66']), button:has(path[d*='19 6.41']), button:has(svg[data-testid='CloseIcon'])"
+      );
+      if (closeSvgBtn && !closeSvgBtn.closest("[class*='social' i], [class*='Social' i], .tabs-filter-bar")) return closeSvgBtn;
+
+      const ariaClose = paper.querySelector(
+        "button[aria-label*='close' i], button[aria-label*='fechar' i], [aria-label*='close' i]"
+      );
+      if (ariaClose) return ariaClose;
+
+      const regClose = paper.querySelector(
+        ".widgetRegCloseSingleView button, .widgetRegCloseSingleView .MuiIconButton-root, [class*='widgetRegClose'] button"
+      );
+      if (regClose) return regClose;
+    }
+
+    const globalClose = document.querySelector(
+      ".MuiDrawer-root button[aria-label*='close' i], .MuiModal-root button[aria-label*='close' i], .widgetRegCloseSingleView button, #demoCloseBtn"
+    );
+    if (globalClose) return globalClose;
+
+    return null;
+  }
+
+  let isDismissingModal = false;
+  function dismissModalPopup() {
+    if (isDismissingModal) return;
+    isDismissingModal = true;
+
+    try {
+      
+      document.querySelectorAll(".card-selected").forEach((c) => c.classList.remove("card-selected"));
+
+      const demoDrawer = document.getElementById("demoDrawer");
+      if (demoDrawer) {
+        demoDrawer.style.display = "none";
+        document.body.style.overflow = "";
+      }
+
+      const closeBtn = findModalCloseButton();
+      if (closeBtn && closeBtn.id !== "demoCloseBtn") {
+        const actualBtn = closeBtn.closest("button") || closeBtn;
+        const reactKey = Object.keys(actualBtn).find((k) => k.startsWith("__reactProps"));
+        if (reactKey && actualBtn[reactKey]?.onClick) {
+          try {
+            actualBtn[reactKey].onClick({ preventDefault: () => { }, stopPropagation: () => { } });
+          } catch (_) { }
+        }
+        actualBtn.click();
+      }
+
+      ["keydown", "keyup"].forEach((type) => {
+        const escEvent = new KeyboardEvent(type, {
+          key: "Escape",
+          code: "Escape",
+          keyCode: 27,
+          which: 27,
+          bubbles: true,
+          cancelable: true,
+        });
+        document.dispatchEvent(escEvent);
+        window.dispatchEvent(escEvent);
+      });
+    } finally {
+      setTimeout(() => {
+        isDismissingModal = false;
+      }, 50);
+    }
+
+    return true;
+  }
+
+  function enhanceExhibitorDrawer() {
+
+    document.querySelectorAll(".MuiBackdrop-root, .MuiDrawer-root, .MuiModal-root, #demoDrawer").forEach((container) => {
+      if (!container.dataset.inspiraBackdropBound) {
+        container.dataset.inspiraBackdropBound = "true";
+        container.style.cursor = "pointer";
+        container.style.pointerEvents = "auto";
+        container.addEventListener("click", function (e) {
+          if (!e.target.closest(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], .MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)")) {
+            e.preventDefault();
+            e.stopPropagation();
+            dismissModalPopup();
+          }
+        });
+      }
+    });
+
+    const drawerPaper = document.querySelector(
+      ".MuiDrawer-root .MuiDrawer-paper, .MuiDrawer-paper, .MuiModal-root [class*='modalContentStyle'], .MuiDialog-paper"
+    );
+    if (!drawerPaper || drawerPaper.offsetHeight === 0) {
+      const cached = document.querySelectorAll("[data-inspira-exhibitor-enhanced]");
+      cached.forEach((el) => el.removeAttribute("data-inspira-exhibitor-enhanced"));
+      document.querySelectorAll(".card-selected").forEach((c) => c.classList.remove("card-selected"));
+      return;
+    }
+
+    const innerWrappers = drawerPaper.querySelectorAll(
+      ":scope > div, :scope > .MuiBox-root, [class*='styleExhibitorSidebarImage'], div[style*='46rem']"
+    );
+    innerWrappers.forEach((el) => {
+      const container = el.classList?.contains("styleExhibitorSidebarImage") ? el.parentElement : el;
+      if (container) {
+        container.style.setProperty("width", "100%", "important");
+        container.style.setProperty("max-width", "100%", "important");
+        container.style.setProperty("box-sizing", "border-box", "important");
+      }
+    });
+
+    if (drawerPaper.querySelector(".MuiSkeleton-root")) {
+      return;
+    }
+
+    const title = drawerPaper.querySelector("h3, [class*='styleExhibitorNameSidebar']");
+    if (title && title.children.length === 0) {
+      const parts = title.textContent.split(" " + BULLET + " ");
+      if (parts.length > 1) title.textContent = parts[0].trim();
+    }
+    const titleText = title ? title.textContent.trim() : "";
+    if (drawerPaper.dataset.inspiraEnhancedTitle === titleText && drawerPaper.querySelector(".inspira-filter-tabs-wrapper")) {
+      return;
+    }
+
+    const chips = drawerPaper.querySelectorAll(".MuiChip-root");
+    if (!chips.length) return;
+
+    drawerPaper.dataset.inspiraEnhancedTitle = titleText;
+    drawerPaper.dataset.inspiraExhibitorEnhanced = "true";
+
+    const chipsContainer = chips[0].parentElement;
+    if (!chipsContainer) return;
+
+    chipsContainer.classList.add("inspira-programs-container");
+
+    const rawChips = Array.from(chipsContainer.querySelectorAll(".MuiChip-root"));
+    if (!rawChips.length) return;
+
+    function categorizeProgram(rawText) {
+      const lower = (rawText || "").toLowerCase();
+      if (/engineer|computer|tech|software|cyber|data|robotics|ai|mechanic|civil|electric|chemical|industrial|it\b/.test(lower)) {
+        return { cat: "eng", label: "Engineering and Tech", shortLabel: "Engineering" };
+      }
+      if (/business|admin|management|finance|account|market|entrepreneur|economics|mba|commerce|hospitality|leadership/.test(lower)) {
+        return { cat: "biz", label: "Business and Leadership", shortLabel: "Business" };
+      }
+      if (/science|biology|biomed|health|nursing|medicine|pharma|physics|chemistry|psychology|environment/.test(lower)) {
+        return { cat: "sci", label: "Sciences and Health", shortLabel: "Sciences" };
+      }
+      return { cat: "hum", label: "Humanities and Arts", shortLabel: "Humanities" };
+    }
+
+    function formatProgramTitle(rawText) {
+      let raw = (rawText || "").replace(/_/g, " ").trim();
+      const engMatch = raw.match(/^engineering:\s*(.*)/i);
+      if (engMatch) {
+        const spec = engMatch[1].trim();
+        return spec.toLowerCase().replace(/(?:^|\s|\/|-|\()\S/g, (char) => char.toUpperCase()) + " Engineering";
+      }
+      let name = raw.replace(/^(?:department of|school of|major in):\s*/i, "");
+      if (/computer science.*information tech/i.test(name)) return "Computer Science and IT";
+      if (/business admin.*intl business/i.test(name)) return "Business Administration and International Business";
+      return name.toLowerCase().replace(/(?:^|\s|\/|-|\()\S/g, (char) => char.toUpperCase());
+    }
+
+    const programs = [];
+    rawChips.forEach((chip) => {
+      const label = chip.querySelector(".MuiChip-label") || chip;
+      const raw = label.textContent.trim();
+      if (!raw) return;
+      const cleanName = formatProgramTitle(raw);
+      const catInfo = categorizeProgram(raw);
+      programs.push({
+        raw,
+        cleanName,
+        cat: catInfo.cat,
+        catLabel: catInfo.label,
+        catShort: catInfo.shortLabel
+      });
+      
+      chip.style.setProperty("display", "none", "important");
+    });
+
+    if (!programs.length) return;
+
+    const oldWrapper = chipsContainer.querySelector(".inspira-filter-tabs-wrapper");
+    if (oldWrapper) oldWrapper.remove();
+    const oldHeader = chipsContainer.querySelector(".inspira-programs-header-badge");
+    if (oldHeader) oldHeader.remove();
+
+    const tabsWrapper = document.createElement("div");
+    tabsWrapper.className = "inspira-filter-tabs-wrapper";
+
+    const categoryCounts = {};
+    programs.forEach((p) => {
+      categoryCounts[p.cat] = (categoryCounts[p.cat] || 0) + 1;
+    });
+
+    const SVG_ICONS = {
+      filterPill: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+      all: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
+      eng: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+      biz: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+      sci: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><path d="M10 2v7.31L4.2 20.4A2 2 0 0 0 5.86 23h12.28a2 2 0 0 0 1.66-2.6L14 9.31V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/></svg>`,
+      hum: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+      other: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
+      chevronDown: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:3px;"><polyline points="6 9 12 15 18 9"/></svg>`,
+      chevronUp: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:3px;"><polyline points="18 15 12 9 6 15"/></svg>`
+    };
+
+    const catConfig = {
+      eng: { label: "Engineering", icon: SVG_ICONS.eng },
+      biz: { label: "Business", icon: SVG_ICONS.biz },
+      sci: { label: "Sciences", icon: SVG_ICONS.sci },
+      hum: { label: "Humanities", icon: SVG_ICONS.hum }
+    };
+
+    const hasMore = programs.length > 6;
+    let chipsHtml = "";
+    programs.forEach((p, idx) => {
+      const isCollapsed = hasMore && idx >= 6;
+      chipsHtml += `<span class="tab-chip ${isCollapsed ? "tab-chip-collapsed" : ""}" data-cat="${p.cat}" title="${escapeHTML(p.raw)}">${escapeHTML(p.cleanName)}</span>`;
+    });
+
+    if (hasMore) {
+      const moreCount = programs.length - 6;
+      chipsHtml += `
+        <button type="button" class="tab-more-btn" id="modalDrawerMoreBtn">
+          <span>Show ${moreCount} more</span> ${SVG_ICONS.chevronDown}
+        </button>
+      `;
+    }
+
+    tabsWrapper.innerHTML = `
+      <div class="c2-filter-header-bar">
+        <span class="c2-filter-title">
+          ${SVG_ICONS.filterPill} ACADEMIC PROGRAMS AND MAJORS
+        </span>
+        <span class="c2-filter-count">
+          ${programs.length} ${programs.length === 1 ? "major" : "majors"}
+        </span>
+      </div>
+      <div class="tab-chips-container" style="justify-content: flex-start; gap: 6px; display: flex; flex-wrap: wrap;">
+        ${chipsHtml}
+      </div>
+    `;
+
+    chipsContainer.appendChild(tabsWrapper);
+
+    const programChips = tabsWrapper.querySelectorAll(".tab-chip");
+    const moreBtn = tabsWrapper.querySelector(".tab-more-btn");
+    let isExpanded = false;
+
+    if (moreBtn) {
+      moreBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        isExpanded = !isExpanded;
+        if (isExpanded) {
+          programChips.forEach((c) => c.classList.remove("tab-chip-collapsed"));
+          this.innerHTML = `<span>Show Less</span> ${SVG_ICONS.chevronUp}`;
+        } else {
+          programChips.forEach((c, idx) => {
+            if (idx >= 6) c.classList.add("tab-chip-collapsed");
+          });
+          const moreCount = programs.length - 6;
+          this.innerHTML = `<span>Show ${moreCount} more</span> ${SVG_ICONS.chevronDown}`;
+        }
+      });
+    }
+  }
+
+  function initBackdropDismissal() {
+    if (window._inspiraBackdropDismissalActive) return;
+    window._inspiraBackdropDismissalActive = true;
+
+    function handleOutsideInteraction(e) {
+      
+      const papers = document.querySelectorAll(
+        ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], #demoDrawer .MuiPaper-root, .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root), .MuiModal-root .MuiBox-root[tabindex='-1']"
+      );
+      let activePaper = null;
+      for (const p of papers) {
+        
+        const container = p.closest(".MuiDrawer-root, .MuiModal-root, #demoDrawer");
+        if (container && window.getComputedStyle(container).display === "none") continue;
+        const rect = p.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0 && window.getComputedStyle(p).display !== "none") {
+          activePaper = p;
+          break;
+        }
+      }
+      if (!activePaper) return;
+
+      if (activePaper.contains(e.target)) {
+        return;
+      }
+
+      if (e.target.closest(".MuiMenu-root, .MuiPopover-root, .MuiAutocomplete-popper, .MuiTooltip-popper, .flatpickr-calendar, .cookieBlock, [class*='cookieBlock']")) {
+        return;
+      }
+
+      e.stopPropagation();
+      dismissModalPopup();
+    }
+
+    window.addEventListener("click", handleOutsideInteraction, true);
+
+    document.addEventListener("click", function (e) {
+      const calModal = document.querySelector(".MuiModal-root:not(.MuiDrawer-root)");
+      if (!calModal) return;
+
+      const target = e.target;
+      const closeBtn = target.closest("button");
+      if (closeBtn && calModal.contains(closeBtn)) {
+        const isClose = closeBtn.classList.contains("mui-1e6be0u") ||
+          closeBtn.closest(".mui-f0uyk5") ||
+          closeBtn.querySelector("path[d*='205.66'], svg[data-testid='CloseIcon']") ||
+          target.closest("path[d*='205.66'], svg[data-testid='CloseIcon']");
+
+        if (isClose) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          const reactKey = Object.keys(closeBtn).find((k) => k.startsWith("__reactProps"));
+          if (reactKey && closeBtn[reactKey]?.onClick) {
+            try { closeBtn[reactKey].onClick(e); } catch (_) { }
+          }
+
+          dismissModalPopup();
+          return;
+        }
+      }
+
+      const backdrop = calModal.querySelector(".MuiBackdrop-root");
+      if (backdrop && (target === backdrop || backdrop.contains(target))) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        dismissModalPopup();
+      }
+    }, true);
+
+    window.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" && e.key !== "Esc") return;
+      
+      if (!e.isTrusted || isDismissingModal) return;
+      
+      if (visibleMatch(".MuiPopover-root, .MuiMenu-root, .MuiAutocomplete-popper, .flatpickr-calendar.open, [role='listbox']")) return;
+
+      const openList = Array.prototype.find.call(document.querySelectorAll(".popup .MuiList-root"), (el) => el.getClientRects().length > 0);
+      if (openList) {
+        const host = openList.closest(".singleViewWidgetDetails, .modalContent, .MuiDrawer-paper, .MuiDialog-paper") || document.body;
+        const heading = host.querySelector("h1, h2, h3, h4, h5, h6") || host;
+        ["pointerdown", "mousedown", "pointerup", "mouseup", "click"].forEach((type) => {
+          heading.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window }));
+        });
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      if (!getActiveModalPopup()) return;
+      dismissModalPopup();
+    }, true);
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, (tag) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "'": "&#39;",
+      '"': "&quot;",
+    }[tag] || tag));
+  }
+
+  function readNativeTicket(panel) {
+    const leaves = Array.from(panel.querySelectorAll("p, span, h1, h2, h3, h4, h5, h6, div"))
+      .filter((n) => n.children.length === 0 && !n.closest(".inspira-ticket-v2-container"))
+      .map((n) => n.textContent.replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    const until = leaves.find((t) => /^available till/i.test(t)) || "";
+    const index = leaves.findIndex((t) => /^available till/i.test(t));
+    let name = index > 0 ? leaves[index - 1] : "";
+    if (/register now|add to calendar|event starts in/i.test(name) || name.length > 60) name = "";
+    return {
+      name: name,
+      until: until ? until.replace(/^available till/i, "Registration open until") : ""
+    };
+  }
+
+  function ticketSubtitle(count) {
+    return count
+      ? `Meet admissions teams from ${count} universities, live and online.`
+      : "Meet university admissions teams, live and online.";
+  }
+
+  function enhanceEventTicketPanel() {
+    const panel = document.querySelector(SELECTORS.registerPanel);
+    if (!panel) return;
+
+    panel.classList.add("inspira-ticket-shell");
+
+    const count = getUniversityCount();
+    const when = eventDateParts();
+    const native = readNativeTicket(panel);
+    const heroSub = count ? `${when.date}${SEP}${count} universities` : when.date;
+
+    const existingTicket = panel.querySelector(".inspira-ticket-v2-container");
+    if (existingTicket) {
+      setHTML(existingTicket.querySelector(".inspira-ticket-hero-subtitle"), heroSub);
+      setText(existingTicket.querySelector(".inspira-ticket-main-subtitle"), ticketSubtitle(count));
+      if (native.name) setText(existingTicket.querySelector("[data-ticket-name]"), native.name);
+      if (native.until) setText(existingTicket.querySelector(".inspira-ticket-note"), native.until);
+      return;
+    }
+
+    const innerBox = panel.querySelector(":scope > .MuiBox-root") || panel.firstElementChild || panel;
+    if (!innerBox) return;
+
+    panel.querySelectorAll(".inspira-ticket-hero-card, .inspira-ticket-perforation, .inspira-ticket-details-block, .inspira-ticket-barcode-card, .inspira-ticket-v2-container")
+      .forEach((el) => el.remove());
+
+    const ticketContainer = document.createElement("div");
+    ticketContainer.className = "inspira-ticket-v2-container";
+    ticketContainer.innerHTML = `
+      <div class="inspira-ticket-hero-card">
+        <div class="inspira-ticket-hero-media">
+          <img src="${EVENT.passImage}" alt="" class="inspira-ticket-hero-img" />
+          <div class="inspira-ticket-hero-scrim"></div>
+          <div class="inspira-ticket-hero-overlay-text">
+            <span class="inspira-ticket-hero-kicker">Student pass</span>
+            <h3 class="inspira-ticket-hero-title">${escapeHTML(EVENT.name)}</h3>
+            <p class="inspira-ticket-hero-subtitle">${heroSub}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspira-ticket-perforation inspira-ticket-perforation-top">
+        <span class="inspira-notch inspira-notch-left"></span>
+        <div class="inspira-dashed-line"></div>
+        <span class="inspira-notch inspira-notch-right"></span>
+      </div>
+
+      <div class="inspira-ticket-details-block">
+        <div class="inspira-ticket-meta-header">
+          <span class="inspira-ticket-category-pill">Online event</span>
+        </div>
+
+        <h2 class="inspira-ticket-main-title">Register for the fair</h2>
+        <p class="inspira-ticket-main-subtitle">${ticketSubtitle(count)}</p>
+
+        <div class="inspira-ticket-hairline"></div>
+
+        <div class="inspira-ticket-grid">
+          <div class="inspira-ticket-col">
+            <span class="inspira-ticket-label">Date</span>
+            <span class="inspira-ticket-val">${when.date}</span>
+          </div>
+          <div class="inspira-ticket-col">
+            <span class="inspira-ticket-label">Time</span>
+            <span class="inspira-ticket-val">${when.time}</span>
+          </div>
+          <div class="inspira-ticket-col">
+            <span class="inspira-ticket-label">Location</span>
+            <span class="inspira-ticket-val">Online</span>
+          </div>
+          <div class="inspira-ticket-col">
+            <span class="inspira-ticket-label">Ticket</span>
+            <span class="inspira-ticket-val" data-ticket-name>${escapeHTML(native.name || "Student pass")}</span>
+          </div>
+        </div>
+
+        <div class="inspira-ticket-actions">
+          <button type="button" class="inspira-ticket-btn-primary" id="inspiraTicketRegisterBtn">
+            <span>Register Now</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="inspira-ticket-btn-secondary" id="inspiraTicketCalendarBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Add To Calendar</span>
+          </button>
+        </div>
+        <p class="inspira-ticket-note">${escapeHTML(native.until)}</p>
+      </div>
+    `;
+
+    innerBox.insertBefore(ticketContainer, innerBox.firstChild);
+
+    function clickNative(e, label, ownId) {
+      e.preventDefault();
+      e.stopPropagation();
+      const orig = Array.from(panel.querySelectorAll("button")).find(
+        (b) => b.id !== ownId && !b.closest(".inspira-ticket-v2-container") && b.textContent.toLowerCase().includes(label)
+      );
+      if (orig) orig.click();
+    }
+
+    function continueSingleTicket(tries) {
+      if (document.querySelector(".singleViewWidgetDetails")) return;
+      const buttons = Array.from(document.querySelectorAll(".MuiDrawer-paper .ticketListActionWrapper button"))
+        .filter((b) => b.getClientRects().length > 0 && /register now/i.test(b.textContent));
+      if (buttons.length === 1) {
+        buttons[0].click();
+      } else if (buttons.length === 0 && tries > 0) {
+        setTimeout(() => continueSingleTicket(tries - 1), 100);
+      }
+    }
+    const regBtn = ticketContainer.querySelector("#inspiraTicketRegisterBtn");
+    if (regBtn) regBtn.addEventListener("click", (e) => {
+      clickNative(e, "register now", "inspiraTicketRegisterBtn");
+      setTimeout(() => continueSingleTicket(20), 100);
+    });
+    const calBtn = ticketContainer.querySelector("#inspiraTicketCalendarBtn");
+    if (calBtn) calBtn.addEventListener("click", (e) => clickNative(e, "add to calendar", "inspiraTicketCalendarBtn"));
+  }
+
+  let drawerPollTimer = null;
+  function triggerDrawerEnhancement() {
+    if (drawerPollTimer) clearInterval(drawerPollTimer);
+    let attempts = 0;
+    drawerPollTimer = setInterval(() => {
+      attempts++;
+      const paper = document.querySelector(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle']");
+      if (!paper || attempts > 60) {
+        clearInterval(drawerPollTimer);
+        drawerPollTimer = null;
+        return;
+      }
+      const chips = paper.querySelectorAll(".MuiChip-root");
+      const hasTabs = !!paper.querySelector(".inspira-filter-tabs-wrapper");
+      if (chips.length > 0 && !hasTabs) {
+        enhanceExhibitorDrawer();
+        clearInterval(drawerPollTimer);
+        drawerPollTimer = null;
+      }
+    }, 50);
+  }
+
+  document.addEventListener("click", function (e) {
+    if (e.target.closest(SELECTORS.cards) || e.target.closest(".MuiCard-root, [class*='Card-root']")) {
+      setTimeout(triggerDrawerEnhancement, 100);
+    }
+  }, true);
+
+  function initializeAll() {
+    [
+      removeStickyTabBar,
+      enhanceHeaderBrand,
+      initHeaderScrollListener,
+      enhanceCountdownTimer,
+      enhanceUniversityCards,
+      initDirectorySearchAndFilter,
+      initCardInteractionTracking,
+      enhanceExhibitorDrawer,
+      enhanceEventTicketPanel,
+      initBackdropDismissal
+    ].forEach(function (fn) {
+      try { fn(); } catch (err) { if (window.console) console.warn("[inspira-register]", fn.name, err); }
+    });
+  }
+
+  const OWN_NODES = ".inspira-enhanced-countdown, .inspira-ticket-v2-container, .inspira-nav-brand, " +
+    ".univ-filter-container, .univ-empty-state, .inspira-filter-tabs-wrapper, .inspira-card-view";
+
+  function isOwnMutation(m) {
+    const t = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentElement);
+    return !!(t && t.closest && t.closest(OWN_NODES));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeAll);
+  } else {
+    initializeAll();
+  }
+
+  let debounceTimeout;
+  const bodyObserver = new MutationObserver(function (mutations) {
+    if (mutations.every(isOwnMutation)) return;
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(initializeAll, 120);
+
+    const paper = document.querySelector(".MuiDrawer-paper");
+    if (paper && !paper.querySelector(".inspira-filter-tabs-wrapper")) {
+      enhanceExhibitorDrawer();
+    }
+  });
+
+  bodyObserver.observe(document.body, { childList: true, subtree: true });
+})();
+;
+
+(function () {
+  'use strict';
+
+  if (window.__BT_ROOMS__) return;
+  window.__BT_ROOMS__ = true;
+
+  var CFG = Object.assign({
+    closeDrawerOnOutside: true,
+    searchShortcut: true,
+    staggerCards: true,
+    spotlight: true
+  }, window.BT_ROOMS_CONFIG || {});
+
+  var doc = document;
+  var root = doc.documentElement;
+  var mql = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
+  var reduceMotion = mql('(prefers-reduced-motion: reduce)');
+
+  function $(sel, ctx) { return (ctx || doc).querySelector(sel); }
+  function $$(sel, ctx) { return Array.prototype.slice.call((ctx || doc).querySelectorAll(sel)); }
+  function setClass(el, cls, on) {
+    if (el && el.classList.contains(cls) !== !!on) el.classList.toggle(cls, !!on);
+  }
+  function visible(el) { return !!(el && el.getClientRects().length); }
+  function isEditable(el) {
+    return !!(el && el.closest && el.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]'));
+  }
+  function anyModalOpen() {
+    return !!$('.ReactModal__Overlay, .MuiModal-root:not(.MuiModal-hidden), .MuiPopover-root');
+  }
+  function focusLater(el) {
+    if (!el) return;
+    setTimeout(function () {
+      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) {  } }
+    }, 30);
+  }
+  function onRoomsPage() { return root.classList.contains('bt-rooms'); }
+
+  function openDrawer() { return $('.sidedrawerWrapper.open:not(.profile)'); }
+
+  function pageFlags() {
+    var page = $('.roomPageWrapper');
+    setClass(root, 'bt-rooms', !!page);
+    setClass(root, 'bt-mobile', !!$('.isMobileContainer, .mainContainerMob'));
+    setClass(root, 'bt-drawer-open', !!openDrawer());
+    return page;
+  }
+
+  var scrolled = null;
+  function onScroll() {
+    var s = (window.pageYOffset || root.scrollTop || 0) > 8;
+    if (s !== scrolled) { scrolled = s; setClass(root, 'bt-scrolled', s); }
+  }
+
+  function showcase() {
+    $$('.roomsCardsList .roomCardMedia').forEach(function (media) {
+      var img = $('img', media);
+      var src = img && (img.currentSrc || img.getAttribute('src'));
+      var value = src ? 'url(' + JSON.stringify(src) + ')' : '';
+      if (media.style.getPropertyValue('--bt-media') !== value) {
+        if (value) media.style.setProperty('--bt-media', value);
+        else media.style.removeProperty('--bt-media');
+      }
+    });
+  }
+
+  var firstRun = true;
+  function stagger() {
+    if (!CFG.staggerCards || reduceMotion) return;
+    var i = 0;
+    $$('.roomsCardsList .roomAnimate').forEach(function (card) {
+      if (card.__btI !== undefined) return;
+      if (firstRun) { card.__btI = -1; return; }
+      card.__btI = Math.min(i++, 11);
+      card.style.setProperty('--bt-i', String(card.__btI));
+    });
+    firstRun = false;
+  }
+
+  var spotCard = null, spotX = 0, spotY = 0, spotQueued = false;
+  function paintSpot() {
+    spotQueued = false;
+    if (!spotCard) return;
+    var r = spotCard.getBoundingClientRect();
+    spotCard.style.setProperty('--bt-mx', Math.round(spotX - r.left) + 'px');
+    spotCard.style.setProperty('--bt-my', Math.round(spotY - r.top) + 'px');
+  }
+  doc.addEventListener('pointermove', function (e) {
+    if (!CFG.spotlight || reduceMotion || e.pointerType !== 'mouse') return;
+    var card = e.target.closest && e.target.closest('.roomsCardsList .roomCard');
+    spotCard = card || null;
+    if (!card) return;
+    spotX = e.clientX;
+    spotY = e.clientY;
+    if (!spotQueued) { spotQueued = true; requestAnimationFrame(paintSpot); }
+  }, { passive: true });
+
+  function nameTips() {
+    $$('.roomsCardsList .orgName h6').forEach(function (h) {
+      var full = (h.textContent || '').trim();
+      var cut = h.scrollHeight > h.clientHeight + 1;
+      if (cut && h.getAttribute('title') !== full) h.setAttribute('title', full);
+      if (!cut && h.hasAttribute('title') && h.__btTitled) h.removeAttribute('title');
+      h.__btTitled = cut;
+    });
+  }
+
+  function sortButton() {
+    var desk = $('.roomsHeadBarDesktop .sortDropdown button');
+    if (visible(desk)) return desk;
+    var phone = $('.roomsHeadBarMobile .sortDropdown button');
+    return visible(phone) ? phone : null;
+  }
+  function closeSortMenu() {
+    var menu = $('.ListMenuPopup');
+    var btn = sortButton();
+    if (!menu || !btn || !visible(menu) || !onRoomsPage()) return false;
+    btn.click();
+    focusLater(btn);
+    return true;
+  }
+
+  function searchControls() {
+    return {
+      wrap: $('.roomsHeadBarDesktop .pageSearchWrapper.searchIcon'),
+      btn: $('.roomsHeadBarDesktop .searchBtn'),
+      deskInput: $('.roomsHeadBarDesktop .searchInput'),
+      close: $('.roomsHeadBarDesktop .searchCloseBtn'),
+      barInput: $('.roomsHeadBarMobile input')
+    };
+  }
+  function focusSearch() {
+    var s = searchControls();
+    if (visible(s.barInput)) { s.barInput.focus(); return true; }
+    if (s.wrap && visible(s.btn)) {
+      if (!s.wrap.classList.contains('active')) s.btn.click();
+
+      if (s.deskInput) { try { s.deskInput.focus({ preventScroll: true }); } catch (e) {  } }
+      focusLater(s.deskInput);
+      return true;
+    }
+    return false;
+  }
+  function closeSearch(target) {
+    var s = searchControls();
+    if (!s.wrap || !s.wrap.classList.contains('active') || !s.close) return false;
+    if (target && !s.wrap.contains(target)) return false;
+    s.close.click();
+    focusLater(s.btn);
+    return true;
+  }
+
+  var opener = null;
+  doc.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button, a, [role="tab"]');
+    if (!b || openDrawer()) return;
+    setTimeout(function () { if (openDrawer()) opener = b; }, 60);
+  }, true);
+
+  function closeDrawer(d) {
+    var back = d && $('.backBtn', d);
+    if (!back) return false;
+    var focusWasInPanel = !doc.activeElement || doc.activeElement === doc.body || d.contains(doc.activeElement);
+    back.click();
+    if (focusWasInPanel) focusLater(opener);
+    return true;
+  }
+
+  function phoneSheet() {
+    try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar)'); }
+    catch (e) { return null; }   
+  }
+  function closeSheet(c) {
+    var btn = c && $('.drawerCloseButton button', c);
+    if (!btn) return false;
+    btn.click();
+    return true;
+  }
+
+  var IGNORE_OUTSIDE = [
+    '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
+    '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
+    '[role="listbox"]', '.toastWrapper', '.ListMenuPopup', '.roomCard',
+    
+    'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
+    '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]'
+  ].join(',');
+
+  var pressedOutside = false;
+  window.addEventListener('pointerdown', function (e) {
+    pressedOutside = false;
+    if (!CFG.closeDrawerOnOutside || !onRoomsPage() || root.classList.contains('bt-mobile')) return;
+    var d = openDrawer();
+    var t = e.target;
+    if (!d || !(t instanceof Element) || d.contains(t) || t.closest(IGNORE_OUTSIDE)) return;
+    pressedOutside = true;
+  }, true);
+
+  window.addEventListener('click', function (e) {
+    var c = phoneSheet();
+    var t = e.target;
+    if (c && t instanceof Element && !c.contains(t) && t.closest('.bottom-sheet__wrapper')) {
+      if (!e.defaultPrevented) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeSheet(c);
+      }
+      return;
+    }
+    if (!pressedOutside) return;
+    pressedOutside = false;
+    if (e.defaultPrevented) return;
+    if (String(window.getSelection ? window.getSelection() : '') !== '') return;
+    var d = openDrawer();
+    if (d && !d.contains(t)) closeDrawer(d);
+  }, true);
+
+  doc.addEventListener('keydown', function (e) {
+    if (e.defaultPrevented) return;
+
+    if (e.key === 'Escape') {
+      if (closeSheet(phoneSheet())) { e.preventDefault(); return; }
+      if (anyModalOpen()) return;                       
+      if (closeSortMenu() || closeSearch(e.target)) { e.preventDefault(); return; }
+      if (isEditable(e.target) && e.target.value) return; 
+      var d = openDrawer();
+      if (d && closeDrawer(d)) e.preventDefault();
+      return;
+    }
+
+    if (e.key === '/' && CFG.searchShortcut && onRoomsPage()) {
+      if (e.altKey || e.ctrlKey || e.metaKey || isEditable(e.target) || anyModalOpen()) return;
+      if (focusSearch()) e.preventDefault();
+    }
+  });
+
+  function update() {
+    var page = pageFlags();
+    onScroll();
+    if (!page) return;
+    [showcase, stagger, nameTips].forEach(function (fn) {
+      try { fn(); } catch (err) { if (window.console) console.warn('[rooms-override]', fn.name, err); }
+    });
+  }
+
+  var queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }
+
+  var mo = new MutationObserver(schedule);
+
+  function boot() {
+    update();
+    mo.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'src'] });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', schedule);
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(schedule);
+  }
+
+  if (doc.readyState === 'complete') {
+    boot();
+  } else {
+    window.addEventListener('load', boot);
+  }
+})();
+;
+
+(function () {
+  'use strict';
+
+  if (window.__BT_EMBED__) return;
+  window.__BT_EMBED__ = true;
+
+  var CFG = Object.assign({
+    closeDrawerOnOutside: true
+  }, window.BT_EMBED_CONFIG || {});
+
+  var doc = document;
+  var root = doc.documentElement;
+
+  function $(sel, ctx) { return (ctx || doc).querySelector(sel); }
+  function setClass(el, cls, on) {
+    if (el && el.classList.contains(cls) !== !!on) el.classList.toggle(cls, !!on);
+  }
+  function isEditable(el) {
+    return !!(el && el.closest && el.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]'));
+  }
+  function anyModalOpen() {
+    return !!$('.ReactModal__Overlay, .MuiModal-root:not(.MuiModal-hidden), .MuiPopover-root');
+  }
+  function focusLater(el) {
+    if (!el) return;
+    setTimeout(function () {
+      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) {  } }
+    }, 30);
+  }
+  function onEmbedPage() { return root.classList.contains('bt-embed'); }
+
+  function openDrawer() { return $('.sidedrawerWrapper.open:not(.profile)'); }
+
+  function pageFlags() {
+    setClass(root, 'bt-embed', !!$('.hasEmbedAppScreen'));
+    setClass(root, 'bt-mobile', !!$('.isMobileContainer, .mainContainerMob'));
+    setClass(root, 'bt-drawer-open', !!openDrawer());
+  }
+
+  var scrolled = null;
+  function onScroll() {
+    var s = (window.pageYOffset || root.scrollTop || 0) > 8;
+    if (s !== scrolled) { scrolled = s; setClass(root, 'bt-scrolled', s); }
+  }
+
+  var opener = null;
+  doc.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button, a, [role="tab"]');
+    if (!b || openDrawer()) return;
+    setTimeout(function () { if (openDrawer()) opener = b; }, 60);
+  }, true);
+
+  function closeDrawer(d) {
+    var back = d && $('.backBtn', d);
+    if (!back) return false;
+    var focusWasInPanel = !doc.activeElement || doc.activeElement === doc.body || d.contains(doc.activeElement);
+    back.click();
+    if (focusWasInPanel) focusLater(opener);
+    return true;
+  }
+
+  var IGNORE_OUTSIDE = [
+    '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
+    '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
+    '[role="listbox"]', '.toastWrapper', 'iframe',
+    
+    'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
+    '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]'
+  ].join(',');
+
+  function phoneSheet() {
+    try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar)'); }
+    catch (e) { return null; }   
+  }
+  function closeSheet(c) {
+    var btn = c && $('.drawerCloseButton button', c);
+    if (!btn) return false;
+    btn.click();
+    return true;
+  }
+
+  var pressedOutside = false;
+  window.addEventListener('pointerdown', function (e) {
+    pressedOutside = false;
+    if (!CFG.closeDrawerOnOutside || !onEmbedPage() || root.classList.contains('bt-mobile')) return;
+    var d = openDrawer();
+    var t = e.target;
+    if (!d || !(t instanceof Element) || d.contains(t) || t.closest(IGNORE_OUTSIDE)) return;
+    pressedOutside = true;
+  }, true);
+
+  window.addEventListener('click', function (e) {
+    var c = phoneSheet();
+    var t = e.target;
+    if (c && t instanceof Element && !c.contains(t) && t.closest('.bottom-sheet__wrapper')) {
+      if (!e.defaultPrevented) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeSheet(c);
+      }
+      return;
+    }
+    if (!pressedOutside) return;
+    pressedOutside = false;
+    if (e.defaultPrevented) return;
+    if (String(window.getSelection ? window.getSelection() : '') !== '') return;
+    var d = openDrawer();
+    if (d && !d.contains(t)) closeDrawer(d);
+  }, true);
+
+  doc.addEventListener('keydown', function (e) {
+    if (e.defaultPrevented || e.key !== 'Escape') return;
+    if (closeSheet(phoneSheet())) { e.preventDefault(); return; }
+    if (anyModalOpen()) return;                        
+    if (isEditable(e.target) && e.target.value) return;  
+    var d = openDrawer();
+    if (d && closeDrawer(d)) e.preventDefault();
+  });
+
+  function update() {
+    pageFlags();
+    onScroll();
+  }
+
+  var queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }
+
+  var mo = new MutationObserver(schedule);
+
+  function boot() {
+    update();
+    mo.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  if (doc.readyState === 'complete') {
+    boot();
+  } else {
+    window.addEventListener('load', boot);
+  }
+})();
+;
+
+(function () {
+  'use strict';
+
+  if (window.__BT_BOOTH__) return;
+  window.__BT_BOOTH__ = true;
+
+  var CFG = Object.assign({
+    closeDrawerOnOutside: true,
+    escapeClosesDrawer: true,
+    keyboardBoothNav: true,
+    tagRows: 3,          
+    minHiddenTags: 4,    
+    aboutLines: 8,
+    reveal: true
+  }, window.BT_CONFIG || {});
+
+  var doc = document;
+  var root = doc.documentElement;
+  var mql = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
+  var reduceMotion = mql('(prefers-reduced-motion: reduce)');
+
+  function $(sel, ctx) { return (ctx || doc).querySelector(sel); }
+  function $$(sel, ctx) { return Array.prototype.slice.call((ctx || doc).querySelectorAll(sel)); }
+
+  function setClass(el, cls, on) {
+    if (el && el.classList.contains(cls) !== !!on) el.classList.toggle(cls, !!on);
+  }
+  function setAttr(el, name, value) {
+    if (el && el.getAttribute(name) !== value) el.setAttribute(name, value);
+  }
+  function setText(el, text) {
+    if (el && el.textContent !== text) el.textContent = text;
+  }
+  function isEditable(el) {
+    return !!(el && el.closest && el.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]'));
+  }
+  function anyModalOpen() {
+    return !!$('.ReactModal__Overlay, .MuiModal-root:not(.MuiModal-hidden), .MuiPopover-root, [role="dialog"]');
+  }
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  function icon(cls, d) {
+    var svg = doc.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('class', cls);
+    d.forEach(function (path) {
+      var p = doc.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', path);
+      svg.appendChild(p);
+    });
+    return svg;
+  }
+
+  var live;
+  function announce(msg) {
+    if (!live) {
+      live = doc.createElement('div');
+      live.className = 'bt-sr';
+      live.setAttribute('data-bt', '');
+      live.setAttribute('aria-live', 'polite');
+      doc.body.appendChild(live);
+    }
+    live.textContent = '';
+    setTimeout(function () { live.textContent = msg; }, 30);
+  }
+
+  function openDrawer() { return $('.sidedrawerWrapper.open:not(.profile)'); }
+
+  function pageFlags() {
+    var booth = $('.sponsorsProfileWrapper');
+    setClass(root, 'bt-booth', !!booth);
+    setClass(root, 'bt-mobile', !!$('.isMobileContainer, .mainContainerMob'));
+    setClass(root, 'bt-drawer-open', !!openDrawer());
+    return booth;
+  }
+
+  var scrolled = null;
+  function onScroll() {
+    var s = (window.pageYOffset || root.scrollTop || 0) > 8;
+    if (s !== scrolled) { scrolled = s; setClass(root, 'bt-scrolled', s); }
+  }
+
+  var REVEAL = '.sponsorSocialDetails, .sponsorsInfoWrapper, .roomSlider, .twoColumnWrapper, .filesWrapper';
+  var revealed = typeof WeakSet === 'function' ? new WeakSet() : null;
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      revealed.add(e.target);
+      e.target.classList.add('bt-in');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 }) : null;
+
+  function reveal(booth) {
+    if (!CFG.reveal || reduceMotion || !io || !revealed) return;
+    $$(REVEAL, booth).forEach(function (el) {
+      if (revealed.has(el)) {
+        
+        setClass(el, 'bt-reveal', true);
+        setClass(el, 'bt-in', true);
+        return;
+      }
+      if (el.__btWatch) {
+        setClass(el, 'bt-reveal', true);
+        return;
+      }
+      el.__btWatch = true;
+      el.classList.add('bt-reveal');
+      io.observe(el);
+    });
+  }
+
+  function tags(booth) {
+    var wrap = $('.sponsorsDetails .tagsWrapper', booth);
+    if (!wrap) return;
+    var btn = wrap.nextElementSibling && wrap.nextElementSibling.classList.contains('bt-tags-toggle')
+      ? wrap.nextElementSibling : null;
+    var chips = $$('.MuiChip-root', wrap);
+    if (!chips.length) { if (btn) btn.remove(); return; }
+
+    var cs = getComputedStyle(wrap);
+    var gap = parseFloat(cs.rowGap) || 8;
+    var chipH = chips[0].offsetHeight || 30;
+    var limit = CFG.tagRows * chipH + (CFG.tagRows - 1) * gap;
+    var hidden = chips.filter(function (c) { return c.offsetTop >= limit - 2; }).length;
+
+    if (hidden < CFG.minHiddenTags) {
+      setClass(wrap, 'bt-collapsible', false);
+      setClass(wrap, 'bt-collapsed', false);
+      wrap.style.removeProperty('max-height');
+      if (btn) btn.remove();
+      return;
+    }
+
+    var expanded = !!wrap.__btExpanded;
+    var max = limit + 'px';
+    if (wrap.style.getPropertyValue('--bt-tags-max') !== max) wrap.style.setProperty('--bt-tags-max', max);
+    setClass(wrap, 'bt-collapsible', true);
+    setClass(wrap, 'bt-collapsed', !expanded);
+    
+    if (expanded && !wrap.__btReleased) {
+      wrap.style.maxHeight = wrap.scrollHeight + 'px';
+      wrap.__btReleased = true;
+      setTimeout(function () { if (wrap.__btExpanded) wrap.style.maxHeight = 'none'; }, 380);
+    }
+
+    if (!btn) {
+      btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bt-tags-toggle';
+      btn.setAttribute('data-bt', '');
+      btn.addEventListener('click', function () {
+        if (wrap.__btExpanded) {
+          
+          wrap.style.maxHeight = wrap.scrollHeight + 'px';
+          void wrap.offsetHeight;
+          wrap.style.removeProperty('max-height');
+        }
+        wrap.__btExpanded = !wrap.__btExpanded;
+        wrap.__btReleased = false;
+        update();
+      });
+      wrap.insertAdjacentElement('afterend', btn);
+    }
+    if (!wrap.id) wrap.id = 'bt-tags';
+    setAttr(btn, 'aria-controls', wrap.id);
+    setAttr(btn, 'aria-expanded', String(expanded));
+    setText(btn, expanded ? 'Show less' : '+' + hidden + ' more');
+  }
+
+  function about(booth) {
+    var p = $('.aboutSponsors .aboutText', booth);
+    if (!p) return;
+    var btn = p.nextElementSibling && p.nextElementSibling.classList.contains('bt-more')
+      ? p.nextElementSibling : null;
+    var lh = parseFloat(getComputedStyle(p).lineHeight) || 24;
+    var expanded = !!p.__btExpanded;
+
+    var lines = Math.round(p.scrollHeight / lh);
+    var needs = lines > CFG.aboutLines + 1;   
+
+    if (!needs) { setClass(p, 'bt-clamp', false); if (btn) btn.remove(); return; }
+
+    if (p.style.getPropertyValue('--bt-lines') !== String(CFG.aboutLines)) p.style.setProperty('--bt-lines', String(CFG.aboutLines));
+    setClass(p, 'bt-clamp', !expanded);
+    if (!btn) {
+      btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bt-more';
+      btn.setAttribute('data-bt', '');
+      btn.addEventListener('click', function () {
+        p.__btExpanded = !p.__btExpanded;
+        update();
+      });
+      p.insertAdjacentElement('afterend', btn);
+    }
+    if (!p.id) p.id = 'bt-about';
+    setAttr(btn, 'aria-controls', p.id);
+    setAttr(btn, 'aria-expanded', String(expanded));
+    setText(btn, expanded ? 'Show less' : 'Read more');
+  }
+
+  var COPY_D = ['M8 8h11a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z', 'M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3'];
+  var CHECK_D = ['M20 6 9 17l-5-5'];
+
+  function copyText(text, btn) {
+    function done() {
+      btn.classList.add('bt-copied');
+      btn.setAttribute('data-tip', 'Copied');
+      announce('Copied ' + text);
+      clearTimeout(btn.__btT);
+      btn.__btT = setTimeout(function () {
+        btn.classList.remove('bt-copied');
+        btn.setAttribute('data-tip', btn.__btTip);
+      }, 1600);
+    }
+    function fallback() {
+      var ta = doc.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.setAttribute('data-bt', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      doc.body.appendChild(ta);
+      ta.select();
+      try { if (doc.execCommand('copy')) done(); } catch (e) {  }
+      ta.remove();
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  function addCopy(row, value, what) {
+    if (!row || !value) return;
+    var btn = row.querySelector(':scope > .bt-copy');
+    if (!btn) {
+      btn = doc.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bt-copy';
+      btn.setAttribute('data-bt', '');
+      btn.appendChild(icon('bt-i-copy', COPY_D));
+      btn.appendChild(icon('bt-i-check', CHECK_D));
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        copyText(btn.__btValue, btn);
+      });
+      row.appendChild(btn);
+    }
+    btn.__btValue = value;
+    btn.__btTip = 'Copy ' + what;
+    if (!btn.classList.contains('bt-copied')) setAttr(btn, 'data-tip', btn.__btTip);
+    setAttr(btn, 'aria-label', 'Copy ' + what + ' ' + value);
+  }
+
+  function contact(booth) {
+    var box = $('.getInTouch', booth);
+    if (!box) return;
+
+    var phone = $('.phoneText', box);
+    if (phone) {
+      var row = phone.closest('.phone');
+      var shown = (phone.textContent || '').trim();
+      var tel = shown.replace(/[^\d+]/g, '');
+      if (row && tel.length >= 6) {
+        addCopy(row, shown, 'phone number');
+
+        if (mql('(pointer: coarse)')) {
+          setClass(row, 'bt-tel', true);
+          setAttr(row, 'data-bt-tel', tel);
+        }
+      }
+    }
+
+    var mail = $('a[href^="mailto:"]', box);
+    if (mail) {
+      var email = decodeURIComponent(mail.getAttribute('href').slice(7).split('?')[0]);
+      addCopy(mail.closest('.phone') || mail.parentNode, email, 'email');
+    }
+  }
+
+  function arrows(booth) {
+    [['prev', 'Previous university'], ['next', 'Next university']].forEach(function (a) {
+      var el = $('.exibitorNavigation .arrowNav.' + a[0], booth);
+      if (!el) return;
+      setAttr(el, 'aria-label', a[1]);
+      setAttr(el, 'title', a[1]);
+      
+      var inner = el.querySelector('button');
+      if (inner) { setAttr(inner, 'tabindex', '-1'); setAttr(inner, 'aria-hidden', 'true'); }
+    });
+  }
+
+  function clickArrow(which) {
+    var el = $('.sponsorsProfileWrapper .exibitorNavigation .arrowNav.' + which);
+    if (!el || el.disabled || !el.offsetParent) return false;
+    (el.querySelector('button') || el).click();
+    return true;
+  }
+
+  var opener = null;
+  doc.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button, a, [role="tab"]');
+    if (!b || openDrawer()) return;
+    setTimeout(function () { if (openDrawer()) opener = b; }, 60);
+  }, true);
+
+  function closeDrawer(d) {
+    var back = d && $('.backBtn', d);
+    if (!back) return false;
+    var focusWasInPanel = !doc.activeElement || doc.activeElement === doc.body || d.contains(doc.activeElement);
+    back.click();
+    if (focusWasInPanel && opener && opener.isConnected) {
+      try { opener.focus({ preventScroll: true }); } catch (e) {  }
+    }
+    return true;
+  }
+
+  var IGNORE_OUTSIDE = [
+    '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
+    '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
+    '[role="listbox"]', '.toastWrapper', '.bottom-drawer',
+    
+    'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
+    '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]',
+    '.roomCard', '.peoplesCardWrapper', '.fileBox', '.cursor', '.cursorHand'
+  ].join(',');
+
+  var pressedOutside = false;
+  window.addEventListener('pointerdown', function (e) {
+    pressedOutside = false;
+    if (!CFG.closeDrawerOnOutside || root.classList.contains('bt-mobile')) return;
+    var d = openDrawer();
+    var t = e.target;
+    if (!d || !(t instanceof Element) || d.contains(t) || t.closest(IGNORE_OUTSIDE)) return;
+    pressedOutside = true;
+  }, true);
+
+  window.addEventListener('click', function (e) {
+    if (!pressedOutside) return;
+    pressedOutside = false;
+    if (String(window.getSelection ? window.getSelection() : '') !== '') return; 
+    var d = openDrawer();
+    if (d && !d.contains(e.target)) closeDrawer(d);
+  }, true);
+
+  function profileSheet() {
+    try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar)'); }
+    catch (e) { return null; }   
+  }
+  function closeSheet(c) {
+    var btn = c && $('.drawerCloseButton button', c);
+    if (!btn) return false;
+    btn.click();
+    return true;
+  }
+  window.addEventListener('click', function (e) {
+    var c = profileSheet();
+    var t = e.target;
+    if (!c || !(t instanceof Element) || c.contains(t) || !t.closest('.bottom-sheet__wrapper')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    closeSheet(c);
+  }, true);
+
+  doc.addEventListener('keydown', function (e) {
+    if (e.defaultPrevented) return;
+
+    if (e.key === 'Escape' && closeSheet(profileSheet())) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key === 'Escape' && CFG.escapeClosesDrawer) {
+      if (anyModalOpen()) return;                      
+      if (isEditable(e.target) && e.target.value) return; 
+      var d = openDrawer();
+      if (d && closeDrawer(d)) e.preventDefault();
+      return;
+    }
+
+    if (!CFG.keyboardBoothNav || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (!root.classList.contains('bt-booth') || anyModalOpen() || isEditable(e.target)) return;
+    if (e.target.closest && e.target.closest('.slick-slider, [role="tablist"], .sidedrawerWrapper, .bottom-drawer')) return;
+    if (clickArrow(e.key === 'ArrowLeft' ? 'prev' : 'next')) e.preventDefault();
+  });
+
+  doc.addEventListener('click', function (e) {
+    var row = e.target.closest && e.target.closest('.bt-tel');
+    var tel = row && row.getAttribute('data-bt-tel');
+    if (tel && !e.target.closest('.bt-copy')) window.location.href = 'tel:' + tel;
+  });
+
+  function update() {
+    var booth = pageFlags();
+    onScroll();
+    if (!booth) return;
+    [reveal, tags, about, contact, arrows].forEach(function (fn) {
+      try { fn(booth); } catch (err) { if (window.console) console.warn('[booth-override]', fn.name, err); }
+    });
+  }
+
+  var queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }
+
+  function own(node) {
+    var el = node && (node.nodeType === 1 ? node : node.parentNode);
+    return !!(el && el.closest && el.closest('[data-bt]'));
+  }
+  
+  var mo = new MutationObserver(function (list) {
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      if (own(m.target)) continue;
+      if (m.type !== 'childList') { schedule(); return; }
+      var nodes = Array.prototype.slice.call(m.addedNodes).concat(Array.prototype.slice.call(m.removedNodes));
+      for (var j = 0; j < nodes.length; j++) {
+        if (!(nodes[j].nodeType === 1 && nodes[j].hasAttribute('data-bt'))) { schedule(); return; }
+      }
+    }
+  });
+
+  var resizeT;
+  function boot() {
+    update();
+    mo.observe(doc.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(schedule, 120);
+    });
+    
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(schedule);
+  }
+
+  if (doc.readyState === 'complete') {
+    boot();
+  } else {
+    window.addEventListener('load', boot);
+  }
+})();
+;
+
+(function () {
+  'use strict';
+
+  if (window.__BT_PEOPLE__) return;
+  window.__BT_PEOPLE__ = true;
+
+  var CFG = Object.assign({
+    closeDrawerOnOutside: true,
+    searchShortcut: true,
+    backToTop: true,
+    staggerCards: true
+  }, window.BT_PEOPLE_CONFIG || {});
+
+  var doc = document;
+  var root = doc.documentElement;
+  var mql = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
+  var reduceMotion = mql('(prefers-reduced-motion: reduce)');
+
+  function $(sel, ctx) { return (ctx || doc).querySelector(sel); }
+  function $$(sel, ctx) { return Array.prototype.slice.call((ctx || doc).querySelectorAll(sel)); }
+  function setClass(el, cls, on) {
+    if (el && el.classList.contains(cls) !== !!on) el.classList.toggle(cls, !!on);
+  }
+  function setAttr(el, name, value) {
+    if (el && el.getAttribute(name) !== value) el.setAttribute(name, value);
+  }
+  function visible(el) { return !!(el && el.getClientRects().length); }
+  function isEditable(el) {
+    return !!(el && el.closest && el.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]'));
+  }
+  function anyModalOpen() {
+    return !!$('.ReactModal__Overlay, .MuiModal-root:not(.MuiModal-hidden), .MuiPopover-root');
+  }
+  function focusLater(el) {
+    if (!el) return;
+    setTimeout(function () {
+      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) {  } }
+    }, 30);
+  }
+  function onPeoplePage() { return root.classList.contains('bt-people'); }
+
+  function openDrawer() { return $('.sidedrawerWrapper.open:not(.profile)'); }
+
+  function pageFlags() {
+    var page = $('.peopleTabHeader') || $('.delegatespageTab');
+    setClass(root, 'bt-people', !!page);
+    setClass(root, 'bt-mobile', !!$('.isMobileContainer, .mainContainerMob'));
+    setClass(root, 'bt-drawer-open', !!openDrawer());
+    return page;
+  }
+
+  var scrolled = null;
+  function onScroll() {
+    var y = window.pageYOffset || root.scrollTop || 0;
+    var s = y > 8;
+    if (s !== scrolled) { scrolled = s; setClass(root, 'bt-scrolled', s); }
+    if (topBtn) setClass(topBtn, 'bt-show', onPeoplePage() && y > window.innerHeight * 1.5);
+  }
+
+  var firstRun = true;
+  function stagger() {
+    if (!CFG.staggerCards || reduceMotion) return;
+    var i = 0;
+    $$('.delegatesTab .peopleAnimate').forEach(function (card) {
+      if (card.__btI !== undefined) return;
+      if (firstRun) { card.__btI = -1; return; }
+      card.__btI = Math.min(i++, 11);
+      card.style.setProperty('--bt-i', String(card.__btI));
+    });
+    firstRun = false;
+  }
+
+  function searchControls() {
+    return {
+      wrap: $('.peopleTabHeader .pageSearchWrapper'),
+      btn: $('.peopleTabHeader .pageSearchWrapper .searchBtn'),
+      deskInput: $('.peopleTabHeader .pageSearchWrapper .searchInput'),
+      close: $('.peopleTabHeader .pageSearchWrapper .searchCloseBtn'),
+      barInput: $('.peopleTabHeader .searchBarWrap input')
+    };
+  }
+
+  function searchA11y() {
+    var s = searchControls();
+    if (CFG.searchShortcut) {
+      if (s.deskInput) setAttr(s.deskInput, 'aria-keyshortcuts', '/');
+      if (s.barInput) setAttr(s.barInput, 'aria-keyshortcuts', '/');
+      if (s.btn) setAttr(s.btn, 'data-bt-kbd', 'Press / to search');
+    }
+  }
+
+  function focusSearch() {
+    var s = searchControls();
+    if (visible(s.barInput)) { s.barInput.focus(); return true; }
+    if (s.wrap && visible(s.btn)) {
+      if (!s.wrap.classList.contains('active')) s.btn.click();
+
+      if (s.deskInput) { try { s.deskInput.focus({ preventScroll: true }); } catch (e) {  } }
+      focusLater(s.deskInput);
+      return true;
+    }
+    return false;
+  }
+
+  function phoneSheet() {
+    try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar, .mobileFilterDrawer)'); }
+    catch (e) { return null; }   
+  }
+  function closeSheet(c) {
+    var btn = c && $('.drawerCloseButton button', c);
+    if (!btn) return false;
+    btn.click();
+    return true;
+  }
+
+  var lastChip = null;     
+  doc.addEventListener('click', function (e) {
+    var chip = e.target.closest && e.target.closest('.delegatesTab .filterList .MuiChip-root');
+    if (chip) lastChip = chip;
+  }, true);
+
+  function closeFilterDropdown() {
+    var dd = $('.delegatesTab .filterDropDown');
+    var btn = dd && $('.filterCloseIcon button', dd);
+    if (!btn || !visible(dd)) return false;
+    btn.click();
+    focusLater(lastChip);
+    return true;
+  }
+  function closeSortMenu() {
+    var menu = $('.delegatesTab .ListMenuPopup');
+    var btn = $('.delegatesTab .sortButtonWrapper > button');
+    if (!menu || !btn || !visible(menu)) return false;
+    btn.click();
+    focusLater(btn);
+    return true;
+  }
+  function closeSearch(target) {
+    var s = searchControls();
+    if (!s.wrap || !s.wrap.classList.contains('active') || !s.close) return false;
+    if (target && !s.wrap.contains(target)) return false;
+    s.close.click();
+    focusLater(s.btn);
+    return true;
+  }
+
+  var opener = null;
+  doc.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button, a, [role="tab"]');
+    if (!b || openDrawer()) return;
+    setTimeout(function () { if (openDrawer()) opener = b; }, 60);
+  }, true);
+
+  function closeDrawer(d) {
+    var back = d && $('.backBtn', d);
+    if (!back) return false;
+    var focusWasInPanel = !doc.activeElement || doc.activeElement === doc.body || d.contains(doc.activeElement);
+    back.click();
+    if (focusWasInPanel) focusLater(opener);
+    return true;
+  }
+
+  var IGNORE_OUTSIDE = [
+    '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
+    '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
+    '[role="listbox"]', '.toastWrapper', '.filterDropDown', '.ListMenuPopup',
+    '.filtersWrapper', '.bt-top',
+    
+    'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
+    '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]',
+    '.peoplesCardWrapper', '.cursor', '.cursorHand'
+  ].join(',');
+
+  var pressedOutside = false;
+  window.addEventListener('pointerdown', function (e) {
+    pressedOutside = false;
+    if (!CFG.closeDrawerOnOutside || !onPeoplePage() || root.classList.contains('bt-mobile')) return;
+    var d = openDrawer();
+    var t = e.target;
+    if (!d || !(t instanceof Element) || d.contains(t) || t.closest(IGNORE_OUTSIDE)) return;
+    pressedOutside = true;
+  }, true);
+
+  window.addEventListener('click', function (e) {
+    
+    var c = phoneSheet();
+    var t = e.target;
+    if (c && t instanceof Element && !c.contains(t) && t.closest('.bottom-sheet__wrapper')) {
+      if (!e.defaultPrevented) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeSheet(c);
+      }
+      return;
+    }
+    
+    if (!pressedOutside) return;
+    pressedOutside = false;
+    if (e.defaultPrevented) return;
+    if (String(window.getSelection ? window.getSelection() : '') !== '') return;
+    var d = openDrawer();
+    if (d && !d.contains(t)) closeDrawer(d);
+  }, true);
+
+  doc.addEventListener('keydown', function (e) {
+    if (e.defaultPrevented) return;
+
+    if (e.key === 'Escape') {
+      if (closeSheet(phoneSheet())) { e.preventDefault(); return; }
+      if (anyModalOpen()) return;                       
+      if (closeFilterDropdown() || closeSortMenu() || closeSearch(e.target)) { e.preventDefault(); return; }
+      if (isEditable(e.target) && e.target.value) return; 
+      var d = openDrawer();
+      if (d && closeDrawer(d)) e.preventDefault();
+      return;
+    }
+
+    if (e.key === '/' && CFG.searchShortcut && onPeoplePage()) {
+      if (e.altKey || e.ctrlKey || e.metaKey || isEditable(e.target) || anyModalOpen()) return;
+      if (focusSearch()) e.preventDefault();
+    }
+  });
+
+  var topBtn = null;
+  function backToTop() {
+    if (!CFG.backToTop || topBtn) return;
+    topBtn = doc.createElement('button');
+    topBtn.type = 'button';
+    topBtn.className = 'bt-top';
+    topBtn.setAttribute('data-bt', '');
+    topBtn.setAttribute('aria-label', 'Back to top');
+    topBtn.title = 'Back to top';
+    var svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2.4');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    var p = doc.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('d', 'M12 19V5M5 12l7-7 7 7');
+    svg.appendChild(p);
+    topBtn.appendChild(svg);
+    topBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      var s = searchControls();
+      focusLater(visible(s.barInput) ? s.barInput : s.btn);
+    });
+    doc.body.appendChild(topBtn);
+  }
+
+  function update() {
+    var page = pageFlags();
+    onScroll();
+    if (!page) return;
+    [backToTop, stagger, searchA11y].forEach(function (fn) {
+      try { fn(); } catch (err) { if (window.console) console.warn('[people-override]', fn.name, err); }
+    });
+    onScroll();
+  }
+
+  var queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }
+
+  function own(node) {
+    var el = node && (node.nodeType === 1 ? node : node.parentNode);
+    return !!(el && el.closest && el.closest('[data-bt]'));
+  }
+  
+  var mo = new MutationObserver(function (list) {
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      if (own(m.target)) continue;
+      if (m.type !== 'childList') { schedule(); return; }
+      var nodes = Array.prototype.slice.call(m.addedNodes).concat(Array.prototype.slice.call(m.removedNodes));
+      for (var j = 0; j < nodes.length; j++) {
+        if (!(nodes[j].nodeType === 1 && nodes[j].hasAttribute('data-bt'))) { schedule(); return; }
+      }
+    }
+  });
+
+  function boot() {
+    update();
+    mo.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', schedule);
+  }
+
+  if (doc.readyState === 'complete') {
+    boot();
+  } else {
+    window.addEventListener('load', boot);
+  }
+})();
+;
