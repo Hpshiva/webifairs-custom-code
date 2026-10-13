@@ -1,0 +1,871 @@
+:root {
+  --bt-primary: #3a255f;
+  --bt-primary-hover: #2d1c4b;
+  --bt-primary-press: #22153a;
+  --bt-primary-soft: #ebe6f4;
+  --bt-primary-soft-hover: #ddd4ec;
+  --bt-primary-tint: #f6f3fb;
+
+  --bt-ink: #1a1523;
+  /* headings            17.9:1 on white */
+  --bt-text: #45405a;
+  /* paragraphs           9.8:1 */
+  --bt-muted: #6b6680;
+  /* captions, labels     5.5:1 (5.0:1 on canvas/tint) */
+  --bt-line: #e8e4ef;
+  /* card borders */
+  --bt-line-strong: #d5cee2;
+  --bt-canvas: #f5f3f8;
+  /* page background */
+  --bt-surface: #ffffff;
+  /* cards */
+  --bt-warn: #8a5300;
+  /* "Not started yet"    5.8:1 on warn-soft */
+  --bt-warn-soft: #fff3df;
+  --bt-ok: #1d7a52;
+
+  /* Gradients: all in the brand purple family (used by section 09).
+     White text on grad-primary: 8.3:1 at the lightest stop. */
+  --bt-violet: #6d4ac2;
+  /* accent; 6.2:1 as text on white */
+  --bt-orchid: #a35bd1;
+  /* highlight, decorative only */
+  --bt-grad-primary: linear-gradient(135deg, #5b3d93 0%, #3a255f 55%, #2b1a49 100%);
+  --bt-grad-primary-hover: linear-gradient(135deg, #6a47a8 0%, #442b6f 55%, #331f55 100%);
+  --bt-grad-soft: linear-gradient(135deg, #f4effb 0%, #e9e1f5 100%);
+  --bt-grad-soft-hover: linear-gradient(135deg, #ece4f8 0%, #ddd1ef 100%);
+  --bt-grad-tint: linear-gradient(180deg, #fbfafd 0%, #f3eef9 100%);
+  --bt-grad-accent: linear-gradient(180deg, var(--bt-orchid) 0%, var(--bt-violet) 45%, var(--bt-primary) 100%);
+  --bt-grad-accent-x: linear-gradient(90deg, var(--bt-violet) 0%, var(--bt-primary) 100%);
+  --bt-grad-border: linear-gradient(135deg, rgba(109, 74, 194, .55) 0%, var(--bt-line) 35%, var(--bt-line) 65%, rgba(163, 91, 209, .45) 100%);
+  --bt-grad-text: linear-gradient(100deg, var(--bt-ink) 0%, var(--bt-primary) 55%, #5b3d93 100%);
+
+  --bt-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --bt-r-sm: 10px;
+  --bt-r: 14px;
+  --bt-r-lg: 20px;
+  --bt-r-pill: 999px;
+
+  --bt-shadow-xs: 0 1px 2px rgba(26, 21, 35, .06);
+  --bt-shadow-sm: 0 1px 2px rgba(26, 21, 35, .05), 0 4px 10px -4px rgba(26, 21, 35, .10);
+  --bt-shadow-md: 0 2px 4px rgba(26, 21, 35, .04), 0 14px 32px -12px rgba(58, 37, 95, .26);
+  --bt-shadow-lg: 0 32px 80px -20px rgba(26, 21, 35, .45);
+  --bt-ring: 0 0 0 3px rgba(58, 37, 95, .32);
+
+  --bt-ease: cubic-bezier(.22, .8, .24, 1);
+  --bt-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --bt-fast: .16s;
+  --bt-med: .28s;
+  --bt-slow: .6s;
+}
+
+
+/* 02 Base + focus ----------------------------------------------------- */
+html body {
+  background: var(--bt-canvas) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--bt-primary-soft-hover);
+  color: var(--bt-ink);
+}
+
+.sidedrawerWrapper {
+  font-family: var(--bt-font);
+}
+
+/* One visible, consistent keyboard focus ring */
+.headerWrapper :is(button, a):focus-visible,
+.miniSidedrawerInn button:focus-visible,
+.sidedrawerWrapper :is(button, a, [role="tab"]):focus-visible,
+.mobileNav :is(a, button):focus-visible,
+.ReactModalPortal :is(button, a):focus-visible {
+  outline: none !important;
+  box-shadow: var(--bt-ring) !important;
+}
+
+
+/* 03 Top header ------------------------------------------------------- */
+/* Frosted bar. The blur sits on a pseudo-element so the header does not
+   become a containing block for any fixed-position children. */
+.headerWrapper {
+  background: transparent !important;
+  box-shadow: 0 1px 0 var(--bt-line) !important;
+  transition: box-shadow var(--bt-med) var(--bt-ease);
+}
+
+.headerWrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 255, 255, .86);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  backdrop-filter: saturate(180%) blur(16px);
+}
+
+html.bt-scrolled .headerWrapper {
+  box-shadow: 0 1px 0 var(--bt-line), 0 12px 30px -16px rgba(26, 21, 35, .25) !important;
+}
+
+/* Main menu: pill hover + pill active state, slimmer indicator */
+.headerWrapper .menuInnerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.headerWrapper .menuItem {
+  margin: 0 !important;
+  height: 64px;
+  align-items: center;
+}
+
+.headerWrapper .menuItem>button {
+  min-width: 84px;
+  padding: 5px 12px !important;
+  border-radius: 12px;
+  transition: background-color var(--bt-fast) var(--bt-ease);
+}
+
+.headerWrapper .menuItem:not(.active)>button:hover {
+  background: var(--bt-primary-tint);
+}
+
+.headerWrapper .menuItem.active>button {
+  background: var(--bt-primary-soft);
+}
+
+.headerWrapper .menuItem .icon {
+  transition: transform var(--bt-med) var(--bt-ease);
+}
+
+.headerWrapper .menuItem:hover .icon {
+  transform: translateY(-2px);
+}
+
+.headerWrapper .menuItem .menuText {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--bt-muted) !important;
+  transition: color var(--bt-fast) var(--bt-ease);
+}
+
+.headerWrapper .menuItem:hover .menuText {
+  color: var(--bt-ink) !important;
+}
+
+.headerWrapper .menuItem.active .menuText {
+  color: var(--bt-primary) !important;
+  font-weight: 700 !important;
+}
+
+.headerWrapper .menuItem.active::before {
+  left: 18px !important;
+  width: calc(100% - 36px) !important;
+  height: 3px !important;
+  border-radius: 3px 3px 0 0 !important;
+  background: var(--bt-primary) !important;
+}
+
+/* Right-hand icons + avatar */
+.headerWrapper .rightActionWrapper {
+  align-items: center;
+  gap: 4px;
+}
+
+.headerWrapper .rightActionWrapper .mr20 {
+  margin-right: 0 !important;
+}
+
+.headerWrapper .rightActionWrapper .MuiIconButton-root {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px !important;
+  transition: background-color var(--bt-fast) var(--bt-ease);
+}
+
+.headerWrapper .rightActionWrapper .MuiIconButton-root:hover {
+  background: var(--bt-primary-tint) !important;
+}
+
+.headerWrapper .rightActionWrapper .MuiBadge-badge {
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.headerWrapper .avtarWrapper {
+  margin-left: 10px;
+}
+
+.headerWrapper .avtarWrapper .MuiAvatar-root {
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary-soft);
+  transition: box-shadow var(--bt-fast) var(--bt-ease);
+}
+
+.headerWrapper .avtarWrapper .MuiAvatar-root:hover {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary);
+}
+
+
+/* 04 Right icon rail -------------------------------------------------- */
+.miniSidedrawerInn {
+  background: var(--bt-surface) !important;
+  border-left: 1px solid var(--bt-line) !important;
+  padding-top: 8px !important;
+}
+
+.miniSidedrawerInn .svgBox {
+  width: 46px !important;
+  height: 46px !important;
+  margin: 3px auto !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
+}
+
+.miniSidedrawerInn .svgBox:hover {
+  background: var(--bt-primary-tint) !important;
+}
+
+.miniSidedrawerInn .svgBox:active {
+  transform: scale(.92);
+}
+
+.miniSidedrawerInn .saperator {
+  display: block !important;
+  width: 28px !important;
+  height: 1px !important;
+  margin: 10px auto !important;
+  background: var(--bt-line) !important;
+}
+
+
+/* 05 Side panel (Live Chat, Team, Q&A, Poll) ------------------------- */
+.sidedrawerWrapper.open:not(.profile) {
+  box-shadow: -1px 0 0 var(--bt-line), -32px 0 64px -32px rgba(26, 21, 35, .35) !important;
+}
+
+.sidedrawerWrapper .drawerTabWrapper {
+  border-bottom: 1px solid var(--bt-line);
+  background: var(--bt-surface);
+}
+
+.sidedrawerWrapper .backBtn {
+  background: var(--bt-surface) !important;
+  border: 0 !important;
+  border-right: 1px solid var(--bt-line) !important;
+  cursor: pointer;
+  transition: background-color var(--bt-fast) var(--bt-ease);
+}
+
+.sidedrawerWrapper .backBtn:hover {
+  background: var(--bt-primary-tint) !important;
+}
+
+.sidedrawerWrapper .drawerTabWrapper .tabHeader ul {
+  background: var(--bt-canvas) !important;
+}
+
+.sidedrawerWrapper .drawerTabWrapper li.tabs {
+  cursor: pointer;
+  transition: background-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
+}
+
+.sidedrawerWrapper .drawerTabWrapper li.tabs:not(.activeTab):hover {
+  background: rgba(255, 255, 255, .7) !important;
+}
+
+.sidedrawerWrapper .drawerTabWrapper li.tabs.activeTab {
+  background: var(--bt-surface) !important;
+  box-shadow: inset 0 -3px 0 var(--bt-primary);
+}
+
+.sidedrawerWrapper .drawerTabWrapper .tabText {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--bt-muted) !important;
+}
+
+.sidedrawerWrapper .drawerTabWrapper li.activeTab .tabText {
+  color: var(--bt-ink) !important;
+}
+
+.boothSideTabBlock {
+  border-bottom: 1px solid var(--bt-line);
+}
+
+.boothSideTabBlock li.tabs {
+  cursor: pointer;
+  transition: background-color var(--bt-fast) var(--bt-ease);
+}
+
+.boothSideTabBlock li.tabs:not(.activeTab):hover {
+  background: var(--bt-primary-tint);
+}
+
+.boothSideTabBlock li.tabs .tabText {
+  font-weight: 600 !important;
+}
+
+.boothSideTabBlock li.tabs.activeTab::after {
+  border-radius: 3px 3px 0 0 !important;
+}
+
+/* Chat composer */
+.dataSubmitBlockWrapper {
+  border-top: 1px solid var(--bt-line);
+  background: var(--bt-surface);
+}
+
+.dataSubmitBlockWrapper>.MuiBox-root:not(.submitBtn) {
+  border-radius: 14px !important;
+  transition: border-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
+}
+
+.dataSubmitBlockWrapper>.MuiBox-root:not(.submitBtn):focus-within {
+  border-color: var(--bt-primary) !important;
+  box-shadow: var(--bt-ring);
+}
+
+.dataSubmitBlockWrapper .submitBtn .MuiIconButton-root {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px !important;
+  transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
+}
+
+.dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:hover {
+  background: var(--bt-primary-hover) !important;
+}
+
+.dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:active {
+  transform: scale(.92);
+}
+
+.sidedrawerWrapper .emptyStateWrapper p {
+  font-size: 13px !important;
+  color: var(--bt-muted) !important;
+}
+
+.sideDrawerScroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bt-line-strong) transparent;
+}
+
+
+/* 06 Video stage ------------------------------------------------------ */
+/* The fixed 66px icon rail covered the right edge of the page */
+.layoutWrapper:has(.miniSidedrawerInn) .mainContainer.hasEmbedAppScreen {
+  box-sizing: border-box;
+  padding-right: 66px !important;
+}
+
+.hasEmbedAppScreen .embedAppMobile {
+  margin: 36px 0 40px !important;
+}
+
+.hasEmbedAppScreen .embedAppMobile>.container {
+  position: relative;
+}
+
+/* The embed sits in a white frame */
+.hasEmbedAppScreen .embedAppWrap {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid var(--bt-line);
+  border-radius: 26px;
+  background: var(--bt-surface);
+  box-shadow: var(--bt-shadow-lg);
+  animation: bt-rise .6s var(--bt-ease-out) both;
+}
+
+.hasEmbedAppScreen .embedAppWrap>div {
+  line-height: 0;
+  /* removes the gap under the iframe */
+}
+
+.hasEmbedAppScreen .embedAppWrap iframe {
+  display: block;
+  width: 100% !important;
+  border-radius: 18px !important;
+  background: #140d22;
+  /* dark while the player loads */
+}
+
+/* Videos: a true 16:9 frame (no black bars) that always fits on screen */
+.hasEmbedAppScreen .embedAppWrap:has(iframe:is([src*="youtube"], [src*="youtu.be"], [src*="vimeo"], [src*="wistia"], [src*="loom.com"], [src*="dailymotion"])) {
+  max-width: calc((100vh - 230px) * 16 / 9 + 22px);
+}
+
+.hasEmbedAppScreen .embedAppWrap iframe:is([src*="youtube"], [src*="youtu.be"], [src*="vimeo"], [src*="wistia"], [src*="loom.com"], [src*="dailymotion"]) {
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+}
+
+
+/* 07 Profile popup + menus (shared) ---------------------------------- */
+/* Clicking a person opens a right-hand panel (desktop) or a full-screen
+   sheet (phone). Both now open as a centred dialog. On desktop the
+   platform's modal already closes on a click outside or Esc; on phones the
+   JS adds that. */
+.ReactModal__Overlay.cu-modal-overlay {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.ReactModal__Overlay.sideBarUserPanel {
+  background: rgba(26, 21, 35, .5) !important;
+  animation: bt-fade-in .2s ease both;
+}
+
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile {
+  position: fixed !important;
+  inset: 0 !important;
+  margin: auto !important;
+  width: min(520px, calc(100vw - 32px)) !important;
+  height: fit-content !important;
+  max-height: min(760px, calc(100vh - 48px)) !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  transform: none !important;
+  border-radius: 22px !important;
+  box-shadow: var(--bt-shadow-lg) !important;
+  animation: bt-pop-in .34s var(--bt-ease-out) both;
+}
+
+.ReactModal__Overlay--before-close.sideBarUserPanel {
+  animation: bt-fade-out .2s ease both;
+}
+
+.ReactModal__Overlay--before-close.sideBarUserPanel .sidedrawerWrapper.profile {
+  animation: bt-pop-out .2s ease both;
+}
+
+.DelegateSidebar {
+  position: relative;
+}
+
+/* Close button (desktop): top right, round, readable over any banner */
+.sidedrawerWrapper.profile .closeBox {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  left: auto !important;
+  z-index: 5;
+}
+
+.sidedrawerWrapper.profile .closeBox .MuiIconButton-root,
+.bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton .MuiIconButton-root {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, .92) !important;
+  box-shadow: var(--bt-shadow-sm);
+  transition: transform var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
+}
+
+.sidedrawerWrapper.profile .closeBox .MuiIconButton-root:hover {
+  background: #fff !important;
+  transform: rotate(90deg);
+}
+
+/* Phone: the same profile opens as a full-screen sheet. Show it as a
+   centred card too; a tap on the dimmed area or Esc closes it (JS). */
+.bottom-sheet__wrapper.open:has(.mobDelegateSidebar) {
+  background: rgba(26, 21, 35, .5) !important;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar) {
+  inset: 0 !important;
+  width: calc(100vw - 24px) !important;
+  max-width: 480px !important;
+  height: fit-content !important;
+  max-height: calc(100vh - 48px) !important;
+  max-height: calc(100dvh - 48px) !important;
+  margin: auto !important;
+  overflow: hidden !important;
+  border-radius: 20px !important;
+  box-shadow: var(--bt-shadow-lg) !important;
+  animation: bt-pop-in .34s var(--bt-ease-out) both;
+}
+
+.bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar)>div {
+  height: auto !important;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.bottom-sheet__container .mobDelegateSidebar {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 0 6px !important;
+  /* the 54px top padding made room for the old close bar */
+}
+
+.bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  left: auto !important;
+  z-index: 6;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Profile content (both layouts) */
+.DelegateSidebar .profileBanner img {
+  object-fit: cover;
+}
+
+.DelegateSidebar .profileimg .MuiAvatar-root {
+  border-radius: 24px !important;
+  box-shadow: 0 0 0 4px #fff, 0 16px 30px -14px rgba(26, 21, 35, .45);
+}
+
+.DelegateSidebar .profileDetails h5 {
+  font-family: var(--bt-font) !important;
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.01em;
+  color: var(--bt-ink) !important;
+}
+
+.DelegateSidebar .profileContent {
+  font-size: 13px !important;
+  color: var(--bt-muted) !important;
+}
+
+.DelegateSidebar .deleAllButtonWrap {
+  gap: 8px;
+}
+
+.DelegateSidebar .deleAllButtonWrap .MuiButton-root {
+  height: 40px;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+}
+
+.DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary:hover {
+  background: var(--bt-primary-soft-hover) !important;
+}
+
+.DelegateSidebar .exdarkBox {
+  border: 1px solid var(--bt-line);
+  border-radius: 16px !important;
+  background: var(--bt-primary-tint) !important;
+  transition: border-color var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
+}
+
+.DelegateSidebar .exdarkBox:hover {
+  border-color: var(--bt-line-strong);
+  background: var(--bt-primary-soft) !important;
+}
+
+.DelegateSidebar .exLogo {
+  border-radius: 12px !important;
+}
+
+/* Small MUI menus (same as the booth page) */
+.MuiMenu-paper {
+  padding: 4px;
+  border: 1px solid var(--bt-line);
+  border-radius: 14px !important;
+  box-shadow: 0 20px 44px -16px rgba(26, 21, 35, .32) !important;
+}
+
+.MuiMenu-paper .MuiMenuItem-root {
+  margin: 2px 0;
+  padding: 9px 14px 9px 10px !important;
+  border-radius: 10px;
+  transition: background-color var(--bt-fast) var(--bt-ease);
+}
+
+.MuiMenu-paper .MuiMenuItem-root:hover,
+.MuiMenu-paper .MuiMenuItem-root.Mui-focusVisible {
+  background: var(--bt-primary-tint) !important;
+}
+
+.MuiMenu-paper .MuiMenuItem-root p {
+  font-weight: 500 !important;
+  color: var(--bt-ink) !important;
+}
+
+
+/* 08 Phone layout + bottom bar ---------------------------------------- */
+.isMobileContainer .embedAppMobile {
+  margin: 16px 0 24px !important;
+}
+
+.isMobileContainer .embedAppWrap {
+  padding: 6px;
+  border-radius: 20px;
+}
+
+.isMobileContainer .embedAppWrap iframe {
+  border-radius: 14px !important;
+}
+
+/* Other embeds (forms, tours) keep their height but stop above the bar */
+.isMobileContainer .embedAppWrap iframe:not([src*="youtube"], [src*="youtu.be"], [src*="vimeo"], [src*="wistia"], [src*="loom.com"], [src*="dailymotion"]) {
+  max-height: calc(100vh - 170px);
+}
+
+/* Bottom navigation */
+.mobileNav {
+  border-top: 1px solid var(--bt-line) !important;
+  box-shadow: 0 -10px 30px -18px rgba(26, 21, 35, .3) !important;
+}
+
+.mobileNav li>a {
+  border-radius: 12px;
+  transition: background-color var(--bt-fast) var(--bt-ease);
+}
+
+.mobileNav li>a:active {
+  background: var(--bt-primary-tint);
+}
+
+.mobileNav li>a .text {
+  font-family: var(--bt-font) !important;
+  font-weight: 600 !important;
+}
+
+.mobileNav .hubilo-btn {
+  background: var(--bt-primary) !important;
+  box-shadow: 0 0 0 4px #fff, 0 12px 24px -10px rgba(58, 37, 95, .75) !important;
+  transition: transform var(--bt-fast) var(--bt-ease);
+}
+
+.mobileNav .hubilo-btn:active {
+  transform: scale(.92);
+}
+
+/* The platform turns this icon purple on hover. Phones keep the hover
+   state after a tap, so the icon vanished into the purple button. */
+.mobileNav .hubilo-btn svg path {
+  fill: #fff !important;
+}
+
+
+/* 09 Gradient finish -------------------------------------------------- */
+/* Premium layer on top of sections 02-08: soft purple washes, gradient
+   hairlines, gradient buttons with a light sheen. Everything stays in the
+   brand purple family. Delete this whole section to go back to flat. */
+
+/* Page: two faint purple glows on the canvas */
+html body {
+  background:
+    radial-gradient(1100px 520px at 100% 0%, rgba(109, 74, 194, .10), rgba(109, 74, 194, 0) 70%),
+    radial-gradient(900px 600px at 0% 45%, rgba(163, 91, 209, .06), rgba(163, 91, 209, 0) 70%),
+    var(--bt-canvas) !important;
+}
+
+/* Header: gradient hairline, gradient active pill + indicator, avatar ring */
+.headerWrapper::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(109, 74, 194, 0), rgba(109, 74, 194, .4) 50%, rgba(109, 74, 194, 0));
+  pointer-events: none;
+}
+
+.headerWrapper .menuItem.active>button {
+  background: var(--bt-grad-soft);
+}
+
+.headerWrapper .menuItem.active::before {
+  background: var(--bt-grad-accent-x) !important;
+}
+
+.headerWrapper .avtarWrapper .MuiAvatar-root {
+  border: 2px solid transparent;
+  background: linear-gradient(#fff, #fff) padding-box, var(--bt-grad-accent) border-box;
+  box-shadow: 0 4px 12px -4px rgba(58, 37, 95, .35);
+}
+
+.headerWrapper .avtarWrapper .MuiAvatar-root:hover {
+  box-shadow: 0 6px 16px -4px rgba(109, 74, 194, .55);
+}
+
+.miniSidedrawerInn .svgBox:hover {
+  background: var(--bt-grad-soft) !important;
+}
+
+/* Side panel: gradient tab indicators and send / post buttons */
+.sidedrawerWrapper .drawerTabWrapper li.tabs.activeTab {
+  background: var(--bt-grad-accent-x) bottom / 100% 3px no-repeat, var(--bt-surface) !important;
+  box-shadow: none;
+}
+
+.boothSideTabBlock li.tabs.activeTab::after {
+  background: var(--bt-grad-accent-x) !important;
+}
+
+.dataSubmitBlockWrapper .submitBtn .MuiIconButton-root,
+.sidedrawerWrapper .MuiButton-containedPrimary:not(.Mui-disabled) {
+  background: var(--bt-grad-primary) !important;
+  box-shadow: 0 8px 18px -10px rgba(58, 37, 95, .8);
+}
+
+.dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:hover,
+.sidedrawerWrapper .MuiButton-containedPrimary:not(.Mui-disabled):hover {
+  background: var(--bt-grad-primary-hover) !important;
+}
+
+/* Profile popup: brand-tinted banner, gradient avatar ring */
+.DelegateSidebar .profileBanner {
+  position: relative;
+}
+
+.DelegateSidebar .profileBanner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(91, 61, 147, .55) 0%, rgba(58, 37, 95, .2) 50%, rgba(163, 91, 209, .35) 100%);
+  pointer-events: none;
+}
+
+.DelegateSidebar .profileimg .MuiAvatar-root {
+  border: 3px solid transparent;
+  background: linear-gradient(#fff, #fff) padding-box, var(--bt-grad-accent) border-box;
+  box-shadow: 0 0 0 3px #fff, 0 16px 30px -14px rgba(58, 37, 95, .5);
+}
+
+.DelegateSidebar .exdarkBox {
+  background: var(--bt-grad-tint) !important;
+}
+
+.DelegateSidebar .exdarkBox:hover {
+  background: var(--bt-grad-soft) !important;
+}
+
+.DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary {
+  background: var(--bt-grad-soft) !important;
+}
+
+.DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary:hover {
+  background: var(--bt-grad-soft-hover) !important;
+}
+
+/* Video stage: gradient frame edge and a soft purple glow behind it */
+.hasEmbedAppScreen .embedAppWrap {
+  border-color: transparent;
+  background: linear-gradient(var(--bt-surface), var(--bt-surface)) padding-box, var(--bt-grad-border) border-box;
+}
+
+.hasEmbedAppScreen .embedAppMobile>.container::before {
+  content: "";
+  position: absolute;
+  inset: 8% 6% -6%;
+  z-index: 0;
+  background:
+    radial-gradient(55% 60% at 25% 35%, rgba(109, 74, 194, .38), rgba(109, 74, 194, 0) 70%),
+    radial-gradient(50% 60% at 78% 72%, rgba(163, 91, 209, .3), rgba(163, 91, 209, 0) 70%);
+  filter: blur(36px);
+  pointer-events: none;
+}
+
+.mobileNav .hubilo-btn {
+  background: var(--bt-grad-primary) !important;
+}
+
+
+/* 10 Motion + reduced motion ------------------------------------------ */
+@keyframes bt-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bt-pop-in {
+  from {
+    opacity: 0;
+    scale: .94;
+    translate: 0 12px;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes bt-pop-out {
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: .96;
+  }
+}
+
+@keyframes bt-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bt-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .headerWrapper,
+  .headerWrapper *,
+  .miniSidedrawerInn *,
+  .sidedrawerWrapper,
+  .sidedrawerWrapper *,
+  .hasEmbedAppScreen .embedAppWrap,
+  .bottom-sheet__container,
+  .ReactModalPortal *,
+  .mobileNav * {
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+}

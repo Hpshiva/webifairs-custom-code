@@ -1,0 +1,854 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+
+
+html:has(.logInBlockWrapper),
+body:has(.logInBlockWrapper),
+html:has(.loginWrapperTop),
+body:has(.loginWrapperTop) {
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #030741 !important;
+  overflow: hidden !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+}
+
+#root:has(.logInBlockWrapper),
+#root>div:has(.logInBlockWrapper),
+.container-fluid:has(.logInBlockWrapper),
+body:has(.logInBlockWrapper) #__next {
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  background: #030741 !important;
+  overflow: hidden !important;
+}
+
+.row:has(> .logInBlockWrapper),
+.row.no-gutters:has(> .logInBlockWrapper) {
+  height: 100vh !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  background: #030741 !important;
+}
+
+/* LEFT HERO PANE (60%) */
+.col-sm-8.col-md-8.col-lg-8.logInBlockWrapper,
+.logInBlockWrapper {
+  flex: 0 0 60% !important;
+  max-width: 60% !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
+  background: #030741 !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+.logInBlock,
+.logInBlockInner,
+#sliderSection {
+  display: none !important;
+}
+
+/* CUSTOM INSPIRA HERO BANNER INSIDE LEFT COLUMN */
+.inspira-hero-injected {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 44px 60px !important;
+  box-sizing: border-box !important;
+  background-color: #030722 !important;
+  background-image:
+    radial-gradient(circle at 18% 20%, rgba(29, 78, 216, 0.45) 0%, transparent 55%),
+    radial-gradient(circle at 85% 80%, rgba(126, 34, 206, 0.28) 0%, transparent 55%),
+    linear-gradient(165deg, rgba(2, 6, 32, 0.88) 0%, rgba(3, 7, 45, 0.82) 50%, rgba(4, 9, 52, 0.90) 100%),
+    url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1600&auto=format&fit=crop&q=80') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  color: #FFFFFF !important;
+  z-index: 1 !important;
+}
+
+.inspira-hero-injected .hero-top-brand {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.inspira-hero-injected .hero-brand-logo {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 27px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.5px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1px !important;
+}
+
+.inspira-hero-injected .hero-brand-logo span {
+  color: #F97316 !important;
+}
+
+.inspira-hero-injected .hero-live-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  background: rgba(239, 68, 68, 0.14) !important;
+  border: 1px solid rgba(239, 68, 68, 0.32) !important;
+  color: #FCA5A5 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.inspira-hero-injected .hero-live-dot {
+  width: 7px !important;
+  height: 7px !important;
+  background: #EF4444 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 10px #EF4444 !important;
+}
+
+.inspira-hero-injected .hero-content-center {
+  max-width: 580px !important;
+  margin: auto 0 !important;
+}
+
+.inspira-hero-injected .hero-kicker {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.2px !important;
+  color: #93C5FD !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 14px !important;
+}
+
+.inspira-hero-injected .hero-heading {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 40px !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  color: #FFFFFF !important;
+  margin: 0 0 16px 0 !important;
+  letter-spacing: -1px !important;
+}
+
+.inspira-hero-injected .hero-heading .hero-highlight-word {
+  color: #FFA588 !important;
+  background: none !important;
+  -webkit-text-fill-color: #FFA588 !important;
+}
+
+.inspira-hero-injected .hero-subheading {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: #94A3B8 !important;
+  margin: 0 0 24px 0 !important;
+  font-weight: 400 !important;
+}
+
+/* Countdown */
+.inspira-hero-injected .hero-countdown-strip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 12px 24px !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  margin-bottom: 22px !important;
+}
+
+.inspira-hero-injected .countdown-unit {
+  text-align: center !important;
+  min-width: 38px !important;
+}
+
+.inspira-hero-injected .countdown-val {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  line-height: 1 !important;
+}
+
+.inspira-hero-injected .countdown-lbl {
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  color: #94A3B8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  margin-top: 4px !important;
+}
+
+.inspira-hero-injected .countdown-sep {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  margin-top: -6px !important;
+}
+
+/* Pills */
+.inspira-hero-injected .hero-pills-row {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.inspira-hero-injected .hero-badge-pill {
+  padding: 7px 14px !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(8px) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #E2E8F0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+}
+
+/* Social proof */
+.inspira-hero-injected .hero-bottom-proof {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.inspira-hero-injected .proof-avatars {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.inspira-hero-injected .proof-avatars img {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  border: 2px solid #030741 !important;
+  margin-left: -8px !important;
+  object-fit: cover !important;
+}
+
+.inspira-hero-injected .proof-avatars img:first-child {
+  margin-left: 0 !important;
+}
+
+.inspira-hero-injected .proof-caption {
+  font-size: 13px !important;
+  color: #94A3B8 !important;
+}
+
+.inspira-hero-injected .proof-caption strong {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+/* RIGHT FORM PANE (40%) */
+.col-12.col-sm-12.col-md-12.col-lg-4,
+.row:has(> .logInBlockWrapper)>.col-lg-4,
+.row:has(> .logInBlockWrapper)>div:not(.logInBlockWrapper) {
+  flex: 0 0 40% !important;
+  max-width: 40% !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  background: #FFFFFF !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 44px 52px !important;
+  box-sizing: border-box !important;
+  border-radius: 0 !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08) !important;
+  z-index: 10 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.loginWrapperTop,
+.loginWrapper,
+.logInModule,
+.formDataBlock {
+  width: 100% !important;
+  max-width: 410px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Hide square carousel / extra graphics */
+.topBrandText section,
+.topBrandText .slick-slider,
+.eventLogoWrapper {
+  display: none !important;
+}
+
+/* Hide social buttons */
+.socialButtons {
+  display: none !important;
+}
+
+.inspira-form-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  background: #EFF6FF !important;
+  color: #2563EB !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  border: 1px solid #DBEAFE !important;
+  margin-bottom: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  align-self: flex-start !important;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.06) !important;
+}
+
+.topBrandText {
+  text-align: left !important;
+  margin-bottom: 22px !important;
+}
+
+.topBrandText h2,
+.topBrandText h3,
+.topBrandText .MuiTypography-root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  color: #030741 !important;
+  margin: 0 0 8px 0 !important;
+  text-align: left !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.025em !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+.topBrandText h3,
+.topBrandText h2~h2,
+.topBrandText h2~h3,
+.topBrandText .MuiTypography-root~.MuiTypography-root {
+  display: none !important;
+}
+
+.inspira-form-subtext {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 14px !important;
+  color: #64748B !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+  text-align: left !important;
+  font-weight: 400 !important;
+}
+
+.mt24 {
+  margin-top: 0 !important;
+}
+
+/* Email field label */
+.inspira-input-label {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+  text-align: left !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Hide floating MUI label ONLY on /login where .inspira-input-label is explicitly placed */
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) .MuiInputLabel-root,
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) label.MuiFormLabel-root {
+  display: none !important;
+}
+
+/* Keep MUI labels clearly visible & properly styled on /sign-up and /login-with-code */
+.loginWrapperTop form:has(input[name="firstName"]) .MuiInputLabel-root,
+.loginWrapperTop form:has(input[name="codeVal"]) .MuiInputLabel-root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+}
+
+.loginWrapperTop .MuiInputLabel-shrink {
+  background: #FFFFFF !important;
+  padding: 0 6px !important;
+  border-radius: 4px !important;
+  z-index: 2 !important;
+  font-size: 11.5px !important;
+  line-height: 1 !important;
+}
+
+/* Aceternity UI Input Styling */
+.loginWrapperTop .MuiFormControl-root {
+  position: relative !important;
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+  width: 100% !important;
+}
+
+.loginWrapperTop .MuiOutlinedInput-root {
+  border-radius: 14px !important;
+  background: #F8FAFC !important;
+  border: 1.5px solid #E2E8F0 !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  height: 52px !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.loginWrapperTop .MuiOutlinedInput-root fieldset {
+  border: none !important;
+}
+
+.loginWrapperTop .MuiOutlinedInput-root.Mui-focused {
+  border-color: #0529C1 !important;
+  box-shadow: 0 0 0 4px rgba(5, 41, 193, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  background: #FFFFFF !important;
+}
+
+.loginWrapperTop .MuiOutlinedInput-root input {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Email input on /login: room for the envelope icon */
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) input#email {
+  padding-left: 50px !important;
+  padding-right: 52px !important;
+}
+
+/* Placeholder visibility: crisp and readable on sign-up / code */
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) input#email::placeholder {
+  color: #94A3B8 !important;
+  opacity: 0.6 !important;
+  visibility: visible !important;
+  -webkit-text-fill-color: #94A3B8 !important;
+}
+
+.loginWrapperTop form:has(input[name="firstName"]) input::placeholder,
+.loginWrapperTop form:has(input[name="codeVal"]) input::placeholder {
+  color: #94A3B8 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  -webkit-text-fill-color: #94A3B8 !important;
+  font-size: 13.5px !important;
+}
+
+/* Envelope icon inside the email field */
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) .MuiOutlinedInput-root::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 18px !important;
+  height: 18px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2.5'/%3E%3Cpolyline points='3 7 12 13 21 7'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  pointer-events: none !important;
+  z-index: 5 !important;
+}
+
+/* Aceternity UI Primary CTA Button */
+.loginWrapperTop button.MuiButton-contained,
+.loginWrapperTop button.signUpBtn,
+.loginWrapperTop button[type="submit"] {
+  background: linear-gradient(180deg, #0522B8 0%, #030F5E 100%) !important;
+  color: #FFFFFF !important;
+  border-radius: 14px !important;
+  padding: 14px 24px !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.28), 0 10px 24px -4px rgba(5, 34, 184, 0.45), 0 4px 8px -2px rgba(5, 34, 184, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  width: 100% !important;
+  height: 52px !important;
+  margin-top: 2px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  letter-spacing: -0.2px !important;
+  cursor: pointer !important;
+}
+
+.loginWrapperTop button.MuiButton-contained:active,
+.loginWrapperTop button.signUpBtn:active,
+.loginWrapperTop button[type="submit"]:active {
+  transform: translateY(0px) scale(0.99) !important;
+}
+
+.loginWrapperTop button:disabled {
+  background: #E2E8F0 !important;
+  color: #94A3B8 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* Aceternity UI VIP Perk Card */
+.vip-perk-card {
+  margin-top: 18px !important;
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  padding: 15px 18px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.vip-perk-card:hover {
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.04) !important;
+  transform: translateY(-1px) !important;
+}
+
+.vip-perk-icon {
+  color: #E05C3A !important;
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.vip-perk-text {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 12.5px !important;
+  color: #64748B !important;
+  line-height: 1.45 !important;
+  text-align: left !important;
+}
+
+.vip-perk-text strong {
+  color: #0F172A !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  display: block !important;
+  margin-bottom: 2px !important;
+  letter-spacing: -0.1px !important;
+}
+
+/* Trust footer */
+.form-footer-trust {
+  margin-top: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  font-size: 12px !important;
+  color: #94A3B8 !important;
+  font-weight: 500 !important;
+  width: 100% !important;
+  letter-spacing: 0.1px !important;
+}
+
+/* Ensure Cookie Settings modal and banner sit on top of everything */
+[class*="cookie" i],
+[id*="cookie" i],
+[class*="Cookie" i],
+.MuiDialog-root:has([class*="cookie" i]),
+.MuiModal-root:has([class*="cookie" i]),
+#onetrust-consent-sdk,
+#onetrust-banner-sdk {
+  z-index: 2147483647 !important;
+}
+
+/* Mobile responsive layout */
+@media (max-width: 960px) {
+  .row:has(> .logInBlockWrapper) {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  .col-sm-8.col-md-8.col-lg-8.logInBlockWrapper,
+  .logInBlockWrapper {
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+    min-height: 420px !important;
+  }
+
+  .col-12.col-sm-12.col-md-12.col-lg-4,
+  .row:has(> .logInBlockWrapper)>.col-lg-4,
+  .row:has(> .logInBlockWrapper)>div:not(.logInBlockWrapper) {
+    flex: 0 0 auto !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    border-radius: 24px 24px 0 0 !important;
+    padding: 32px 24px !important;
+  }
+}
+
+
+
+
+.inspira-hero-injected .hero-live-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #E2E8F0 !important;
+  white-space: nowrap !important;
+}
+
+.inspira-hero-injected .hero-live-badge.is-live {
+  background: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.32) !important;
+  color: #FCA5A5 !important;
+}
+
+.inspira-hero-injected .hero-live-badge.is-live .hero-live-dot {
+  animation: inspira-login-pulse 1.6s ease-out infinite;
+}
+
+@keyframes inspira-login-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.inspira-hero-injected .hero-badge-pill svg {
+  flex: none;
+  color: #FFA588;
+}
+
+.inspira-hero-injected .hero-countdown-strip[hidden] {
+  display: none !important;
+}
+
+.inspira-hero-injected .proof-caption {
+  font-size: 12.5px !important;
+}
+
+/* The perk card is information, not a button: no hover lift */
+.vip-perk-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* "Not registered yet? Register for the fair" */
+.form-footer-trust {
+  flex-wrap: wrap !important;
+  font-size: 13px !important;
+  color: #64748B !important;
+}
+
+.form-footer-trust a {
+  color: #0529C1 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  border-radius: 6px;
+}
+
+.form-footer-trust a:hover {
+  text-decoration: underline !important;
+}
+
+.form-footer-trust a:focus-visible,
+.loginWrapperTop button:focus-visible,
+.loginWrapperTop input:focus-visible {
+  outline: 3px solid rgba(5, 41, 193, 0.35) !important;
+  outline-offset: 2px !important;
+}
+
+/* Continue button: platform label kept, small arrow added */
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) button.MuiButton-contained:not(:disabled)::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) button.MuiButton-contained:not(:disabled):hover::after {
+  transform: translateX(3px);
+}
+
+
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) input#email,
+.loginWrapperTop form:not(:has(input[name="firstName"])):not(:has(input[name="codeVal"])) input[name="email"] {
+  padding-left: 50px !important;
+  padding-right: 16px !important;
+}
+
+
+@media (min-width: 961px) {
+
+  .row:has(> .logInBlockWrapper)>div.col-12:not(.logInBlockWrapper),
+  .row:has(> .logInBlockWrapper)>div:not(.logInBlockWrapper) {
+    overflow-y: auto !important;
+    justify-content: safe center !important;
+  }
+
+  .inspira-hero-injected {
+    overflow-y: auto !important;
+    gap: 24px;
+  }
+}
+
+
+@media (max-width: 960px) {
+
+  html:has(.logInBlockWrapper),
+  body:has(.logInBlockWrapper),
+  html:has(.loginWrapperTop),
+  body:has(.loginWrapperTop),
+  #root:has(.logInBlockWrapper),
+  #root>div:has(.logInBlockWrapper),
+  .container-fluid:has(.logInBlockWrapper),
+  body:has(.logInBlockWrapper) #__next {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+
+  html:has(.logInBlockWrapper),
+  html:has(.loginWrapperTop) {
+    overflow-y: auto !important;
+  }
+
+  .row:has(> .logInBlockWrapper) {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+  }
+
+  .col-sm-8.col-md-8.col-lg-8.logInBlockWrapper,
+  .logInBlockWrapper {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .inspira-hero-injected {
+    position: relative !important;
+    inset: auto !important;
+    gap: 18px;
+    padding: 22px 20px 30px !important;
+  }
+
+  .inspira-hero-injected .hero-brand-logo {
+    font-size: 22px !important;
+  }
+
+  .inspira-hero-injected .hero-live-badge {
+    padding: 5px 11px !important;
+    font-size: 10px !important;
+  }
+
+  .inspira-hero-injected .hero-content-center {
+    margin: 0 !important;
+  }
+
+  .inspira-hero-injected .hero-kicker {
+    font-size: 10.5px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .inspira-hero-injected .hero-heading {
+    font-size: clamp(24px, 6.4vw, 34px) !important;
+    margin-bottom: 14px !important;
+  }
+
+  .inspira-hero-injected .hero-subheading,
+  .inspira-hero-injected .hero-pills-row,
+  .inspira-hero-injected .hero-bottom-proof {
+    display: none !important;
+  }
+
+  .inspira-hero-injected .hero-countdown-strip {
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: 100% !important;
+    max-width: 460px !important;
+    box-sizing: border-box !important;
+    padding: 10px 14px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .row:has(> .logInBlockWrapper)>div.col-12:not(.logInBlockWrapper),
+  .row:has(> .logInBlockWrapper)>div:not(.logInBlockWrapper) {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin-top: -18px !important;
+    padding: 28px 20px 32px !important;
+    overflow: visible !important;
+    justify-content: flex-start !important;
+  }
+
+  .loginWrapperTop .logInModule {
+    padding-top: 0 !important;
+  }
+
+  .topBrandText h2,
+  .topBrandText h3,
+  .topBrandText .MuiTypography-root {
+    font-size: 26px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .inspira-hero-injected *,
+  .loginWrapperTop *,
+  .loginWrapperTop *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
