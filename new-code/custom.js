@@ -172,7 +172,7 @@
       if (!$(".inspira-form-badge", rightCol)) {
         const b = document.createElement("div");
         b.className = "inspira-form-badge";
-        b.textContent = "Student sign in";
+        b.textContent = "Portal Login";
         titleEl.parentNode.insertBefore(b, titleEl);
       }
       let sub = $(".inspira-form-subtext", rightCol);
