@@ -3026,6 +3026,22 @@ div[id="refFormPanel"] {
    ========================================================================== */
 
 /* 1. Modal Container Dimensions & Shell */
+/* Suppress platform ticket drawer on mobile & tablet ONLY when the registration form is active */
+body:has(.singleViewWidgetDetails) .MuiDrawer-root:has(.ticketListActionWrapper),
+body:has([class*="singleViewWidget"]) .MuiDrawer-root:has(.ticketListActionWrapper),
+body:has(.singleViewWidgetDetails) .MuiDrawer-paper:has(.ticketListActionWrapper),
+body:has([class*="singleViewWidget"]) .MuiDrawer-paper:has(.ticketListActionWrapper) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+.MuiDrawer-root:has(.singleViewWidgetDetails),
+.MuiDrawer-root:has([class*="singleViewWidget"]) {
+  z-index: 1400 !important;
+}
+
 @media (min-width: 641px) {
 
   .MuiDrawer-paper:has(.singleViewWidgetDetails),
@@ -3035,6 +3051,7 @@ div[id="refFormPanel"] {
     border-radius: 24px !important;
     overflow: hidden !important;
     background: #FFFFFF !important;
+    z-index: 1400 !important;
   }
 }
 
@@ -3045,6 +3062,7 @@ div[id="refFormPanel"] {
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 20px 20px 0 0 !important;
+    z-index: 1400 !important;
   }
 }
 

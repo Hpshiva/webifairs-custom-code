@@ -826,28 +826,28 @@ body:has(.logInBlockWrapper) #__next {
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
-  
+
   --cmx-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --cmx-font-title: "Outfit", "Plus Jakarta Sans", system-ui, sans-serif;
 
   --brand-purple: #030741;
-  
+
   --brand-purple-rgb: 3, 7, 65;
 
   --brand-blue: #0529C1;
-  
+
   --brand-blue-hover: #031E96;
   --brand-blue-light: #EEF2FF;
   --brand-blue-rgb: 5, 41, 193;
 
   --brand-orange: #E05C3A;
-  
+
   --brand-orange-hover: #C94C2B;
   --brand-orange-soft: #FFF3EE;
   --brand-orange-rgb: 224, 92, 58;
 
   --brand-green: #0D8A8A;
-  
+
   --brand-green-hover: #096D6D;
   --brand-green-light: #E5F3F3;
   --brand-green-rgb: 13, 138, 138;
@@ -860,21 +860,21 @@ body:has(.logInBlockWrapper) #__next {
   --cmx-teal-light: var(--brand-green-light);
 
   --cmx-ink: var(--brand-purple);
-  
+
   --cmx-ink-2: #1E243E;
-  
+
   --cmx-muted: #596180;
-  
+
   --cmx-subtle: #8F96B2;
-  
+
   --cmx-line: #E2E6F0;
-  
+
   --cmx-line-strong: #CBD2E2;
-  
+
   --cmx-surface: #FFFFFF;
-  
+
   --cmx-surface-2: #F8F9FD;
-  
+
   --cmx-bg: #F5F7FC;
 
   --cmx-gradient: linear-gradient(135deg, #030741 0%, #0529C1 55%, #1A44E8 100%);
@@ -3649,6 +3649,22 @@ div[id="refFormPanel"] {
   animation-delay: 0.20s;
 }
 
+/* Suppress platform ticket drawer on mobile & tablet ONLY when the registration form is active */
+body:has(.singleViewWidgetDetails) .MuiDrawer-root:has(.ticketListActionWrapper),
+body:has([class*="singleViewWidget"]) .MuiDrawer-root:has(.ticketListActionWrapper),
+body:has(.singleViewWidgetDetails) .MuiDrawer-paper:has(.ticketListActionWrapper),
+body:has([class*="singleViewWidget"]) .MuiDrawer-paper:has(.ticketListActionWrapper) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+.MuiDrawer-root:has(.singleViewWidgetDetails),
+.MuiDrawer-root:has([class*="singleViewWidget"]) {
+  z-index: 1400 !important;
+}
+
 @media (min-width: 641px) {
 
   .MuiDrawer-paper:has(.singleViewWidgetDetails),
@@ -3658,6 +3674,7 @@ div[id="refFormPanel"] {
     border-radius: 24px !important;
     overflow: hidden !important;
     background: #FFFFFF !important;
+    z-index: 1400 !important;
   }
 }
 
@@ -3668,6 +3685,7 @@ div[id="refFormPanel"] {
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 20px 20px 0 0 !important;
+    z-index: 1400 !important;
   }
 }
 
@@ -4867,27 +4885,27 @@ section:is(.cmx-uni-section, [id="Participating Universities"])>h4.MuiTypography
   --bt-primary-tint: #f6f3fb;
 
   --bt-ink: #1a1523;
-  
+
   --bt-text: #45405a;
-  
+
   --bt-muted: #6b6680;
-  
+
   --bt-line: #e8e4ef;
-  
+
   --bt-line-strong: #d5cee2;
   --bt-canvas: #f5f3f8;
-  
+
   --bt-surface: #ffffff;
-  
+
   --bt-warn: #8a5300;
-  
+
   --bt-warn-soft: #fff3df;
   --bt-ok: #1d7a52;
 
   --bt-violet: #6d4ac2;
-  
+
   --bt-orchid: #a35bd1;
-  
+
   --bt-grad-primary: linear-gradient(135deg, #5b3d93 0%, #3a255f 55%, #2b1a49 100%);
   --bt-grad-primary-hover: linear-gradient(135deg, #6a47a8 0%, #442b6f 55%, #331f55 100%);
   --bt-grad-soft: linear-gradient(135deg, #f4effb 0%, #e9e1f5 100%);
@@ -5557,6 +5575,11 @@ html.bt-scrolled .headerWrapper {
 }
 
 .roomsCardsList .cardBottom {
+  display: none !important;
+}
+/* test */
+/* .roomsCardsList .cardBottom {
+  display: none !important;
   position: relative !important;
   inset: auto !important;
   z-index: 1;
@@ -5570,7 +5593,7 @@ html.bt-scrolled .headerWrapper {
   padding: 12px 18px 14px !important;
   border-top: 1px solid var(--bt-line);
   background: var(--bt-primary-tint) !important;
-}
+} */
 
 .roomsCardsList .hostedByBlock p {
   margin-bottom: 6px !important;
@@ -5833,7 +5856,7 @@ html.bt-scrolled .headerWrapper {
   max-height: none !important;
   overflow: visible !important;
   padding: 0 0 6px !important;
-  
+
 }
 
 .bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton {
@@ -6233,27 +6256,27 @@ html body {
   --bt-primary-tint: #f6f3fb;
 
   --bt-ink: #1a1523;
-  
+
   --bt-text: #45405a;
-  
+
   --bt-muted: #6b6680;
-  
+
   --bt-line: #e8e4ef;
-  
+
   --bt-line-strong: #d5cee2;
   --bt-canvas: #f5f3f8;
-  
+
   --bt-surface: #ffffff;
-  
+
   --bt-warn: #8a5300;
-  
+
   --bt-warn-soft: #fff3df;
   --bt-ok: #1d7a52;
 
   --bt-violet: #6d4ac2;
-  
+
   --bt-orchid: #a35bd1;
-  
+
   --bt-grad-primary: linear-gradient(135deg, #5b3d93 0%, #3a255f 55%, #2b1a49 100%);
   --bt-grad-primary-hover: linear-gradient(135deg, #6a47a8 0%, #442b6f 55%, #331f55 100%);
   --bt-grad-soft: linear-gradient(135deg, #f4effb 0%, #e9e1f5 100%);
@@ -6601,7 +6624,7 @@ html.bt-scrolled .headerWrapper {
 
 .hasEmbedAppScreen .embedAppWrap>div {
   line-height: 0;
-  
+
 }
 
 .hasEmbedAppScreen .embedAppWrap iframe {
@@ -6609,7 +6632,7 @@ html.bt-scrolled .headerWrapper {
   width: 100% !important;
   border-radius: 18px !important;
   background: #140d22;
-  
+
 }
 
 .hasEmbedAppScreen .embedAppWrap:has(iframe:is([src*="youtube"], [src*="youtu.be"], [src*="vimeo"], [src*="wistia"], [src*="loom.com"], [src*="dailymotion"])) {
@@ -6714,7 +6737,7 @@ html.bt-scrolled .headerWrapper {
   max-height: none !important;
   overflow: visible !important;
   padding: 0 0 6px !important;
-  
+
 }
 
 .bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton {
@@ -7053,19 +7076,19 @@ html body {
   --bt-primary-soft-hover: #ddd4ec;
   --bt-primary-tint: #f6f3fb;
 
-  --bt-ink: #1a1523;        
-  --bt-text: #45405a;       
-  --bt-muted: #6b6680;      
-  --bt-line: #e8e4ef;       
+  --bt-ink: #1a1523;
+  --bt-text: #45405a;
+  --bt-muted: #6b6680;
+  --bt-line: #e8e4ef;
   --bt-line-strong: #d5cee2;
-  --bt-canvas: #f5f3f8;     
-  --bt-surface: #ffffff;    
-  --bt-warn: #8a5300;       
+  --bt-canvas: #f5f3f8;
+  --bt-surface: #ffffff;
+  --bt-warn: #8a5300;
   --bt-warn-soft: #fff3df;
   --bt-ok: #1d7a52;
 
-  --bt-violet: #6d4ac2;     
-  --bt-orchid: #a35bd1;     
+  --bt-violet: #6d4ac2;
+  --bt-orchid: #a35bd1;
   --bt-grad-primary: linear-gradient(135deg, #5b3d93 0%, #3a255f 55%, #2b1a49 100%);
   --bt-grad-primary-hover: linear-gradient(135deg, #6a47a8 0%, #442b6f 55%, #331f55 100%);
   --bt-grad-soft: linear-gradient(135deg, #f4effb 0%, #e9e1f5 100%);
@@ -7127,26 +7150,32 @@ html body {
   font-weight: 600 !important;
   text-transform: none !important;
   transition: background-color var(--bt-fast) var(--bt-ease),
-              box-shadow var(--bt-fast) var(--bt-ease),
-              transform var(--bt-fast) var(--bt-ease) !important;
+    box-shadow var(--bt-fast) var(--bt-ease),
+    transform var(--bt-fast) var(--bt-ease) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-root:active:not(.Mui-disabled) {
   transform: scale(.97);
 }
+
 .sponsorsProfileWrapper .MuiButton-softPrimary:not(.Mui-disabled) {
   background: var(--bt-primary-soft) !important;
   color: var(--bt-primary) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-softPrimary:not(.Mui-disabled):hover {
   background: var(--bt-primary-soft-hover) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-containedPrimary:not(.Mui-disabled) {
   background: var(--bt-primary) !important;
   color: #fff !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   background: var(--bt-primary-hover) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-root.Mui-disabled {
   background: #efedf3 !important;
   color: #8f8a9c !important;
@@ -7154,10 +7183,12 @@ html body {
   cursor: not-allowed !important;
   pointer-events: auto !important;
 }
+
 .sponsorsProfileWrapper .MuiIconButton-colorSoft {
   border-radius: 10px !important;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease) !important;
 }
+
 .sponsorsProfileWrapper .MuiIconButton-colorSoft:hover {
   background: var(--bt-primary-soft-hover) !important;
 }
@@ -7167,6 +7198,7 @@ html body {
   box-shadow: 0 1px 0 var(--bt-line) !important;
   transition: box-shadow var(--bt-med) var(--bt-ease);
 }
+
 .headerWrapper::before {
   content: "";
   position: absolute;
@@ -7176,6 +7208,7 @@ html body {
   -webkit-backdrop-filter: saturate(180%) blur(16px);
   backdrop-filter: saturate(180%) blur(16px);
 }
+
 html.bt-scrolled .headerWrapper {
   box-shadow: 0 1px 0 var(--bt-line), 0 12px 30px -16px rgba(26, 21, 35, .25) !important;
 }
@@ -7188,42 +7221,52 @@ html.bt-scrolled .headerWrapper {
   margin: 0;
   padding: 0;
 }
+
 .headerWrapper .menuItem {
   margin: 0 !important;
   height: 64px;
   align-items: center;
 }
-.headerWrapper .menuItem > button {
+
+.headerWrapper .menuItem>button {
   min-width: 84px;
   padding: 5px 12px !important;
   border-radius: 12px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
-.headerWrapper .menuItem:not(.active) > button:hover {
+
+.headerWrapper .menuItem:not(.active)>button:hover {
   background: var(--bt-primary-tint);
 }
-.headerWrapper .menuItem.active > button {
+
+.headerWrapper .menuItem.active>button {
   background: var(--bt-primary-soft);
 }
+
 .headerWrapper .menuItem .icon {
   transition: transform var(--bt-med) var(--bt-ease);
 }
+
 .headerWrapper .menuItem:hover .icon {
   transform: translateY(-2px);
 }
+
 .headerWrapper .menuItem .menuText {
   font-size: 12px !important;
   font-weight: 500 !important;
   color: var(--bt-muted) !important;
   transition: color var(--bt-fast) var(--bt-ease);
 }
+
 .headerWrapper .menuItem:hover .menuText {
   color: var(--bt-ink) !important;
 }
+
 .headerWrapper .menuItem.active .menuText {
   color: var(--bt-primary) !important;
   font-weight: 700 !important;
 }
+
 .headerWrapper .menuItem.active::before {
   left: 18px !important;
   width: calc(100% - 36px) !important;
@@ -7236,29 +7279,36 @@ html.bt-scrolled .headerWrapper {
   align-items: center;
   gap: 4px;
 }
+
 .headerWrapper .rightActionWrapper .mr20 {
   margin-right: 0 !important;
 }
+
 .headerWrapper .rightActionWrapper .MuiIconButton-root {
   width: 38px;
   height: 38px;
   border-radius: 12px !important;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .headerWrapper .rightActionWrapper .MuiIconButton-root:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .headerWrapper .rightActionWrapper .MuiBadge-badge {
   box-shadow: 0 0 0 2px #fff;
 }
+
 .headerWrapper .avtarWrapper {
   margin-left: 10px;
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root {
   border-radius: 12px !important;
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary-soft);
   transition: box-shadow var(--bt-fast) var(--bt-ease);
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root:hover {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary);
 }
@@ -7268,6 +7318,7 @@ html.bt-scrolled .headerWrapper {
   border-left: 1px solid var(--bt-line) !important;
   padding-top: 8px !important;
 }
+
 .miniSidedrawerInn .svgBox {
   width: 46px !important;
   height: 46px !important;
@@ -7280,12 +7331,15 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
 }
+
 .miniSidedrawerInn .svgBox:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .miniSidedrawerInn .svgBox:active {
   transform: scale(.92);
 }
+
 .miniSidedrawerInn .saperator {
   display: block !important;
   width: 28px !important;
@@ -7297,10 +7351,12 @@ html.bt-scrolled .headerWrapper {
 .sidedrawerWrapper.open:not(.profile) {
   box-shadow: -1px 0 0 var(--bt-line), -32px 0 64px -32px rgba(26, 21, 35, .35) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper {
   border-bottom: 1px solid var(--bt-line);
   background: var(--bt-surface);
 }
+
 .sidedrawerWrapper .backBtn {
   background: var(--bt-surface) !important;
   border: 0 !important;
@@ -7308,28 +7364,35 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .sidedrawerWrapper .backBtn:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper .tabHeader ul {
   background: var(--bt-canvas) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.tabs {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.tabs:not(.activeTab):hover {
   background: rgba(255, 255, 255, .7) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.tabs.activeTab {
   background: var(--bt-surface) !important;
   box-shadow: inset 0 -3px 0 var(--bt-primary);
 }
+
 .sidedrawerWrapper .drawerTabWrapper .tabText {
   font-size: 15px !important;
   font-weight: 600 !important;
   color: var(--bt-muted) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.activeTab .tabText {
   color: var(--bt-ink) !important;
 }
@@ -7337,16 +7400,20 @@ html.bt-scrolled .headerWrapper {
 .boothSideTabBlock {
   border-bottom: 1px solid var(--bt-line);
 }
+
 .boothSideTabBlock li.tabs {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .boothSideTabBlock li.tabs:not(.activeTab):hover {
   background: var(--bt-primary-tint);
 }
+
 .boothSideTabBlock li.tabs .tabText {
   font-weight: 600 !important;
 }
+
 .boothSideTabBlock li.tabs.activeTab::after {
   border-radius: 3px 3px 0 0 !important;
 }
@@ -7355,30 +7422,37 @@ html.bt-scrolled .headerWrapper {
   border-top: 1px solid var(--bt-line);
   background: var(--bt-surface);
 }
-.dataSubmitBlockWrapper > .MuiBox-root:not(.submitBtn) {
+
+.dataSubmitBlockWrapper>.MuiBox-root:not(.submitBtn) {
   border-radius: 14px !important;
   transition: border-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
 }
-.dataSubmitBlockWrapper > .MuiBox-root:not(.submitBtn):focus-within {
+
+.dataSubmitBlockWrapper>.MuiBox-root:not(.submitBtn):focus-within {
   border-color: var(--bt-primary) !important;
   box-shadow: var(--bt-ring);
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root {
   width: 42px;
   height: 42px;
   border-radius: 12px !important;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:hover {
   background: var(--bt-primary-hover) !important;
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:active {
   transform: scale(.92);
 }
+
 .sidedrawerWrapper .emptyStateWrapper p {
   font-size: 13px !important;
   color: var(--bt-muted) !important;
 }
+
 .sideDrawerScroll {
   scrollbar-width: thin;
   scrollbar-color: var(--bt-line-strong) transparent;
@@ -7388,6 +7462,7 @@ html.bt-scrolled .headerWrapper {
   box-sizing: border-box;
   padding-right: 66px;
 }
+
 .layoutWrapper:has(.miniSidedrawerInn) .sponsorsProfileWrapper .fullWidthBanner img {
   width: 100% !important;
   max-width: 100% !important;
@@ -7398,12 +7473,14 @@ html.bt-scrolled .headerWrapper {
   overflow: hidden;
   background: linear-gradient(135deg, #24163d, var(--bt-primary) 60%, #5b3f8c);
 }
+
 .sponsorsProfileWrapper .fullWidthBanner img {
   height: clamp(190px, 21vw, 300px) !important;
   object-fit: cover;
   object-position: center;
   animation: bt-banner-in 1.4s var(--bt-ease-out) both;
 }
+
 .sponsorsProfileWrapper .fullWidthBanner::after {
   content: "";
   position: absolute;
@@ -7426,6 +7503,7 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-md) !important;
   animation: bt-rise var(--bt-slow) var(--bt-ease-out) .05s both;
 }
+
 .sponsorsProfileWrapper .sponsorProfileDetail {
   display: flex !important;
   align-items: flex-start;
@@ -7447,6 +7525,7 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   box-shadow: 0 0 0 1px var(--bt-line), 0 18px 36px -16px rgba(26, 21, 35, .4) !important;
 }
+
 .sponsorsProfileWrapper .logoWrapper img {
   width: 100% !important;
   height: 100% !important;
@@ -7463,23 +7542,27 @@ html.bt-scrolled .headerWrapper {
   margin: 0 0 6px !important;
   color: var(--bt-muted) !important;
 }
-.sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li > *,
+
+.sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li>*,
 .sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li p {
   font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--bt-muted) !important;
 }
+
 .sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li :is(a, button):hover {
   color: var(--bt-primary) !important;
   background: transparent !important;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li:last-child > *,
+
+.sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li:last-child>*,
 .sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-li:last-child p {
   color: var(--bt-ink) !important;
   font-weight: 600 !important;
 }
+
 .sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-separator {
   margin: 0 6px;
   color: var(--bt-line-strong);
@@ -7494,7 +7577,7 @@ html.bt-scrolled .headerWrapper {
   color: var(--bt-ink) !important;
 }
 
-.sponsorsProfileWrapper .sponsorsDetails > h6 {
+.sponsorsProfileWrapper .sponsorsDetails>h6 {
   display: inline-flex !important;
   align-items: center;
   gap: 6px;
@@ -7503,16 +7586,18 @@ html.bt-scrolled .headerWrapper {
   font-weight: 500 !important;
   color: var(--bt-muted) !important;
 }
-.sponsorsProfileWrapper .sponsorsDetails > h6::before {
+
+.sponsorsProfileWrapper .sponsorsDetails>h6::before {
   content: "";
   flex: none;
   width: 16px;
   height: 16px;
   background: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") center / contain no-repeat;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.sponsorsProfileWrapper .sponsorsDetails > h6:empty {
+
+.sponsorsProfileWrapper .sponsorsDetails>h6:empty {
   display: none !important;
 }
 
@@ -7520,6 +7605,7 @@ html.bt-scrolled .headerWrapper {
   gap: 8px;
   margin: 0 !important;
 }
+
 .sponsorsProfileWrapper .tagsWrapper .MuiChip-root {
   height: 30px !important;
   margin: 0 !important;
@@ -7529,6 +7615,7 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-primary-tint) !important;
   color: var(--bt-primary) !important;
 }
+
 .sponsorsProfileWrapper .tagsWrapper .MuiChip-label {
   padding: 0 10px !important;
   font-size: 11.5px !important;
@@ -7539,18 +7626,22 @@ html.bt-scrolled .headerWrapper {
 .sponsorsProfileWrapper .sponsorProfileAction {
   flex: 0 0 auto;
 }
+
 .sponsorsProfileWrapper .bannerAction {
   gap: 10px;
 }
+
 .sponsorsProfileWrapper .bannerAction .MuiButton-root {
   height: 44px;
   margin: 0 !important;
   padding: 0 20px !important;
   font-size: 14px !important;
 }
+
 .sponsorsProfileWrapper .bannerAction .MuiButton-containedPrimary:not(.Mui-disabled) {
   box-shadow: 0 10px 20px -10px rgba(58, 37, 95, .75) !important;
 }
+
 .sponsorsProfileWrapper .bannerAction .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 26px -12px rgba(58, 37, 95, .8) !important;
@@ -7562,6 +7653,7 @@ html.bt-scrolled .headerWrapper {
   z-index: 3;
   pointer-events: none;
 }
+
 .sponsorsProfileWrapper .exibitorNavigation .arrowNav {
   pointer-events: auto;
   top: 50% !important;
@@ -7573,24 +7665,29 @@ html.bt-scrolled .headerWrapper {
   box-shadow: 0 0 0 1px var(--bt-line), var(--bt-shadow-md) !important;
   transition: transform var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease) !important;
 }
+
 .sponsorsProfileWrapper .exibitorNavigation .arrowNav.prev {
   left: -22px !important;
   right: auto !important;
 }
+
 .sponsorsProfileWrapper .exibitorNavigation .arrowNav.next {
   left: auto !important;
   right: -22px !important;
 }
-.sponsorsProfileWrapper .exibitorNavigation .arrowNav > .MuiIconButton-root {
+
+.sponsorsProfileWrapper .exibitorNavigation .arrowNav>.MuiIconButton-root {
   width: 100% !important;
   height: 100% !important;
   border-radius: 50% !important;
   background: transparent !important;
 }
+
 .sponsorsProfileWrapper .exibitorNavigation .arrowNav:hover {
   background: var(--bt-primary-soft) !important;
   transform: scale(1.06);
 }
+
 .sponsorsProfileWrapper .exibitorNavigation .arrowNav:active {
   transform: scale(.94);
 }
@@ -7601,7 +7698,8 @@ html.bt-scrolled .headerWrapper {
   border: 0 !important;
   row-gap: 20px;
 }
-.sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"] {
+
+.sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"] {
   flex: 1 1 0 !important;
   max-width: none !important;
   margin: 0 10px;
@@ -7612,8 +7710,8 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-xs);
 }
 
-.sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"] > p:first-child,
-.sponsorsProfileWrapper .getInTouch > p:first-child {
+.sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"]>p:first-child,
+.sponsorsProfileWrapper .getInTouch>p:first-child {
   margin: 0 0 14px !important;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -7621,22 +7719,27 @@ html.bt-scrolled .headerWrapper {
   text-transform: uppercase;
   color: var(--bt-muted) !important;
 }
+
 .sponsorsProfileWrapper .socialMediaBar {
   flex-wrap: wrap;
   gap: 8px;
 }
-.sponsorsProfileWrapper .socialMediaBar > * {
+
+.sponsorsProfileWrapper .socialMediaBar>* {
   margin: 0 !important;
 }
+
 .sponsorsProfileWrapper .socialMediaBar .MuiButton-root {
   height: 40px;
   padding: 0 16px !important;
   font-size: 13px !important;
 }
+
 .sponsorsProfileWrapper .socialMediaBar .MuiIconButton-root {
   width: 40px;
   height: 40px;
 }
+
 .sponsorsProfileWrapper .socialMediaBar .MuiIconButton-root:hover {
   transform: translateY(-2px);
 }
@@ -7650,10 +7753,12 @@ html.bt-scrolled .headerWrapper {
   border-radius: 12px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .sponsorsProfileWrapper .getInTouch .phone:hover {
   background: var(--bt-primary-tint);
 }
-.sponsorsProfileWrapper .getInTouch .phone > svg:first-child {
+
+.sponsorsProfileWrapper .getInTouch .phone>svg:first-child {
   flex: none;
   box-sizing: content-box;
   width: 18px;
@@ -7664,34 +7769,40 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-primary-soft);
   color: var(--bt-primary);
 }
+
 .sponsorsProfileWrapper .getInTouch .phone :is(p, span, a) {
   min-width: 0;
   overflow-wrap: anywhere;
   font-size: 14px !important;
 }
+
 .sponsorsProfileWrapper .getInTouch .phoneText {
   font-weight: 600 !important;
   color: var(--bt-ink) !important;
 }
+
 .sponsorsProfileWrapper .getInTouch a {
   font-weight: 600 !important;
   color: var(--bt-primary) !important;
   text-decoration: none !important;
 }
+
 .sponsorsProfileWrapper .getInTouch a:hover {
   text-decoration: underline !important;
   text-underline-offset: 3px;
 }
 
-.sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"]:only-child .getInTouch {
+.sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"]:only-child .getInTouch {
   display: flex;
   flex-wrap: wrap;
   column-gap: 28px;
 }
-.sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"]:only-child .getInTouch > p:first-child {
+
+.sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"]:only-child .getInTouch>p:first-child {
   flex: 0 0 100%;
 }
-.sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"]:only-child .getInTouch .phone {
+
+.sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"]:only-child .getInTouch .phone {
   flex: 0 1 auto;
   min-width: 0;
 }
@@ -7705,6 +7816,7 @@ html.bt-scrolled .headerWrapper {
   padding: 0 !important;
   border: 0 !important;
 }
+
 .sponsorsProfileWrapper .aboutSponsors {
   flex: 1 1 420px;
   min-width: 0;
@@ -7715,6 +7827,7 @@ html.bt-scrolled .headerWrapper {
   border-radius: var(--bt-r-lg);
   box-shadow: var(--bt-shadow-xs);
 }
+
 .sponsorsProfileWrapper .aboutHeading {
   margin: 0 0 10px !important;
   font-size: 19px !important;
@@ -7722,9 +7835,10 @@ html.bt-scrolled .headerWrapper {
   letter-spacing: -.01em;
   color: var(--bt-ink) !important;
 }
+
 .sponsorsProfileWrapper .aboutText {
   max-width: 75ch;
-  text-align: left !important;   
+  text-align: left !important;
   font-size: 14.5px !important;
   line-height: 1.75 !important;
   color: var(--bt-text) !important;
@@ -7757,22 +7871,26 @@ html.bt-scrolled .headerWrapper {
   border: 1px solid rgba(255, 255, 255, .16);
   pointer-events: none;
 }
+
 .sponsorsProfileWrapper .ctaBlock::before {
   width: 180px;
   height: 180px;
   right: -60px;
   bottom: -70px;
 }
+
 .sponsorsProfileWrapper .ctaBlock::after {
   width: 110px;
   height: 110px;
   right: -25px;
   bottom: -35px;
 }
-.sponsorsProfileWrapper .ctaBlock > * {
+
+.sponsorsProfileWrapper .ctaBlock>* {
   position: relative;
   z-index: 1;
 }
+
 .sponsorsProfileWrapper .ctaBlock h5 {
   margin: 0 !important;
   font-family: var(--bt-font) !important;
@@ -7782,12 +7900,15 @@ html.bt-scrolled .headerWrapper {
   letter-spacing: -.01em;
   color: #fff !important;
 }
+
 .sponsorsProfileWrapper .ctaBlock p:empty {
   display: none;
 }
+
 .sponsorsProfileWrapper .ctaBlock p {
   color: rgba(255, 255, 255, .8) !important;
 }
+
 .sponsorsProfileWrapper .ctaBlock .MuiButton-root:not(.Mui-disabled) {
   align-self: flex-start;
   height: 44px;
@@ -7797,6 +7918,7 @@ html.bt-scrolled .headerWrapper {
   color: var(--bt-primary) !important;
   box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .5) !important;
 }
+
 .sponsorsProfileWrapper .ctaBlock .MuiButton-root:not(.Mui-disabled):hover {
   background: var(--bt-primary-soft) !important;
   transform: translateY(-1px);
@@ -7809,13 +7931,16 @@ html.bt-scrolled .headerWrapper {
   padding: 0 !important;
   border: 0 !important;
 }
+
 .sponsorsProfileWrapper .peoplesSlider {
   margin-top: 0 !important;
 }
+
 .sponsorsProfileWrapper .filesWrapper {
   margin: 44px 0 48px !important;
 }
-.sponsorsProfileWrapper :is(.roomSlider, .peoplesSlider, .filesWrapper) > h4 {
+
+.sponsorsProfileWrapper :is(.roomSlider, .peoplesSlider, .filesWrapper)>h4 {
   display: flex !important;
   align-items: center;
   gap: 10px;
@@ -7825,10 +7950,12 @@ html.bt-scrolled .headerWrapper {
   letter-spacing: -.01em;
   color: var(--bt-ink) !important;
 }
-.sponsorsProfileWrapper .filesWrapper > h4 {
-  margin-bottom: 16px !important;   
+
+.sponsorsProfileWrapper .filesWrapper>h4 {
+  margin-bottom: 16px !important;
 }
-.sponsorsProfileWrapper :is(.roomSlider, .peoplesSlider, .filesWrapper) > h4::before {
+
+.sponsorsProfileWrapper :is(.roomSlider, .peoplesSlider, .filesWrapper)>h4::before {
   content: "";
   flex: none;
   width: 4px;
@@ -7836,10 +7963,12 @@ html.bt-scrolled .headerWrapper {
   border-radius: 4px;
   background: var(--bt-primary);
 }
+
 .sponsorsProfileWrapper .viewAllBtn {
   font-weight: 600 !important;
   color: var(--bt-primary) !important;
 }
+
 .sponsorsProfileWrapper .viewAllBtn:hover {
   background: var(--bt-primary-tint) !important;
 }
@@ -7856,11 +7985,13 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-xs);
   transition: transform var(--bt-med) var(--bt-ease), box-shadow var(--bt-med) var(--bt-ease), border-color var(--bt-med) var(--bt-ease);
 }
+
 .sponsorsProfileWrapper .roomCard:hover {
   transform: translateY(-4px);
   border-color: var(--bt-line-strong) !important;
   box-shadow: var(--bt-shadow-md);
 }
+
 .sponsorsProfileWrapper .roomCard .roomCardMedia {
   top: 16px !important;
   right: 16px !important;
@@ -7872,26 +8003,31 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   box-shadow: 0 0 0 1px var(--bt-line), var(--bt-shadow-sm);
 }
+
 .sponsorsProfileWrapper .roomCard .roomCardMedia img {
   width: 100% !important;
   height: 100% !important;
   border-radius: 10px;
   object-fit: contain;
 }
+
 .sponsorsProfileWrapper .roomCard .orgName h6 {
   font-size: 15px !important;
   line-height: 1.4 !important;
   font-weight: 700 !important;
   color: var(--bt-ink) !important;
 }
+
 .sponsorsProfileWrapper .roomCard .roomDesc label {
   color: var(--bt-muted) !important;
 }
+
 .sponsorsProfileWrapper .roomCard .cardBottom {
   padding: 12px 18px 16px !important;
   border-top: 1px solid var(--bt-line);
   background: var(--bt-primary-tint) !important;
 }
+
 .sponsorsProfileWrapper .roomCard .hostedByBlock p {
   font-size: 11.5px !important;
   font-weight: 600 !important;
@@ -7904,18 +8040,22 @@ html.bt-scrolled .headerWrapper {
   display: flex;
   align-items: center;
 }
-.sponsorsProfileWrapper .roomCard .avatarList > .mr5 {
+
+.sponsorsProfileWrapper .roomCard .avatarList>.mr5 {
   margin-right: -6px !important;
   transition: margin var(--bt-med) var(--bt-ease);
 }
-.sponsorsProfileWrapper .roomCard:hover .avatarList > .mr5 {
+
+.sponsorsProfileWrapper .roomCard:hover .avatarList>.mr5 {
   margin-right: 2px !important;
 }
+
 .sponsorsProfileWrapper .roomCard .avatarList .MuiAvatar-root {
   border-radius: 10px !important;
   background: var(--bt-surface);
   box-shadow: 0 0 0 2px var(--bt-surface);
 }
+
 .sponsorsProfileWrapper .roomCard .avatarList .moreCount {
   min-width: 30px;
   height: 30px;
@@ -7947,40 +8087,49 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-xs);
   transition: transform var(--bt-med) var(--bt-ease), box-shadow var(--bt-med) var(--bt-ease), border-color var(--bt-med) var(--bt-ease);
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper:hover {
   transform: translateY(-4px);
   border-color: var(--bt-line-strong) !important;
   box-shadow: var(--bt-shadow-md);
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper .delegateCardMedia {
   overflow: hidden;
   border-radius: 14px;
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper .delegateCardMedia img {
   border-radius: 14px !important;
   transition: transform .6s var(--bt-ease) !important;
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper:hover .delegateCardMedia img {
   transform: scale(1.04);
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper .orgName h6 {
   margin-top: 4px !important;
   font-size: 15px !important;
   font-weight: 700 !important;
   color: var(--bt-ink) !important;
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper :is(.designation, .organization) {
   font-size: 12.5px !important;
   color: var(--bt-muted) !important;
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper .cardActions .MuiIconButton-root {
   background: rgba(255, 255, 255, .94) !important;
   box-shadow: var(--bt-shadow-sm);
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper .hoverButtonWrapper {
   padding: 10px;
   border-top: 1px solid var(--bt-line);
 }
+
 .sponsorsProfileWrapper .peoplesCardWrapper .hoverButtonWrapper .MuiButton-root {
   width: 100%;
   height: 38px;
@@ -7996,16 +8145,19 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: transform var(--bt-med) var(--bt-ease), box-shadow var(--bt-med) var(--bt-ease), border-color var(--bt-med) var(--bt-ease);
 }
+
 .sponsorsProfileWrapper .fileBox:hover {
   transform: translateY(-2px);
   border-color: var(--bt-line-strong) !important;
   box-shadow: var(--bt-shadow-md);
 }
+
 .sponsorsProfileWrapper .fileBox .iconText {
   min-width: 0;
   align-items: center;
 }
-.sponsorsProfileWrapper .fileBox .iconText > svg {
+
+.sponsorsProfileWrapper .fileBox .iconText>svg {
   flex: none;
   box-sizing: border-box;
   width: 42px;
@@ -8015,14 +8167,17 @@ html.bt-scrolled .headerWrapper {
   border-radius: 12px;
   background: var(--bt-primary-tint);
 }
+
 .sponsorsProfileWrapper .fileBox .textWrapper {
   min-width: 0;
 }
+
 .sponsorsProfileWrapper .fineName {
   font-size: 14px !important;
   font-weight: 600 !important;
   color: var(--bt-ink) !important;
 }
+
 .sponsorsProfileWrapper .iconName {
   font-size: 11px !important;
   font-weight: 700 !important;
@@ -8030,6 +8185,7 @@ html.bt-scrolled .headerWrapper {
   text-transform: uppercase;
   color: var(--bt-muted) !important;
 }
+
 .sponsorsProfileWrapper .fileBox .moreButton {
   flex: none;
   width: 34px;
@@ -8037,11 +8193,13 @@ html.bt-scrolled .headerWrapper {
   border-radius: 10px !important;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .sponsorsProfileWrapper .fileBox .moreButton:hover {
   background: var(--bt-primary-soft) !important;
 }
+
 @media (max-width: 900px) {
-  .sponsorsProfileWrapper .fileComponentWrapper > .fileComponent {
+  .sponsorsProfileWrapper .fileComponentWrapper>.fileComponent {
     flex: 0 0 50% !important;
     max-width: 50% !important;
   }
@@ -8053,16 +8211,19 @@ html.bt-scrolled .headerWrapper {
   border-radius: 14px !important;
   box-shadow: 0 20px 44px -16px rgba(26, 21, 35, .32) !important;
 }
+
 .MuiMenu-paper .MuiMenuItem-root {
   margin: 2px 0;
   padding: 9px 14px 9px 10px !important;
   border-radius: 10px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .MuiMenu-paper .MuiMenuItem-root:hover,
 .MuiMenu-paper .MuiMenuItem-root.Mui-focusVisible {
   background: var(--bt-primary-tint) !important;
 }
+
 .MuiMenu-paper .MuiMenuItem-root p {
   font-weight: 500 !important;
   color: var(--bt-ink) !important;
@@ -8072,10 +8233,12 @@ html.bt-scrolled .headerWrapper {
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
+
 .ReactModal__Overlay.sideBarUserPanel {
   background: rgba(26, 21, 35, .5) !important;
   animation: bt-fade-in .2s ease both;
 }
+
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile {
   position: fixed !important;
   inset: 0 !important;
@@ -8090,12 +8253,15 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
 }
+
 .ReactModal__Overlay--before-close.sideBarUserPanel {
   animation: bt-fade-out .2s ease both;
 }
+
 .ReactModal__Overlay--before-close.sideBarUserPanel .sidedrawerWrapper.profile {
   animation: bt-pop-out .2s ease both;
 }
+
 .DelegateSidebar {
   position: relative;
 }
@@ -8107,6 +8273,7 @@ html.bt-scrolled .headerWrapper {
   left: auto !important;
   z-index: 5;
 }
+
 .sidedrawerWrapper.profile .closeBox .MuiIconButton-root,
 .bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton .MuiIconButton-root {
   width: 36px;
@@ -8116,6 +8283,7 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-sm);
   transition: transform var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
 }
+
 .sidedrawerWrapper.profile .closeBox .MuiIconButton-root:hover {
   background: #fff !important;
   transform: rotate(90deg);
@@ -8126,6 +8294,7 @@ html.bt-scrolled .headerWrapper {
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
+
 .bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar) {
   inset: 0 !important;
   width: calc(100vw - 24px) !important;
@@ -8139,19 +8308,22 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
 }
-.bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar) > div {
+
+.bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar)>div {
   height: auto !important;
   max-height: calc(100vh - 48px);
   max-height: calc(100dvh - 48px);
   overflow: auto;
   overscroll-behavior: contain;
 }
+
 .bottom-sheet__container .mobDelegateSidebar {
   height: auto !important;
   max-height: none !important;
   overflow: visible !important;
-  padding: 0 0 6px !important;   
+  padding: 0 0 6px !important;
 }
+
 .bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton {
   position: absolute !important;
   top: 12px !important;
@@ -8168,10 +8340,12 @@ html.bt-scrolled .headerWrapper {
 .DelegateSidebar .profileBanner img {
   object-fit: cover;
 }
+
 .DelegateSidebar .profileimg .MuiAvatar-root {
   border-radius: 24px !important;
   box-shadow: 0 0 0 4px #fff, 0 16px 30px -14px rgba(26, 21, 35, .45);
 }
+
 .DelegateSidebar .profileDetails h5 {
   font-family: var(--bt-font) !important;
   font-size: 21px !important;
@@ -8179,36 +8353,43 @@ html.bt-scrolled .headerWrapper {
   letter-spacing: -.01em;
   color: var(--bt-ink) !important;
 }
+
 .DelegateSidebar .profileContent {
   font-size: 13px !important;
   color: var(--bt-muted) !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap {
   gap: 8px;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-root {
   height: 40px;
   border-radius: 12px !important;
   font-weight: 600 !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary:hover {
   background: var(--bt-primary-soft-hover) !important;
 }
+
 .DelegateSidebar .exdarkBox {
   border: 1px solid var(--bt-line);
   border-radius: 16px !important;
   background: var(--bt-primary-tint) !important;
   transition: border-color var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
 }
+
 .DelegateSidebar .exdarkBox:hover {
   border-color: var(--bt-line-strong);
   background: var(--bt-primary-soft) !important;
 }
+
 .DelegateSidebar .exLogo {
   border-radius: 12px !important;
 }
 
-.isMobileContainer .sponsorsProfileWrapper > .MuiBox-root:has(> .MuiBreadcrumbs-root) {
+.isMobileContainer .sponsorsProfileWrapper>.MuiBox-root:has(> .MuiBreadcrumbs-root) {
   position: sticky;
   top: 0;
   z-index: 30;
@@ -8218,7 +8399,8 @@ html.bt-scrolled .headerWrapper {
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   backdrop-filter: saturate(180%) blur(14px);
 }
-.isMobileContainer .sponsorsProfileWrapper > .MuiBox-root:has(> .MuiBreadcrumbs-root) > .MuiIconButton-root {
+
+.isMobileContainer .sponsorsProfileWrapper>.MuiBox-root:has(> .MuiBreadcrumbs-root)>.MuiIconButton-root {
   width: 36px;
   height: 36px;
   border-radius: 12px !important;
@@ -8227,6 +8409,7 @@ html.bt-scrolled .headerWrapper {
 .isMobileContainer .sponsorsProfileWrapper .fullWidthBanner img {
   height: 150px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .sponsorProfileHeader {
   display: block !important;
   margin: -46px 0 0 !important;
@@ -8234,9 +8417,11 @@ html.bt-scrolled .headerWrapper {
   text-align: center;
   border-radius: 22px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .sponsorProfileDetail {
   display: block !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .logoWrapper {
   width: 108px !important;
   height: 108px !important;
@@ -8244,18 +8429,23 @@ html.bt-scrolled .headerWrapper {
   padding: 10px !important;
   border-radius: 20px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .sponsorsDetails .MuiBreadcrumbs-root {
   display: none !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .sponTitle {
   justify-content: center;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .sponTitle h5 {
   font-size: 22px !important;
 }
-.isMobileContainer .sponsorsProfileWrapper .sponsorsDetails > h6 {
+
+.isMobileContainer .sponsorsProfileWrapper .sponsorsDetails>h6 {
   margin: 6px 0 16px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .tagsWrapper {
   justify-content: center;
 }
@@ -8265,16 +8455,19 @@ html.bt-scrolled .headerWrapper {
   min-height: 30px;
   max-width: 100%;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .tagsWrapper .MuiChip-label {
   padding: 6px 12px !important;
   white-space: normal !important;
   line-height: 1.35;
   text-align: center;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .bannerAction {
   justify-content: center;
   margin-top: 18px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .bannerAction .MuiButton-root {
   flex: 1 1 0;
   max-width: 200px;
@@ -8286,35 +8479,44 @@ html.bt-scrolled .headerWrapper {
   gap: 12px;
   margin: 14px 0 0 !important;
 }
-.isMobileContainer .sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"] {
-  flex: 0 0 auto !important;   
+
+.isMobileContainer .sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"] {
+  flex: 0 0 auto !important;
   margin: 0 !important;
   padding: 18px 18px !important;
   text-align: left;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .socialMediaBar {
   justify-content: flex-start !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .getInTouch .phone {
   justify-content: flex-start !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .sponsorsInfoWrapper {
   gap: 12px;
   margin-top: 12px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .aboutSponsors {
   padding: 20px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .ctaBlock {
   max-width: none;
 }
+
 .isMobileContainer .sponsorsProfileWrapper :is(.roomSlider, .twoColumnWrapper) {
   margin-top: 32px !important;
 }
+
 .isMobileContainer .sponsorsProfileWrapper .filesWrapper {
   margin: 32px 0 24px !important;
 }
-.isMobileContainer .sponsorsProfileWrapper .fileComponentWrapper > .fileComponent {
+
+.isMobileContainer .sponsorsProfileWrapper .fileComponentWrapper>.fileComponent {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -8324,6 +8526,7 @@ html.bt-scrolled .headerWrapper {
   border-radius: 20px 20px 0 0 !important;
   box-shadow: 0 -12px 32px -14px rgba(26, 21, 35, .28) !important;
 }
+
 .bottom-drawer::before {
   content: "";
   position: absolute;
@@ -8337,9 +8540,11 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-line-strong);
   pointer-events: none;
 }
+
 .bottom-drawer .bottom-drawer-toggle {
   border-top-left-radius: 20px;
 }
+
 .bottom-drawer .boothSideTabBlock {
   border-top-right-radius: 20px;
 }
@@ -8355,6 +8560,7 @@ html.bt-scrolled .headerWrapper {
   overflow: hidden;
   transition: max-height .35s var(--bt-ease);
 }
+
 .sponsorsProfileWrapper .tagsWrapper.bt-collapsed {
   max-height: var(--bt-tags-max, 106px);
 }
@@ -8376,10 +8582,12 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .bt-tags-toggle:hover,
 .bt-more:hover {
   background: var(--bt-primary-tint);
 }
+
 .bt-tags-toggle::after,
 .bt-more::after {
   content: "";
@@ -8387,13 +8595,15 @@ html.bt-scrolled .headerWrapper {
   height: 10px;
   background: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
   transition: transform var(--bt-med) var(--bt-ease);
 }
+
 .bt-tags-toggle[aria-expanded="true"]::after,
 .bt-more[aria-expanded="true"]::after {
   transform: rotate(180deg);
 }
+
 .isMobileContainer .bt-tags-toggle {
   margin-left: 0;
 }
@@ -8422,31 +8632,38 @@ html.bt-scrolled .headerWrapper {
   opacity: 0;
   transition: opacity var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease), color var(--bt-fast) var(--bt-ease);
 }
+
 .getInTouch .phone:hover .bt-copy,
 .bt-copy:focus-visible,
 .bt-copy.bt-copied {
   opacity: 1;
 }
+
 @media (hover: none) {
   .bt-copy {
     opacity: 1;
   }
 }
+
 .bt-copy:hover {
   background: var(--bt-primary-soft);
   color: var(--bt-primary);
 }
+
 .bt-copy svg {
   width: 16px;
   height: 16px;
 }
+
 .bt-copy .bt-i-check,
 .bt-copy.bt-copied .bt-i-copy {
   display: none;
 }
+
 .bt-copy.bt-copied .bt-i-check {
   display: block;
 }
+
 .bt-copy.bt-copied {
   color: var(--bt-ok);
 }
@@ -8467,6 +8684,7 @@ html.bt-scrolled .headerWrapper {
   transform: translateY(4px);
   transition: opacity var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
 }
+
 .bt-copy:hover::after,
 .bt-copy:focus-visible::after,
 .bt-copy.bt-copied::after {
@@ -8481,6 +8699,7 @@ html.bt-scrolled .headerWrapper {
 .bt-reveal {
   transition: opacity .7s var(--bt-ease-out), transform .7s var(--bt-ease-out);
 }
+
 .bt-reveal:not(.bt-in) {
   opacity: 0;
   transform: translateY(20px);
@@ -8515,20 +8734,25 @@ html body {
   background: linear-gradient(90deg, rgba(109, 74, 194, 0), rgba(109, 74, 194, .4) 50%, rgba(109, 74, 194, 0));
   pointer-events: none;
 }
-.headerWrapper .menuItem.active > button {
+
+.headerWrapper .menuItem.active>button {
   background: var(--bt-grad-soft);
 }
+
 .headerWrapper .menuItem.active::before {
   background: var(--bt-grad-accent-x) !important;
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root {
   border: 2px solid transparent;
   background: linear-gradient(#fff, #fff) padding-box, var(--bt-grad-accent) border-box;
   box-shadow: 0 4px 12px -4px rgba(58, 37, 95, .35);
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root:hover {
   box-shadow: 0 6px 16px -4px rgba(109, 74, 194, .55);
 }
+
 .miniSidedrawerInn .svgBox:hover {
   background: var(--bt-grad-soft) !important;
 }
@@ -8537,14 +8761,17 @@ html body {
   background: var(--bt-grad-accent-x) bottom / 100% 3px no-repeat, var(--bt-surface) !important;
   box-shadow: none;
 }
+
 .boothSideTabBlock li.tabs.activeTab::after {
   background: var(--bt-grad-accent-x) !important;
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root,
 .sidedrawerWrapper .MuiButton-containedPrimary:not(.Mui-disabled) {
   background: var(--bt-grad-primary) !important;
   box-shadow: 0 8px 18px -10px rgba(58, 37, 95, .8);
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:hover,
 .sidedrawerWrapper .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   background: var(--bt-grad-primary-hover) !important;
@@ -8553,14 +8780,17 @@ html body {
 .sponsorsProfileWrapper .MuiButton-containedPrimary:not(.Mui-disabled) {
   background: var(--bt-grad-primary) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   background: var(--bt-grad-primary-hover) !important;
   box-shadow: 0 12px 26px -12px rgba(109, 74, 194, .8) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-softPrimary:not(.Mui-disabled),
 .sponsorsProfileWrapper .MuiIconButton-colorSoft {
   background: var(--bt-grad-soft) !important;
 }
+
 .sponsorsProfileWrapper .MuiButton-softPrimary:not(.Mui-disabled):hover,
 .sponsorsProfileWrapper .MuiIconButton-colorSoft:hover {
   background: var(--bt-grad-soft-hover) !important;
@@ -8570,6 +8800,7 @@ html body {
 .sponsorsProfileWrapper .ctaBlock .MuiButton-root:not(.Mui-disabled) {
   overflow: hidden;
 }
+
 .sponsorsProfileWrapper .bannerAction .MuiButton-containedPrimary:not(.Mui-disabled)::after,
 .sponsorsProfileWrapper .ctaBlock .MuiButton-root:not(.Mui-disabled)::after {
   content: "";
@@ -8580,9 +8811,11 @@ html body {
   transition: transform .8s var(--bt-ease-out);
   pointer-events: none;
 }
+
 .sponsorsProfileWrapper .ctaBlock .MuiButton-root:not(.Mui-disabled)::after {
   background: linear-gradient(110deg, rgba(109, 74, 194, 0) 25%, rgba(109, 74, 194, .18) 50%, rgba(109, 74, 194, 0) 75%);
 }
+
 .sponsorsProfileWrapper .bannerAction .MuiButton-containedPrimary:not(.Mui-disabled):hover::after,
 .sponsorsProfileWrapper .ctaBlock .MuiButton-root:not(.Mui-disabled):hover::after {
   transform: translateX(130%);
@@ -8601,6 +8834,7 @@ html body {
     linear-gradient(var(--bt-surface), var(--bt-surface)) padding-box,
     var(--bt-grad-border) border-box !important;
 }
+
 .sponsorsProfileWrapper .logoWrapper {
   border: 1px solid transparent !important;
   background: linear-gradient(var(--bt-surface), var(--bt-surface)) padding-box, var(--bt-grad-border) border-box !important;
@@ -8611,41 +8845,49 @@ html body {
   .sponsorsProfileWrapper .sponTitle h5 {
     background: var(--bt-grad-text);
     -webkit-background-clip: text;
-            background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 }
+
 @media (forced-colors: active) {
   .sponsorsProfileWrapper .sponTitle h5 {
     background: none;
     -webkit-text-fill-color: currentColor;
   }
 }
+
 .sponsorsProfileWrapper .tagsWrapper .MuiChip-root {
   background: var(--bt-grad-tint) !important;
 }
 
-.sponsorsProfileWrapper .sponsorSocialDetails > [class*="col-"],
+.sponsorsProfileWrapper .sponsorSocialDetails>[class*="col-"],
 .sponsorsProfileWrapper .aboutSponsors {
   background: radial-gradient(420px 160px at 100% 0%, rgba(109, 74, 194, .05), rgba(109, 74, 194, 0) 70%), var(--bt-surface);
 }
-.sponsorsProfileWrapper .getInTouch .phone > svg:first-child,
-.sponsorsProfileWrapper .fileBox .iconText > svg {
+
+.sponsorsProfileWrapper .getInTouch .phone>svg:first-child,
+.sponsorsProfileWrapper .fileBox .iconText>svg {
   background: var(--bt-grad-soft);
 }
+
 .sponsorsProfileWrapper :is(.roomCard, .peoplesCardWrapper, .fileBox):hover {
   border-color: transparent !important;
   background: linear-gradient(var(--bt-surface), var(--bt-surface)) padding-box, var(--bt-grad-border) border-box !important;
 }
-.sponsorsProfileWrapper :is(.roomSlider, .peoplesSlider, .filesWrapper) > h4::before {
+
+.sponsorsProfileWrapper :is(.roomSlider, .peoplesSlider, .filesWrapper)>h4::before {
   background: var(--bt-grad-accent);
 }
+
 .sponsorsProfileWrapper .roomCard .cardBottom {
   background: var(--bt-grad-tint) !important;
 }
+
 .sponsorsProfileWrapper .roomCard .avatarList .moreCount {
   background: var(--bt-grad-primary) !important;
 }
+
 .sponsorsProfileWrapper .roomCard:has(button[aria-label*="not started" i]) .roomStartAt::before {
   background: radial-gradient(circle at 11px 50%, currentColor 3px, transparent 3.5px), linear-gradient(180deg, #fff7ea, #ffefd2);
 }
@@ -8660,6 +8902,7 @@ html body {
 .DelegateSidebar .profileBanner {
   position: relative;
 }
+
 .DelegateSidebar .profileBanner::after {
   content: "";
   position: absolute;
@@ -8667,20 +8910,25 @@ html body {
   background: linear-gradient(135deg, rgba(91, 61, 147, .55) 0%, rgba(58, 37, 95, .2) 50%, rgba(163, 91, 209, .35) 100%);
   pointer-events: none;
 }
+
 .DelegateSidebar .profileimg .MuiAvatar-root {
   border: 3px solid transparent;
   background: linear-gradient(#fff, #fff) padding-box, var(--bt-grad-accent) border-box;
   box-shadow: 0 0 0 3px #fff, 0 16px 30px -14px rgba(58, 37, 95, .5);
 }
+
 .DelegateSidebar .exdarkBox {
   background: var(--bt-grad-tint) !important;
 }
+
 .DelegateSidebar .exdarkBox:hover {
   background: var(--bt-grad-soft) !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary {
   background: var(--bt-grad-soft) !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary:hover {
   background: var(--bt-grad-soft-hover) !important;
 }
@@ -8692,31 +8940,77 @@ html body {
 }
 
 @keyframes bt-rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
+
 @keyframes bt-banner-in {
-  from { opacity: .4; transform: scale(1.06); }
-  to   { opacity: 1; transform: none; }
+  from {
+    opacity: .4;
+    transform: scale(1.06);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
+
 @keyframes bt-pop-in {
-  from { opacity: 0; scale: .94; translate: 0 12px; }
-  to   { opacity: 1; scale: 1; translate: 0 0; }
+  from {
+    opacity: 0;
+    scale: .94;
+    translate: 0 12px;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
 }
+
 @keyframes bt-pop-out {
-  from { opacity: 1; scale: 1; }
-  to   { opacity: 0; scale: .96; }
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: .96;
+  }
 }
+
 @keyframes bt-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 @keyframes bt-fade-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .headerWrapper,
   .headerWrapper *,
   .miniSidedrawerInn *,
@@ -8730,6 +9024,7 @@ html body {
     animation: none !important;
     transition-duration: .01ms !important;
   }
+
   .bt-reveal:not(.bt-in) {
     opacity: 1;
     transform: none;
@@ -8744,19 +9039,19 @@ html body {
   --bt-primary-soft-hover: #ddd4ec;
   --bt-primary-tint: #f6f3fb;
 
-  --bt-ink: #1a1523;        
-  --bt-text: #45405a;       
-  --bt-muted: #6b6680;      
-  --bt-line: #e8e4ef;       
+  --bt-ink: #1a1523;
+  --bt-text: #45405a;
+  --bt-muted: #6b6680;
+  --bt-line: #e8e4ef;
   --bt-line-strong: #d5cee2;
-  --bt-canvas: #f5f3f8;     
-  --bt-surface: #ffffff;    
-  --bt-warn: #8a5300;       
+  --bt-canvas: #f5f3f8;
+  --bt-surface: #ffffff;
+  --bt-warn: #8a5300;
   --bt-warn-soft: #fff3df;
   --bt-ok: #1d7a52;
 
-  --bt-violet: #6d4ac2;     
-  --bt-orchid: #a35bd1;     
+  --bt-violet: #6d4ac2;
+  --bt-orchid: #a35bd1;
   --bt-grad-primary: linear-gradient(135deg, #5b3d93 0%, #3a255f 55%, #2b1a49 100%);
   --bt-grad-primary-hover: linear-gradient(135deg, #6a47a8 0%, #442b6f 55%, #331f55 100%);
   --bt-grad-soft: linear-gradient(135deg, #f4effb 0%, #e9e1f5 100%);
@@ -8823,26 +9118,32 @@ html body {
   font-weight: 600 !important;
   text-transform: none !important;
   transition: background-color var(--bt-fast) var(--bt-ease),
-              box-shadow var(--bt-fast) var(--bt-ease),
-              transform var(--bt-fast) var(--bt-ease) !important;
+    box-shadow var(--bt-fast) var(--bt-ease),
+    transform var(--bt-fast) var(--bt-ease) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-root:active:not(.Mui-disabled) {
   transform: scale(.97);
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-softPrimary:not(.Mui-disabled) {
   background: var(--bt-primary-soft) !important;
   color: var(--bt-primary) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-softPrimary:not(.Mui-disabled):hover {
   background: var(--bt-primary-soft-hover) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-containedPrimary:not(.Mui-disabled) {
   background: var(--bt-primary) !important;
   color: #fff !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   background: var(--bt-primary-hover) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-root.Mui-disabled {
   background: #efedf3 !important;
   color: #8f8a9c !important;
@@ -8861,6 +9162,7 @@ html body {
   box-shadow: 0 1px 0 var(--bt-line) !important;
   transition: box-shadow var(--bt-med) var(--bt-ease);
 }
+
 .headerWrapper::before {
   content: "";
   position: absolute;
@@ -8870,6 +9172,7 @@ html body {
   -webkit-backdrop-filter: saturate(180%) blur(16px);
   backdrop-filter: saturate(180%) blur(16px);
 }
+
 html.bt-scrolled .headerWrapper {
   box-shadow: 0 1px 0 var(--bt-line), 0 12px 30px -16px rgba(26, 21, 35, .25) !important;
 }
@@ -8882,42 +9185,52 @@ html.bt-scrolled .headerWrapper {
   margin: 0;
   padding: 0;
 }
+
 .headerWrapper .menuItem {
   margin: 0 !important;
   height: 64px;
   align-items: center;
 }
-.headerWrapper .menuItem > button {
+
+.headerWrapper .menuItem>button {
   min-width: 84px;
   padding: 5px 12px !important;
   border-radius: 12px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
-.headerWrapper .menuItem:not(.active) > button:hover {
+
+.headerWrapper .menuItem:not(.active)>button:hover {
   background: var(--bt-primary-tint);
 }
-.headerWrapper .menuItem.active > button {
+
+.headerWrapper .menuItem.active>button {
   background: var(--bt-primary-soft);
 }
+
 .headerWrapper .menuItem .icon {
   transition: transform var(--bt-med) var(--bt-ease);
 }
+
 .headerWrapper .menuItem:hover .icon {
   transform: translateY(-2px);
 }
+
 .headerWrapper .menuItem .menuText {
   font-size: 12px !important;
   font-weight: 500 !important;
   color: var(--bt-muted) !important;
   transition: color var(--bt-fast) var(--bt-ease);
 }
+
 .headerWrapper .menuItem:hover .menuText {
   color: var(--bt-ink) !important;
 }
+
 .headerWrapper .menuItem.active .menuText {
   color: var(--bt-primary) !important;
   font-weight: 700 !important;
 }
+
 .headerWrapper .menuItem.active::before {
   left: 18px !important;
   width: calc(100% - 36px) !important;
@@ -8930,29 +9243,36 @@ html.bt-scrolled .headerWrapper {
   align-items: center;
   gap: 4px;
 }
+
 .headerWrapper .rightActionWrapper .mr20 {
   margin-right: 0 !important;
 }
+
 .headerWrapper .rightActionWrapper .MuiIconButton-root {
   width: 38px;
   height: 38px;
   border-radius: 12px !important;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .headerWrapper .rightActionWrapper .MuiIconButton-root:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .headerWrapper .rightActionWrapper .MuiBadge-badge {
   box-shadow: 0 0 0 2px #fff;
 }
+
 .headerWrapper .avtarWrapper {
   margin-left: 10px;
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root {
   border-radius: 12px !important;
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary-soft);
   transition: box-shadow var(--bt-fast) var(--bt-ease);
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root:hover {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary);
 }
@@ -8962,6 +9282,7 @@ html.bt-scrolled .headerWrapper {
   border-left: 1px solid var(--bt-line) !important;
   padding-top: 8px !important;
 }
+
 .miniSidedrawerInn .svgBox {
   width: 46px !important;
   height: 46px !important;
@@ -8974,12 +9295,15 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
 }
+
 .miniSidedrawerInn .svgBox:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .miniSidedrawerInn .svgBox:active {
   transform: scale(.92);
 }
+
 .miniSidedrawerInn .saperator {
   display: block !important;
   width: 28px !important;
@@ -8991,10 +9315,12 @@ html.bt-scrolled .headerWrapper {
 .sidedrawerWrapper.open:not(.profile) {
   box-shadow: -1px 0 0 var(--bt-line), -32px 0 64px -32px rgba(26, 21, 35, .35) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper {
   border-bottom: 1px solid var(--bt-line);
   background: var(--bt-surface);
 }
+
 .sidedrawerWrapper .backBtn {
   background: var(--bt-surface) !important;
   border: 0 !important;
@@ -9002,28 +9328,35 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .sidedrawerWrapper .backBtn:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper .tabHeader ul {
   background: var(--bt-canvas) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.tabs {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.tabs:not(.activeTab):hover {
   background: rgba(255, 255, 255, .7) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.tabs.activeTab {
   background: var(--bt-surface) !important;
   box-shadow: inset 0 -3px 0 var(--bt-primary);
 }
+
 .sidedrawerWrapper .drawerTabWrapper .tabText {
   font-size: 15px !important;
   font-weight: 600 !important;
   color: var(--bt-muted) !important;
 }
+
 .sidedrawerWrapper .drawerTabWrapper li.activeTab .tabText {
   color: var(--bt-ink) !important;
 }
@@ -9031,16 +9364,20 @@ html.bt-scrolled .headerWrapper {
 .boothSideTabBlock {
   border-bottom: 1px solid var(--bt-line);
 }
+
 .boothSideTabBlock li.tabs {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .boothSideTabBlock li.tabs:not(.activeTab):hover {
   background: var(--bt-primary-tint);
 }
+
 .boothSideTabBlock li.tabs .tabText {
   font-weight: 600 !important;
 }
+
 .boothSideTabBlock li.tabs.activeTab::after {
   border-radius: 3px 3px 0 0 !important;
 }
@@ -9049,30 +9386,37 @@ html.bt-scrolled .headerWrapper {
   border-top: 1px solid var(--bt-line);
   background: var(--bt-surface);
 }
-.dataSubmitBlockWrapper > .MuiBox-root:not(.submitBtn) {
+
+.dataSubmitBlockWrapper>.MuiBox-root:not(.submitBtn) {
   border-radius: 14px !important;
   transition: border-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
 }
-.dataSubmitBlockWrapper > .MuiBox-root:not(.submitBtn):focus-within {
+
+.dataSubmitBlockWrapper>.MuiBox-root:not(.submitBtn):focus-within {
   border-color: var(--bt-primary) !important;
   box-shadow: var(--bt-ring);
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root {
   width: 42px;
   height: 42px;
   border-radius: 12px !important;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:hover {
   background: var(--bt-primary-hover) !important;
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:active {
   transform: scale(.92);
 }
+
 .sidedrawerWrapper .emptyStateWrapper p {
   font-size: 13px !important;
   color: var(--bt-muted) !important;
 }
+
 .sideDrawerScroll {
   scrollbar-width: thin;
   scrollbar-color: var(--bt-line-strong) transparent;
@@ -9081,6 +9425,7 @@ html.bt-scrolled .headerWrapper {
 .peopleTabHeader {
   margin-top: 36px !important;
 }
+
 .peopleTabHeader h2 {
   font-family: var(--bt-font) !important;
   font-size: clamp(26px, 1.4vw + 14px, 34px) !important;
@@ -9099,20 +9444,24 @@ html.bt-scrolled .headerWrapper {
   box-shadow: 0 10px 20px -10px rgba(58, 37, 95, .7);
   transition: transform var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
 }
+
 .peopleTabHeader .pageSearchWrapper:not(.active) .searchBtn:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 26px -12px rgba(58, 37, 95, .75);
 }
+
 .peopleTabHeader .searchInputWrapper.active {
   border: 1px solid var(--bt-line-strong);
   border-radius: 14px !important;
   box-shadow: var(--bt-shadow-sm);
   transition: border-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease), width .25s var(--bt-ease) !important;
 }
+
 .peopleTabHeader .searchInputWrapper.active:focus-within {
   border-color: var(--bt-violet);
   box-shadow: var(--bt-ring), var(--bt-shadow-sm);
 }
+
 .peopleTabHeader .searchInput {
   font-family: var(--bt-font) !important;
   font-size: 15px !important;
@@ -9120,12 +9469,15 @@ html.bt-scrolled .headerWrapper {
   color: var(--bt-ink) !important;
   outline: none !important;
 }
+
 .peopleTabHeader .searchInput::placeholder {
   color: var(--bt-muted);
 }
+
 .peopleTabHeader .searchCloseBtn {
   border-radius: 10px !important;
 }
+
 .peopleTabHeader .searchCloseBtn:hover {
   background: var(--bt-primary-tint) !important;
 }
@@ -9133,10 +9485,12 @@ html.bt-scrolled .headerWrapper {
 .peopleTabHeader .searchBarWrap {
   gap: 8px;
 }
+
 .peopleTabHeader .searchBarWrap .sortingBlock {
   gap: 8px;
   margin-left: 0 !important;
 }
+
 .peopleTabHeader .searchBarWrap .MuiOutlinedInput-root {
   min-height: 44px;
   border-radius: 14px !important;
@@ -9144,17 +9498,21 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-xs);
   font-family: var(--bt-font) !important;
 }
+
 .peopleTabHeader .searchBarWrap fieldset {
   border-color: var(--bt-line-strong) !important;
   border-radius: 14px !important;
 }
+
 .peopleTabHeader .searchBarWrap .Mui-focused fieldset {
   border-color: var(--bt-violet) !important;
   border-width: 1px !important;
 }
+
 .peopleTabHeader .searchBarWrap .MuiOutlinedInput-root.Mui-focused {
   box-shadow: var(--bt-ring);
 }
+
 .peopleTabHeader .searchBarWrap .sortingBlock .MuiIconButton-root {
   width: 44px !important;
   height: 44px !important;
@@ -9162,6 +9520,7 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-primary) !important;
   box-shadow: 0 10px 20px -12px rgba(58, 37, 95, .75);
 }
+
 .peopleTabHeader .MuiBadge-badge:not(.MuiBadge-invisible) {
   box-shadow: 0 0 0 2px #fff;
   font-weight: 700;
@@ -9178,18 +9537,22 @@ html.bt-scrolled .headerWrapper {
   color: var(--bt-muted) !important;
   transition: background-color var(--bt-fast) var(--bt-ease), color var(--bt-fast) var(--bt-ease);
 }
+
 .peopleTabHeader .MuiTab-root:hover {
   background: var(--bt-primary-tint);
   color: var(--bt-ink) !important;
 }
+
 .peopleTabHeader .MuiTab-root.Mui-selected {
   color: var(--bt-primary) !important;
 }
+
 .peopleTabHeader .MuiTabs-indicator {
   height: 3px !important;
   border-radius: 3px 3px 0 0;
   background: var(--bt-primary) !important;
 }
+
 .mainContainer:has(.peopleTabHeader) .divider {
   border-color: var(--bt-line) !important;
 }
@@ -9197,12 +9560,15 @@ html.bt-scrolled .headerWrapper {
 .peopleTabBody {
   padding-top: 18px !important;
 }
+
 .delegatesTab .delegateFilters {
   margin: 18px 0 !important;
 }
+
 .delegatesTab .delegateFilters .sortingBlock {
   gap: 10px;
 }
+
 .delegatesTab .delegateFilters .sortingBlock .MuiButton-root {
   height: 40px;
   margin: 0 !important;
@@ -9218,9 +9584,11 @@ html.bt-scrolled .headerWrapper {
   transform-origin: top right;
   animation: bt-menu-in .18s var(--bt-ease-out) both;
 }
+
 .delegatesTab .ListMenuPopup .MuiList-root {
   padding: 2px 0 !important;
 }
+
 .delegatesTab .ListMenuPopup .MuiMenuItem-root {
   min-height: 40px;
   margin: 2px 0;
@@ -9228,18 +9596,22 @@ html.bt-scrolled .headerWrapper {
   border-radius: 10px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .delegatesTab .ListMenuPopup .MuiMenuItem-root:hover,
 .delegatesTab .ListMenuPopup .MuiMenuItem-root.Mui-focusVisible {
   background: var(--bt-primary-tint) !important;
 }
+
 .delegatesTab .ListMenuPopup .MuiMenuItem-root.Mui-selected {
   background: var(--bt-primary-soft) !important;
 }
+
 .delegatesTab .ListMenuPopup .MuiMenuItem-root p {
   font-family: var(--bt-font) !important;
   font-weight: 500 !important;
   color: var(--bt-ink) !important;
 }
+
 .delegatesTab .ListMenuPopup .MuiMenuItem-root.Mui-selected p {
   font-weight: 700 !important;
   color: var(--bt-primary) !important;
@@ -9249,6 +9621,7 @@ html.bt-scrolled .headerWrapper {
   border-color: var(--bt-line) !important;
   background: rgba(255, 255, 255, .55);
 }
+
 .delegatesTab .filterList .MuiChip-root {
   height: 34px !important;
   border: 1px solid var(--bt-line-strong) !important;
@@ -9256,14 +9629,17 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   transition: border-color var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease), box-shadow var(--bt-fast) var(--bt-ease);
 }
+
 .delegatesTab .filterList .MuiChip-root:hover {
   border-color: var(--bt-violet) !important;
   background: var(--bt-primary-tint) !important;
 }
+
 .delegatesTab .filterList .MuiChip-root:is(.MuiChip-colorPrimary, .MuiChip-colorSecondary, .active) {
   border-color: var(--bt-violet) !important;
   background: var(--bt-primary-soft) !important;
 }
+
 .delegatesTab .filterList .MuiChip-label {
   padding: 0 14px !important;
   font-family: var(--bt-font) !important;
@@ -9271,6 +9647,7 @@ html.bt-scrolled .headerWrapper {
   font-weight: 600 !important;
   color: var(--bt-ink) !important;
 }
+
 .delegatesTab .filterList .slick-arrow {
   width: 34px !important;
   height: 34px !important;
@@ -9279,12 +9656,15 @@ html.bt-scrolled .headerWrapper {
   box-shadow: 0 0 0 1px var(--bt-line), var(--bt-shadow-sm) !important;
   transition: background-color var(--bt-fast) var(--bt-ease), opacity var(--bt-fast) var(--bt-ease);
 }
+
 .delegatesTab .filterList .slick-arrow:hover {
   background: var(--bt-primary-tint) !important;
 }
+
 .delegatesTab .filterList .slick-arrow.slick-disabled {
   opacity: .4;
 }
+
 .delegatesTab .buttonActionWrapper .MuiButton-root {
   height: 36px;
 }
@@ -9299,30 +9679,37 @@ html.bt-scrolled .headerWrapper {
   transform-origin: top left;
   animation: bt-menu-in .2s var(--bt-ease-out) both;
 }
+
 .delegatesTab .filterDropDown .filterCloseIcon .MuiIconButton-root {
   border-radius: 50% !important;
   background: var(--bt-surface) !important;
   box-shadow: 0 0 0 1px var(--bt-line), var(--bt-shadow-sm);
   transition: transform var(--bt-fast) var(--bt-ease);
 }
+
 .delegatesTab .filterDropDown .filterCloseIcon .MuiIconButton-root:hover {
   transform: rotate(90deg);
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .filterSearch .MuiOutlinedInput-root {
   border-radius: 12px !important;
   font-family: var(--bt-font) !important;
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .filterSearch fieldset {
   border-color: var(--bt-line-strong) !important;
   border-radius: 12px !important;
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .filterSearch .Mui-focused fieldset {
   border-color: var(--bt-violet) !important;
   border-width: 1px !important;
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .filterSearch .MuiOutlinedInput-root.Mui-focused {
   box-shadow: var(--bt-ring);
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .addFilterText .MuiChip-root {
   height: 34px !important;
   border: 1px solid var(--bt-line) !important;
@@ -9330,10 +9717,12 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-primary-tint) !important;
   transition: border-color var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .addFilterText .MuiChip-root:hover {
   border-color: var(--bt-violet) !important;
   background: var(--bt-primary-soft) !important;
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .addFilterText .MuiChip-label {
   font-family: var(--bt-font) !important;
   font-size: 13px !important;
@@ -9349,6 +9738,7 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-xs);
   transition: transform var(--bt-med) var(--bt-ease), box-shadow var(--bt-med) var(--bt-ease), border-color var(--bt-med) var(--bt-ease);
 }
+
 .delegatesTab .peoplesCardWrapper:hover {
   transform: translateY(-4px);
   border-color: var(--bt-line-strong) !important;
@@ -9368,21 +9758,25 @@ html.bt-scrolled .headerWrapper {
   font-weight: 700 !important;
   color: var(--bt-ink) !important;
 }
+
 .delegatesTab .peoplesCardWrapper :is(.designation, .organization) {
   font-family: var(--bt-font) !important;
   font-size: 12px !important;
   line-height: 1.35 !important;
   color: var(--bt-muted) !important;
 }
+
 .delegatesTab .peoplesCardWrapper .cardActions .MuiIconButton-root {
   border-radius: 10px !important;
   background: rgba(255, 255, 255, .94) !important;
   box-shadow: var(--bt-shadow-sm);
 }
+
 .delegatesTab .peoplesCardWrapper .hoverButtonWrapper {
   padding: 8px 10px 10px;
   border-top: 1px solid var(--bt-line);
 }
+
 .delegatesTab .peoplesCardWrapper .hoverButtonWrapper .MuiButton-root {
   width: 100%;
   height: 36px;
@@ -9393,6 +9787,7 @@ html.bt-scrolled .headerWrapper {
   animation: bt-rise .55s var(--bt-ease-out) both !important;
   animation-delay: calc(var(--bt-i, 0) * 45ms) !important;
 }
+
 .delegatesTab .emptyStateWrapper p {
   font-size: 14px !important;
   color: var(--bt-muted) !important;
@@ -9402,10 +9797,12 @@ html.bt-scrolled .headerWrapper {
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
+
 .ReactModal__Overlay.sideBarUserPanel {
   background: rgba(26, 21, 35, .5) !important;
   animation: bt-fade-in .2s ease both;
 }
+
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile {
   position: fixed !important;
   inset: 0 !important;
@@ -9420,12 +9817,15 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
 }
+
 .ReactModal__Overlay--before-close.sideBarUserPanel {
   animation: bt-fade-out .2s ease both;
 }
+
 .ReactModal__Overlay--before-close.sideBarUserPanel .sidedrawerWrapper.profile {
   animation: bt-pop-out .2s ease both;
 }
+
 .DelegateSidebar {
   position: relative;
 }
@@ -9437,6 +9837,7 @@ html.bt-scrolled .headerWrapper {
   left: auto !important;
   z-index: 5;
 }
+
 .sidedrawerWrapper.profile .closeBox .MuiIconButton-root,
 .bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton .MuiIconButton-root {
   width: 36px;
@@ -9446,6 +9847,7 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-sm);
   transition: transform var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
 }
+
 .sidedrawerWrapper.profile .closeBox .MuiIconButton-root:hover {
   background: #fff !important;
   transform: rotate(90deg);
@@ -9456,6 +9858,7 @@ html.bt-scrolled .headerWrapper {
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
+
 .bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar) {
   inset: 0 !important;
   width: calc(100vw - 24px) !important;
@@ -9469,19 +9872,22 @@ html.bt-scrolled .headerWrapper {
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
 }
-.bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar) > div {
+
+.bottom-sheet__container.isFullScreen:has(.mobDelegateSidebar)>div {
   height: auto !important;
   max-height: calc(100vh - 48px);
   max-height: calc(100dvh - 48px);
   overflow: auto;
   overscroll-behavior: contain;
 }
+
 .bottom-sheet__container .mobDelegateSidebar {
   height: auto !important;
   max-height: none !important;
   overflow: visible !important;
-  padding: 0 0 6px !important;   
+  padding: 0 0 6px !important;
 }
+
 .bottom-sheet__container:has(.mobDelegateSidebar) .drawerCloseButton {
   position: absolute !important;
   top: 12px !important;
@@ -9498,10 +9904,12 @@ html.bt-scrolled .headerWrapper {
 .DelegateSidebar .profileBanner img {
   object-fit: cover;
 }
+
 .DelegateSidebar .profileimg .MuiAvatar-root {
   border-radius: 24px !important;
   box-shadow: 0 0 0 4px #fff, 0 16px 30px -14px rgba(26, 21, 35, .45);
 }
+
 .DelegateSidebar .profileDetails h5 {
   font-family: var(--bt-font) !important;
   font-size: 21px !important;
@@ -9509,31 +9917,38 @@ html.bt-scrolled .headerWrapper {
   letter-spacing: -.01em;
   color: var(--bt-ink) !important;
 }
+
 .DelegateSidebar .profileContent {
   font-size: 13px !important;
   color: var(--bt-muted) !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap {
   gap: 8px;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-root {
   height: 40px;
   border-radius: 12px !important;
   font-weight: 600 !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary:hover {
   background: var(--bt-primary-soft-hover) !important;
 }
+
 .DelegateSidebar .exdarkBox {
   border: 1px solid var(--bt-line);
   border-radius: 16px !important;
   background: var(--bt-primary-tint) !important;
   transition: border-color var(--bt-fast) var(--bt-ease), background-color var(--bt-fast) var(--bt-ease);
 }
+
 .DelegateSidebar .exdarkBox:hover {
   border-color: var(--bt-line-strong);
   background: var(--bt-primary-soft) !important;
 }
+
 .DelegateSidebar .exLogo {
   border-radius: 12px !important;
 }
@@ -9544,16 +9959,19 @@ html.bt-scrolled .headerWrapper {
   border-radius: 14px !important;
   box-shadow: 0 20px 44px -16px rgba(26, 21, 35, .32) !important;
 }
+
 .MuiMenu-paper .MuiMenuItem-root {
   margin: 2px 0;
   padding: 9px 14px 9px 10px !important;
   border-radius: 10px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .MuiMenu-paper .MuiMenuItem-root:hover,
 .MuiMenu-paper .MuiMenuItem-root.Mui-focusVisible {
   background: var(--bt-primary-tint) !important;
 }
+
 .MuiMenu-paper .MuiMenuItem-root p {
   font-weight: 500 !important;
   color: var(--bt-ink) !important;
@@ -9562,12 +9980,15 @@ html.bt-scrolled .headerWrapper {
 .isMobileContainer .peopleTabHeader {
   margin-top: 14px !important;
 }
+
 .isMobileContainer .delegatesTab .delegateFilters {
   margin: 8px 0 !important;
 }
+
 .isMobileContainer .peopleTabBody {
   padding-top: 10px !important;
 }
+
 .isMobileContainer .delegatesTab .peoplesCardWrapper:hover {
   transform: none;
 }
@@ -9579,25 +10000,30 @@ html.bt-scrolled .headerWrapper {
 .ReactModal__Overlay.actionOverlay {
   background: rgba(26, 21, 35, .5) !important;
 }
+
 .peopleSortFilterModel {
   overflow: hidden;
   border-radius: 22px !important;
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .3s var(--bt-ease-out) both;
 }
+
 .peopleSortFilterModel .modalHeader {
   padding: 18px 20px 12px !important;
   border-bottom-color: var(--bt-line) !important;
 }
+
 .peopleSortFilterModel .modalHeader h5 {
   font-family: var(--bt-font) !important;
   font-size: 18px !important;
   font-weight: 700 !important;
   color: var(--bt-ink) !important;
 }
+
 .peopleSortFilterModel .BodyWrapper {
   padding: 10px 10px 12px !important;
 }
+
 .peopleSortFilterModel .SortList {
   min-height: 44px;
   padding: 0 10px;
@@ -9608,22 +10034,27 @@ html.bt-scrolled .headerWrapper {
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
+
 .peopleSortFilterModel .SortList:hover {
   background: var(--bt-primary-tint);
 }
+
 .peopleSortFilterModel .SortList.selected {
   background: var(--bt-primary-soft);
 }
+
 .peopleSortFilterModel .SortList p {
   font-family: var(--bt-font) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   color: var(--bt-ink) !important;
 }
+
 .peopleSortFilterModel .SortList.selected p {
   font-weight: 700 !important;
   color: var(--bt-primary) !important;
 }
+
 .peopleSortFilterModel .SortList .MuiIconButton-root {
   color: var(--bt-primary) !important;
 }
@@ -9633,6 +10064,7 @@ html.bt-scrolled .headerWrapper {
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
+
 .bottom-sheet__container.isFullScreen:has(.mobileFilterDrawer) {
   top: auto !important;
   right: 0 !important;
@@ -9646,14 +10078,17 @@ html.bt-scrolled .headerWrapper {
   box-shadow: 0 -24px 60px -20px rgba(26, 21, 35, .45) !important;
   animation: bt-sheet-up .38s var(--bt-ease-out) backwards;
 }
-.bottom-sheet__container.isFullScreen:has(.mobileFilterDrawer) > div {
+
+.bottom-sheet__container.isFullScreen:has(.mobileFilterDrawer)>div {
   height: 100% !important;
   overflow: auto;
   overscroll-behavior: contain;
 }
+
 .bottom-sheet__container:has(.mobileFilterDrawer) .drawerCloseButton {
   border-bottom: 0 !important;
 }
+
 .bottom-sheet__container:has(.mobileFilterDrawer) .drawerCloseButton::after {
   content: "";
   position: absolute;
@@ -9665,29 +10100,35 @@ html.bt-scrolled .headerWrapper {
   border-radius: 4px;
   background: var(--bt-line-strong);
 }
+
 .bottom-sheet__container:has(.mobileFilterDrawer) .drawerCloseButton .MuiIconButton-root {
   border-radius: 50% !important;
 }
+
 .mobileFilterDrawer {
   min-height: 100% !important;
   height: auto !important;
   padding-bottom: 84px;
 }
+
 .mobileFilterDrawer .titleWrapper h6 {
   font-family: var(--bt-font) !important;
   font-size: 18px !important;
   font-weight: 700 !important;
   color: var(--bt-ink) !important;
 }
+
 .mobileFilterDrawer .titleWrapper .MuiChip-root {
   border-radius: var(--bt-r-pill) !important;
   background: var(--bt-primary-soft) !important;
 }
+
 .mobileFilterDrawer .titleWrapper .MuiChip-label {
   font-weight: 700 !important;
   letter-spacing: .04em;
   color: var(--bt-primary) !important;
 }
+
 .mobileFilterDrawer .MuiTab-root {
   font-family: var(--bt-font) !important;
   font-size: 14px !important;
@@ -9695,22 +10136,27 @@ html.bt-scrolled .headerWrapper {
   text-transform: none !important;
   color: var(--bt-muted) !important;
 }
+
 .mobileFilterDrawer .MuiTab-root.Mui-selected {
   color: var(--bt-primary) !important;
 }
+
 .mobileFilterDrawer .MuiTabs-indicator {
   height: 3px !important;
   border-radius: 3px 3px 0 0;
   background: var(--bt-primary) !important;
 }
+
 .mobileFilterDrawer .divider {
   border-color: var(--bt-line) !important;
 }
+
 .mobileFilterDrawer .buttonWrapper {
   gap: 10px;
   border-top: 1px solid var(--bt-line);
   box-shadow: 0 -10px 24px -18px rgba(26, 21, 35, .35);
 }
+
 .mobileFilterDrawer .buttonWrapper .MuiButton-root {
   height: 44px;
 }
@@ -9719,22 +10165,27 @@ html.bt-scrolled .headerWrapper {
   border-top: 1px solid var(--bt-line) !important;
   box-shadow: 0 -10px 30px -18px rgba(26, 21, 35, .3) !important;
 }
-.mobileNav li > a {
+
+.mobileNav li>a {
   border-radius: 12px;
   transition: background-color var(--bt-fast) var(--bt-ease);
 }
-.mobileNav li > a:active {
+
+.mobileNav li>a:active {
   background: var(--bt-primary-tint);
 }
-.mobileNav li > a .text {
+
+.mobileNav li>a .text {
   font-family: var(--bt-font) !important;
   font-weight: 600 !important;
 }
+
 .mobileNav .hubilo-btn {
   background: var(--bt-primary) !important;
   box-shadow: 0 0 0 4px #fff, 0 12px 24px -10px rgba(58, 37, 95, .75) !important;
   transition: transform var(--bt-fast) var(--bt-ease);
 }
+
 .mobileNav .hubilo-btn:active {
   transform: scale(.92);
 }
@@ -9764,30 +10215,36 @@ html.bt-scrolled .headerWrapper {
   transform: translateY(12px) scale(.9);
   transition: opacity var(--bt-med) var(--bt-ease), transform var(--bt-med) var(--bt-ease), visibility 0s linear var(--bt-med);
 }
+
 .bt-top.bt-show {
   opacity: 1;
   visibility: visible;
   transform: none;
   transition: opacity var(--bt-med) var(--bt-ease), transform var(--bt-med) var(--bt-ease), visibility 0s;
 }
+
 .bt-top:hover {
   transform: translateY(-2px);
 }
+
 .bt-top:focus-visible {
   outline: none;
   box-shadow: var(--bt-ring), 0 14px 30px -12px rgba(58, 37, 95, .8);
 }
+
 .bt-top svg {
   width: 20px;
   height: 20px;
 }
+
 html.bt-drawer-open .bt-top {
   opacity: 0;
   visibility: hidden;
 }
+
 html.bt-mobile .bt-top {
   right: 16px;
-  bottom: 88px;   
+  bottom: 88px;
 }
 
 .peopleTabHeader .pageSearchWrapper:not(.active) .searchBtn[data-bt-kbd]::after {
@@ -9806,6 +10263,7 @@ html.bt-mobile .bt-top {
   transform: translateY(-4px);
   transition: opacity var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
 }
+
 .peopleTabHeader .pageSearchWrapper:not(.active) .searchBtn[data-bt-kbd]:is(:hover, :focus-visible)::after {
   opacity: 1;
   transform: none;
@@ -9828,20 +10286,25 @@ html body {
   background: linear-gradient(90deg, rgba(109, 74, 194, 0), rgba(109, 74, 194, .4) 50%, rgba(109, 74, 194, 0));
   pointer-events: none;
 }
-.headerWrapper .menuItem.active > button {
+
+.headerWrapper .menuItem.active>button {
   background: var(--bt-grad-soft);
 }
+
 .headerWrapper .menuItem.active::before {
   background: var(--bt-grad-accent-x) !important;
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root {
   border: 2px solid transparent;
   background: linear-gradient(#fff, #fff) padding-box, var(--bt-grad-accent) border-box;
   box-shadow: 0 4px 12px -4px rgba(58, 37, 95, .35);
 }
+
 .headerWrapper .avtarWrapper .MuiAvatar-root:hover {
   box-shadow: 0 6px 16px -4px rgba(109, 74, 194, .55);
 }
+
 .miniSidedrawerInn .svgBox:hover {
   background: var(--bt-grad-soft) !important;
 }
@@ -9850,14 +10313,17 @@ html body {
   background: var(--bt-grad-accent-x) bottom / 100% 3px no-repeat, var(--bt-surface) !important;
   box-shadow: none;
 }
+
 .boothSideTabBlock li.tabs.activeTab::after {
   background: var(--bt-grad-accent-x) !important;
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root,
 .sidedrawerWrapper .MuiButton-containedPrimary:not(.Mui-disabled) {
   background: var(--bt-grad-primary) !important;
   box-shadow: 0 8px 18px -10px rgba(58, 37, 95, .8);
 }
+
 .dataSubmitBlockWrapper .submitBtn .MuiIconButton-root:hover,
 .sidedrawerWrapper .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   background: var(--bt-grad-primary-hover) !important;
@@ -9866,6 +10332,7 @@ html body {
 .DelegateSidebar .profileBanner {
   position: relative;
 }
+
 .DelegateSidebar .profileBanner::after {
   content: "";
   position: absolute;
@@ -9873,20 +10340,25 @@ html body {
   background: linear-gradient(135deg, rgba(91, 61, 147, .55) 0%, rgba(58, 37, 95, .2) 50%, rgba(163, 91, 209, .35) 100%);
   pointer-events: none;
 }
+
 .DelegateSidebar .profileimg .MuiAvatar-root {
   border: 3px solid transparent;
   background: linear-gradient(#fff, #fff) padding-box, var(--bt-grad-accent) border-box;
   box-shadow: 0 0 0 3px #fff, 0 16px 30px -14px rgba(58, 37, 95, .5);
 }
+
 .DelegateSidebar .exdarkBox {
   background: var(--bt-grad-tint) !important;
 }
+
 .DelegateSidebar .exdarkBox:hover {
   background: var(--bt-grad-soft) !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary {
   background: var(--bt-grad-soft) !important;
 }
+
 .DelegateSidebar .deleAllButtonWrap .MuiButton-softPrimary:hover {
   background: var(--bt-grad-soft-hover) !important;
 }
@@ -9896,103 +10368,171 @@ html body {
     width: fit-content;
     background: var(--bt-grad-text);
     -webkit-background-clip: text;
-            background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 }
+
 @media (forced-colors: active) {
   .peopleTabHeader h2 {
     background: none;
     -webkit-text-fill-color: currentColor;
   }
 }
+
 .peopleTabHeader .pageSearchWrapper:not(.active) .searchBtn,
 .peopleTabHeader .searchBarWrap .sortingBlock .MuiIconButton-root,
 .mobileNav .hubilo-btn,
 .bt-top {
   background: var(--bt-grad-primary) !important;
 }
+
 .peopleTabHeader .MuiBadge-badge:not(.MuiBadge-invisible) {
   background: var(--bt-grad-primary) !important;
   color: #fff !important;
 }
+
 .peopleTabHeader .MuiTabs-indicator,
 .mobileFilterDrawer .MuiTabs-indicator {
   background: var(--bt-grad-accent-x) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-containedPrimary:not(.Mui-disabled) {
   background: var(--bt-grad-primary) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-containedPrimary:not(.Mui-disabled):hover {
   background: var(--bt-grad-primary-hover) !important;
   box-shadow: 0 12px 26px -12px rgba(109, 74, 194, .8) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-softPrimary:not(.Mui-disabled),
 .mobileFilterDrawer .titleWrapper .MuiChip-root {
   background: var(--bt-grad-soft) !important;
 }
+
 :is(.peopleTabHeader, .delegatesTab, .mobileFilterDrawer) .MuiButton-softPrimary:not(.Mui-disabled):hover {
   background: var(--bt-grad-soft-hover) !important;
 }
+
 .delegatesTab .ListMenuPopup .MuiMenuItem-root.Mui-selected,
 .peopleSortFilterModel .SortList.selected {
   background: var(--bt-grad-soft) !important;
 }
+
 .delegatesTab .filtersWrapper {
   background: linear-gradient(90deg, rgba(255, 255, 255, .35), rgba(246, 243, 251, .95) 50%, rgba(255, 255, 255, .35));
 }
+
 .delegatesTab .filterList .MuiChip-root:hover,
 :is(.delegatesTab, .mobileFilterDrawer) .addFilterText .MuiChip-root {
   background: var(--bt-grad-tint) !important;
 }
+
 :is(.delegatesTab, .mobileFilterDrawer) .addFilterText .MuiChip-root:hover {
   background: var(--bt-grad-soft) !important;
 }
+
 .delegatesTab .filterDropDown {
   border-color: transparent !important;
   background: linear-gradient(var(--bt-surface), var(--bt-surface)) padding-box, var(--bt-grad-border) border-box !important;
 }
+
 .delegatesTab .peoplesCardWrapper:hover {
   border-color: transparent !important;
   background: linear-gradient(var(--bt-surface), var(--bt-surface)) padding-box, var(--bt-grad-border) border-box !important;
 }
+
 .delegatesTab .peoplesCardWrapper .delegateCardMedia img {
   background: var(--bt-grad-soft);
 }
+
 .peopleSortFilterModel .modalHeader {
   background: var(--bt-grad-tint);
 }
 
 @keyframes bt-rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
+
 @keyframes bt-pop-in {
-  from { opacity: 0; scale: .94; translate: 0 12px; }
-  to   { opacity: 1; scale: 1; translate: 0 0; }
+  from {
+    opacity: 0;
+    scale: .94;
+    translate: 0 12px;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
 }
+
 @keyframes bt-pop-out {
-  from { opacity: 1; scale: 1; }
-  to   { opacity: 0; scale: .96; }
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: .96;
+  }
 }
+
 @keyframes bt-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 @keyframes bt-fade-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
+
 @keyframes bt-menu-in {
-  from { opacity: 0; transform: translateY(-6px) scale(.97); }
-  to   { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
+
 @keyframes bt-sheet-up {
-  from { transform: translateY(100%); }
-  to   { transform: none; }
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .headerWrapper,
   .headerWrapper *,
   .miniSidedrawerInn *,

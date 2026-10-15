@@ -1000,7 +1000,7 @@
     }
 
     // 3. Direct Hubilo Drawer paper close button (fastest & most reliable)
-    const drawerBtn = document.querySelector(".MuiDrawer-paper > button, .MuiDrawer-paper > .MuiIconButton-root, .MuiDrawer-paper button.mui-cysavz, .MuiDrawer-paper [class*='mui-cysavz']");
+    const drawerBtn = document.querySelector(".MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) > button, .MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) > .MuiIconButton-root, .MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) button.mui-cysavz, .MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) [class*='mui-cysavz']");
     if (drawerBtn && (drawerBtn.offsetWidth > 0 || drawerBtn.offsetHeight > 0 || drawerBtn.offsetParent !== null)) return drawerBtn;
 
     // 4. Active open drawer paper on screen (DO NOT check generic .MuiPaper-root cards!)
@@ -1010,8 +1010,8 @@
 
     for (const paper of openPapers) {
       if (paper.offsetWidth === 0 && paper.offsetHeight === 0) continue;
-      // Skip if this paper is inside a card, accordion, or ticket panel
-      if (paper.closest(".MuiCard-root, .MuiAccordion-root, #refFormPanel")) continue;
+      // Skip if this paper is inside a card, accordion, or registration form
+      if (paper.closest(".MuiCard-root, .MuiAccordion-root, #refFormPanel") || paper.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) continue;
 
       // Direct child button of drawer paper (Hubilo close button)
       const directBtn = paper.querySelector(":scope > button, :scope > .MuiIconButton-root, button.mui-cysavz, [class*='mui-cysavz']");
@@ -1032,17 +1032,11 @@
         "button[aria-label*='close' i], button[aria-label*='fechar' i], [aria-label*='close' i]"
       );
       if (ariaClose) return ariaClose;
-
-      // Registration form close button
-      const regClose = paper.querySelector(
-        ".widgetRegCloseSingleView button, .widgetRegCloseSingleView .MuiIconButton-root, [class*='widgetRegClose'] button"
-      );
-      if (regClose) return regClose;
     }
 
     // 5. Global search for visible close button
     const globalClose = document.querySelector(
-      ".MuiDrawer-root button[aria-label*='close' i], .MuiModal-root button[aria-label*='close' i], .widgetRegCloseSingleView button, #demoCloseBtn"
+      ".MuiDrawer-root:not(:has(.singleViewWidgetDetails)) button[aria-label*='close' i], .MuiModal-root:not(:has(.singleViewWidgetDetails)) button[aria-label*='close' i], #demoCloseBtn"
     );
     if (globalClose) return globalClose;
 
@@ -1054,7 +1048,11 @@
    */
   let isDismissingModal = false;
   function dismissModalPopup() {
-    if (isDismissingModal) return;
+    if (isDismissingModal) return false;
+    // CRITICAL: NEVER dismiss when the user has the registration form open!
+    if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
+      return false;
+    }
     isDismissingModal = true;
 
     try {
@@ -1109,15 +1107,27 @@
    * formats programs into a modern Bento card, prevents text truncation, and binds backdrop dismissal.
    */
   function enhanceExhibitorDrawer() {
+    // If registration form is active on the page, never touch drawers or bind backdrop dismissals
+    if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
+      return;
+    }
 
     // Direct click-outside dismiss listener on all backdrops & modal containers
     document.querySelectorAll(".MuiBackdrop-root, .MuiDrawer-root, .MuiModal-root, #demoDrawer").forEach((container) => {
+      if (container.querySelector && container.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
+      if (container.closest && container.closest(".MuiDrawer-root:has(.singleViewWidgetDetails)")) return;
       if (!container.dataset.inspiraBackdropBound) {
         container.dataset.inspiraBackdropBound = "true";
         container.style.cursor = "pointer";
         container.style.pointerEvents = "auto";
         container.addEventListener("click", function (e) {
-          if (!e.target.closest(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], .MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)")) {
+          if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
+          if (!e.target.closest(
+            ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], " +
+            ".singleViewWidgetDetails, [class*='singleViewWidget'], .popup, " +
+            "[role='listbox'], [role='option'], .MuiPopover-root, .MuiMenu-root, " +
+            ".MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)"
+          )) {
             e.preventDefault();
             e.stopPropagation();
             dismissModalPopup();
@@ -1133,6 +1143,11 @@
       const cached = document.querySelectorAll("[data-inspira-exhibitor-enhanced]");
       cached.forEach((el) => el.removeAttribute("data-inspira-exhibitor-enhanced"));
       document.querySelectorAll(".card-selected").forEach((c) => c.classList.remove("card-selected"));
+      return;
+    }
+
+    // NEVER touch or style the registration form or ticket list drawer!
+    if (drawerPaper.querySelector(".singleViewWidgetDetails, .ticketListActionWrapper, [class*='singleViewWidget']")) {
       return;
     }
 
@@ -1333,34 +1348,40 @@
 
 
     function handleOutsideInteraction(e) {
-      // Find open modal card on screen
-      const papers = document.querySelectorAll(
+      // If registration form is active anywhere on the page, NEVER dismiss!
+      if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
+        return;
+      }
+
+      // 1. If clicking inside ANY registration form element, dropdowns, popups, options, or calendars: NEVER dismiss!
+      if (e.target.closest(
+        ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], " +
+        ".singleViewWidgetDetails, [class*='singleViewWidget'], .popup, " +
+        ".MuiPopover-root, .MuiMenu-root, .MuiAutocomplete-popper, .MuiTooltip-popper, " +
+        ".flatpickr-calendar, [class*='flatpickr'], [role='listbox'], [role='menu'], [role='option'], " +
+        "#demoDrawer .MuiPaper-root, .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root), " +
+        ".cookieBlock, [class*='cookieBlock']"
+      )) {
+        return;
+      }
+
+      // 2. Query visible modal papers
+      const papers = Array.from(document.querySelectorAll(
         ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], #demoDrawer .MuiPaper-root, .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root), .MuiModal-root .MuiBox-root[tabindex='-1']"
-      );
-      let activePaper = null;
-      for (const p of papers) {
-        // Skip hidden containers
+      )).filter((p) => {
         const container = p.closest(".MuiDrawer-root, .MuiModal-root, #demoDrawer");
-        if (container && window.getComputedStyle(container).display === "none") continue;
+        if (container && window.getComputedStyle(container).display === "none") return false;
         const rect = p.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0 && window.getComputedStyle(p).display !== "none") {
-          activePaper = p;
-          break;
-        }
-      }
-      if (!activePaper) return;
+        return rect.width > 0 && rect.height > 0 && window.getComputedStyle(p).display !== "none";
+      });
 
-      // If clicked INSIDE the active modal paper, DO NOT dismiss!
-      if (activePaper.contains(e.target)) {
+      if (!papers.length) return;
+
+      // 3. If target is inside ANY open paper, DO NOT dismiss!
+      if (papers.some((p) => p.contains(e.target))) {
         return;
       }
 
-      // Don't dismiss if clicked inside popovers, menus, select dropdowns
-      if (e.target.closest(".MuiMenu-root, .MuiPopover-root, .MuiAutocomplete-popper, .MuiTooltip-popper, .flatpickr-calendar, .cookieBlock, [class*='cookieBlock']")) {
-        return;
-      }
-
-      // User clicked outside the modal card (on backdrop, dimmed area, background cards, screen edges)
       e.stopPropagation();
       dismissModalPopup();
     }
@@ -1370,6 +1391,7 @@
 
     // Explicit delegated listener for standalone MuiModal / Add To Calendar close button & backdrop
     document.addEventListener("click", function (e) {
+      if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
       const calModal = document.querySelector(".MuiModal-root:not(.MuiDrawer-root)");
       if (!calModal) return;
 
@@ -1407,6 +1429,7 @@
     // On window (capture) so it runs before the form's own Escape handling
     window.addEventListener("keydown", function (e) {
       if (e.key !== "Escape" && e.key !== "Esc") return;
+      if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
       // Ignore the synthetic Escape that dismissModalPopup() dispatches itself
       if (!e.isTrusted || isDismissingModal) return;
       // An open dropdown, menu or date picker closes first
@@ -1581,26 +1604,61 @@
       );
       if (orig) orig.click();
     }
-    // Phones: the platform first opens a sheet that lists the tickets. When there is only one,
-    // continue straight to the form (with several tickets the sheet stays so the student can choose).
-    function continueSingleTicket(tries) {
-      if (document.querySelector(".singleViewWidgetDetails")) return;
-      const buttons = Array.from(document.querySelectorAll(".MuiDrawer-paper .ticketListActionWrapper button"))
-        .filter((b) => b.getClientRects().length > 0 && /register now/i.test(b.textContent));
-      if (buttons.length === 1) {
-        buttons[0].click();
-      } else if (buttons.length === 0 && tries > 0) {
-        setTimeout(() => continueSingleTicket(tries - 1), 100);
-      }
-    }
+
     const regBtn = ticketContainer.querySelector("#inspiraTicketRegisterBtn");
     if (regBtn) regBtn.addEventListener("click", (e) => {
       clickNative(e, "register now", "inspiraTicketRegisterBtn");
-      setTimeout(() => continueSingleTicket(20), 100);
+      setTimeout(() => continueSingleTicket(25), 60);
     });
     const calBtn = ticketContainer.querySelector("#inspiraTicketCalendarBtn");
     if (calBtn) calBtn.addEventListener("click", (e) => clickNative(e, "add to calendar", "inspiraTicketCalendarBtn"));
   }
+
+  function continueSingleTicket(tries) {
+    if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
+      return;
+    }
+
+    const buttons = Array.from(document.querySelectorAll(".ticketListActionWrapper button"))
+      .filter((b) => b.id !== "inspiraTicketRegisterBtn" && (/register|inscrever|registrar/i.test(b.textContent || "") || b.offsetWidth > 0));
+    if (buttons.length >= 1) {
+      buttons[0].click();
+    } else if (tries > 0) {
+      setTimeout(() => continueSingleTicket(tries - 1), 60);
+    }
+  }
+
+  // Global handler for mobile/tablet sticky register buttons and platform triggers
+  document.addEventListener("click", function (e) {
+    const mobileReg = e.target.closest(
+      ".toggleOn button, [class*='registerBtnScroll'] button, #refFormPanel .toggleOn button"
+    );
+    if (mobileReg) {
+      setTimeout(() => continueSingleTicket(25), 60);
+    }
+  }, true);
+
+  // When user closes the registration form, also close any underlying ticket drawer cleanly
+  document.addEventListener("click", function (e) {
+    const regClose = e.target.closest(
+      ".singleViewWidgetDetails .widgetRegCloseSingleView button, " +
+      ".singleViewWidgetDetails button[aria-label*='close' i], " +
+      ".singleViewWidgetDetails button.widgetRegCloseSingleView, " +
+      "[class*='singleViewWidget'] [class*='widgetRegClose'] button"
+    );
+    if (regClose) {
+      setTimeout(() => {
+        const ticketClose = document.querySelector(
+          ".MuiDrawer-root:has(.ticketListActionWrapper) button[aria-label*='close' i], " +
+          ".MuiDrawer-root:has(.ticketListActionWrapper) button.mui-cysavz, " +
+          ".MuiDrawer-root:has(.ticketListActionWrapper) button"
+        );
+        if (ticketClose) {
+          ticketClose.click();
+        }
+      }, 80);
+    }
+  }, true);
 
   /**
    * Continuous drawer polling helper to immediately enhance drawer once chips appear
@@ -1617,6 +1675,12 @@
         drawerPollTimer = null;
         return;
       }
+      // Never trigger exhibitor enhancement on registration form or ticket drawer
+      if (paper.querySelector(".singleViewWidgetDetails, .ticketListActionWrapper, [class*='singleViewWidget']")) {
+        clearInterval(drawerPollTimer);
+        drawerPollTimer = null;
+        return;
+      }
       const chips = paper.querySelectorAll(".MuiChip-root");
       const hasTabs = !!paper.querySelector(".inspira-filter-tabs-wrapper");
       if (chips.length > 0 && !hasTabs) {
@@ -1629,6 +1693,7 @@
 
   // Fast trigger on card clicks
   document.addEventListener("click", function (e) {
+    if (e.target.closest("#refFormPanel, .singleViewWidgetDetails, [class*='singleViewWidget']")) return;
     if (e.target.closest(SELECTORS.cards) || e.target.closest(".MuiCard-root, [class*='Card-root']")) {
       setTimeout(triggerDrawerEnhancement, 100);
     }
@@ -1661,7 +1726,11 @@
 
   function isOwnMutation(m) {
     const t = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentElement);
-    return !!(t && t.closest && t.closest(OWN_NODES));
+    if (!t || !t.closest) return false;
+    return !!(
+      t.closest(OWN_NODES) ||
+      t.closest(".singleViewWidgetDetails, [class*='singleViewWidget'], .popup, [role='listbox'], .MuiDrawer-paper:has(.singleViewWidgetDetails)")
+    );
   }
 
   if (document.readyState === "loading") {
@@ -1677,7 +1746,12 @@
     debounceTimeout = setTimeout(initializeAll, 120);
 
     const paper = document.querySelector(".MuiDrawer-paper");
-    if (paper && !paper.querySelector(".inspira-filter-tabs-wrapper")) {
+    if (
+      paper &&
+      !paper.querySelector(".singleViewWidgetDetails, .ticketListActionWrapper, [class*='singleViewWidget']") &&
+      !paper.querySelector(".inspira-filter-tabs-wrapper") &&
+      paper.querySelector("[class*='styleExhibitor'], [class*='exhibitor'], .MuiChip-root")
+    ) {
       enhanceExhibitorDrawer();
     }
   });
