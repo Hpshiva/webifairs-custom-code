@@ -265,6 +265,8 @@
   if (window.__INSPIRA_REGISTER__) return;
   window.__INSPIRA_REGISTER__ = true;
 
+  // Official event time, from the event banner: Thursday 22 Oct 2026, 5:00 PM to 8:00 PM BRT.
+  // Can be overridden before this script loads with window.INSPIRA_EVENT_CONFIG = { ... }.
   const EVENT = Object.assign({
     name: "Rede Inspira Virtual University Fair",
     start: "2026-10-22T17:00:00-03:00",
@@ -274,9 +276,13 @@
     passImage: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3583_7137_630733001791452515.jpeg"
   }, window.INSPIRA_EVENT_CONFIG || {});
 
+  // Platform data uses a bullet between name and country ("Cardiff University <bullet> U.K.").
+  // It is only matched here, never shown.
   const BULLET = "\u2022";
   const SEP = '<span class="inspira-sep" aria-hidden="true"></span>';
 
+  // Writes only when the element does not already show this markup (also repairs it if
+  // something else rewrote it), so the page observer is not triggered for nothing.
   function setHTML(el, html) {
     if (!el || (el.__inspiraHTML === html && el.innerHTML === el.__inspiraOut)) return;
     el.innerHTML = html;
@@ -339,6 +345,7 @@
     }
   }
 
+  // Configuration constants
   const SELECTORS = {
     header: "#headerTop",
     headerLogoBox: "#headerTop [class*='mui-jx8ode']",
@@ -350,6 +357,10 @@
     registerPanel: "#refFormPanel",
   };
 
+  /**
+   * 1. HIDE REDUNDANT STICKY TAB BAR
+   * Removes the redundant "Participating Universities" secondary sticky tab bar.
+   */
   function removeStickyTabBar() {
     const stickyEls = document.querySelectorAll(
       '#headerSticky, [id*="headerSticky"], .headerSticky, [class*="headerSticky"]'
@@ -360,6 +371,10 @@
     });
   }
 
+  /**
+   * 2. HEADER BRANDING ENHANCEMENT
+   * Injects the official Rede Inspira event brand into the empty header slot.
+   */
   function enhanceHeaderBrand() {
     const logoBox = document.querySelector(SELECTORS.headerLogoBox);
     if (!logoBox) return;
@@ -392,6 +407,10 @@
     }
   }
 
+  /**
+   * 3. HEADER SCROLL EFFECT
+   * Adds an elevation class to the header when user scrolls down.
+   */
   function initHeaderScrollListener() {
     const header = document.querySelector(SELECTORS.header);
     if (!header || header.dataset.scrollListenerActive) return;
@@ -413,17 +432,24 @@
     );
   }
 
+  /**
+   * 4. COUNTDOWN TIMER HERO ENHANCEMENT
+   * Replaces Hubilo's raw unstyled countdown with an executive, modern timer widget
+   * (frosted glass pill).
+   * Robust against any DOM structure, case-insensitive, extracts numbers reliably,
+   * hides native raw elements, and updates live via MutationObserver and 1s fallback ticker.
+   */
   let _inspiraCountdownInterval = null;
 
   function enhanceCountdownTimer() {
-    
+    // 1. Locate the timer container element
     const timerCandidates = document.querySelectorAll(
       '#description [class*="styleTimerWrapper"], #description [class*="styleTimerComponent"], [class*="styleTimerComponent"], [class*="styleTimerWrapper"], #description > .MuiBox-root:has(> label), [class*="TimerComponent"]'
     );
     let timerEl = null;
     for (const el of timerCandidates) {
       const text = (el.textContent || "").trim();
-      
+      // Case-insensitive matching for "event starts in", "starts in", "days", "secs"
       if (
         /(?:event starts in|starts in|fair begins in)/i.test(text) ||
         (/days/i.test(text) && /(?:secs?|seconds?|mins?|minutes?|hours?)/i.test(text))
@@ -433,6 +459,7 @@
       }
     }
 
+    // Fallback: search anywhere inside #description
     if (!timerEl) {
       const desc = document.getElementById("description");
       if (desc) {
@@ -453,12 +480,14 @@
     timerEl.style.setProperty("max-width", "100%", "important");
     timerEl.style.setProperty("box-sizing", "border-box", "important");
 
+    // 2. Hide all native Hubilo child elements so they never bleed through
     Array.from(timerEl.children).forEach((child) => {
       if (!child.classList.contains("inspira-enhanced-countdown")) {
         child.style.setProperty("display", "none", "important");
       }
     });
 
+    // 3. Extract countdown digits (Days, Hours, Mins, Secs)
     function extractCountdownNumbers() {
       const raw = timerEl.textContent || "";
       let d = raw.match(/(\d+)\s*(?:days?|d\b)/i)?.[1];
@@ -466,6 +495,7 @@
       let m = raw.match(/(\d+)\s*(?:minutes?|mins?|m\b)/i)?.[1];
       let s = raw.match(/(\d+)\s*(?:seconds?|secs?|s\b)/i)?.[1];
 
+      // If unit tags and numbers are separate nodes, inspect leaf elements
       if (!d || !h || !m || !s) {
         const leafTexts = Array.from(timerEl.querySelectorAll("*"))
           .filter((el) => el.children.length === 0 && !el.closest(".inspira-enhanced-countdown"))
@@ -482,6 +512,7 @@
           }
         }
 
+        // Check if there are 4 standalone numeric leaves: [days, hours, mins, secs]
         if (!d || !h || !m || !s) {
           const pureDigits = leafTexts.filter((t) => /^\d+$/.test(t));
           if (pureDigits.length >= 4) {
@@ -493,6 +524,7 @@
         }
       }
 
+      // Fallback: colon or slash sequence e.g. "13:15:40:16"
       if (!d || !h || !m || !s) {
         const seqMatch = raw.match(/(\d{1,3})\s*[:\-\/]\s*(\d{1,2})\s*[:\-\/]\s*(\d{1,2})\s*[:\-\/]\s*(\d{1,2})/);
         if (seqMatch) {
@@ -503,6 +535,7 @@
         }
       }
 
+      // Keep "--" until all four numbers can be read (never show invented numbers)
       if (d == null || h == null || m == null || s == null) return null;
       return {
         days: String(d).padStart(2, "0"),
@@ -512,6 +545,7 @@
       };
     }
 
+    // 4. Timer widget
     const style = "apple";
 
     let widget = timerEl.querySelector(".inspira-enhanced-countdown");
@@ -569,9 +603,11 @@
       if (secsEl && secsEl.textContent !== secs) secsEl.textContent = secs;
     }
 
+    // Initial update
     const initialValues = extractCountdownNumbers();
     updateWidgetValues(initialValues);
 
+    // 5. Real-Time Mutation Observer on timerEl
     if (!timerEl.dataset.timerObserved) {
       timerEl.dataset.timerObserved = "true";
       const observer = new MutationObserver(function (mutations) {
@@ -591,6 +627,7 @@
       observer.observe(timerEl, { childList: true, characterData: true, subtree: true });
     }
 
+    // 6. Resilient 1-Second Fallback Ticker
     if (!_inspiraCountdownInterval) {
       _inspiraCountdownInterval = setInterval(function () {
         if (!document.body.contains(timerEl)) {
@@ -604,6 +641,12 @@
     }
   }
 
+  /**
+   * AUTHENTIC WEBSITE UNIVERSITIES DATASET
+   * Extracted directly from live platform (redeinspira.webifairs.com).
+   * 100% real university names, countries, official CDN logos, and official CDN banners.
+   * Zero custom or mock data.
+   */
   const REAL_WEBSITE_UNIVERSITIES = [
     {
       name: "Technology Help Desk",
@@ -802,6 +845,17 @@
 
   window._inspiraCardViewMode = "style2";
 
+  /**
+   * 5. CARD DESIGN SYSTEM: STYLE 2 (SPLIT CLEAN) - 100% REAL PLATFORM DATA
+   * Contained official banner with logo badge, clean white base,
+   * real university name, real country tag, official booth tag, and dark "Explore Booth" pill CTA.
+   */
+  /**
+   * Intelligently formats university names and campus/location details.
+   * Prevents long institution names from overflowing and formats campus locations
+   * meaningfully into card subtitles (e.g., "Concordia University Wisconsin" with
+   * "Mequon Campus" subtitle).
+   */
   function formatUniversityCardDetails(rawName, countryHint, isSupportHint) {
     let displayName = (rawName || "").trim();
     let campusLocation = "";
@@ -818,6 +872,9 @@
       };
     }
 
+    // Check if the university name contains a campus or location separated by hyphen or dash
+    // Handles a regular hyphen, an en dash (u2013) and an em dash (u2014)
+    // e.g. "Concordia University Wisconsin - Mequon, WI" -> "Concordia University Wisconsin" + "Mequon Campus"
     if (/[\-\u2013\u2014]/.test(displayName)) {
       const parts = displayName.split(/\s*[\-\u2013\u2014]\s*/);
       const head = parts[0].trim();
@@ -829,6 +886,7 @@
       }
     }
 
+    // Meaningful concise subtitle: fits comfortably within 3-column cards without truncation
     let subtitle = escapeHTML(countryName(displayCountry));
     if (campusLocation) {
       let cleanCampus = campusLocation;
@@ -848,12 +906,17 @@
     };
   }
 
+  /**
+   * 5. ENHANCE PARTICIPATING UNIVERSITY CARDS (STYLE 2: SPLIT CLEAN)
+   * Transforms raw 32 cards into high-conversion cards:
+   * Contained top 110px photo banner with badge, white content, 2-line title, dark pill CTA.
+   */
   function enhanceUniversityCards(forceUpdate = false) {
     const cards = document.querySelectorAll(SELECTORS.cards);
     if (!cards.length) return;
 
     cards.forEach((card, index) => {
-      
+      // 1. Extract real university details from Hubilo raw DOM or authentic dataset
       let univName = "";
       let country = "";
       let logo = "";
@@ -883,6 +946,7 @@
       if (rawLogoImg && rawLogoImg.src) logo = rawLogoImg.src;
       if (rawBannerImg && rawBannerImg.src) banner = rawBannerImg.src;
 
+      // Match against official dataset for guaranteed authentic logo & banner
       const matched = REAL_WEBSITE_UNIVERSITIES.find(
         (u) =>
           univName &&
@@ -914,6 +978,7 @@
         if (fallback.isSupport) isSupport = true;
       }
 
+      // Format card details with smart campus/title separation and meaningful subtitle
       const details = formatUniversityCardDetails(rawFullName, country, isSupport);
       univName = details.displayName;
       country = details.country;
@@ -924,6 +989,7 @@
         ? '<path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>'
         : '<path d="M3 21h18M3 10h18M5 10v11M9 10v11M15 10v11M19 10v11M12 2l10 5H2l10-5z"></path>';
 
+      // Clean up any lingering chat, message buttons, or stray undergrad/grad tags on the card
       card.querySelectorAll(".inspira-card-chat-frosted, .inspira-card-chat-circle, .inspira-card-fav-btn, .inspira-card-fav-circle, [class*='chat-circle'], [class*='chat-frosted']").forEach((el) => el.remove());
       card.querySelectorAll(".inspira-card-tags-row-dark span, .inspira-card-tags-row span, [class*='inspira-tag']").forEach((tag) => {
         if (/undergrad|grad|live support/i.test(tag.textContent)) {
@@ -941,8 +1007,10 @@
       card.dataset.renderedStyle = "style2";
       card.dataset.cardVersion = "v9";
 
+      // Clean all existing custom overlays
       card.querySelectorAll(".inspira-card-view").forEach((el) => el.remove());
 
+      // STYLE 2: SPLIT CLEAN CARD (100% Real Website Data)
       const cardHtml = `
         <div class="inspira-card-view inspira-view-split">
           <div class="inspira-card-split-media">
@@ -987,6 +1055,7 @@
 
       card.insertAdjacentHTML("beforeend", cardHtml);
 
+      // Explore Booth button handler (opens booth modal drawer)
       const exploreBtn = card.querySelector(".inspira-card-cta-btn");
       if (exploreBtn) {
         exploreBtn.addEventListener("click", function (e) {
@@ -997,6 +1066,11 @@
     });
   }
 
+  /**
+   * 6. DIRECTORY LIVE SEARCH, COUNTRY FILTER & CARD DESIGN SWITCHER
+   * Injects an interactive search input, country pills, and design switcher
+   * right above the 32 university cards for effortless exploration.
+   */
   function initDirectorySearchAndFilter() {
     const section = document.querySelector(SELECTORS.universitiesSection);
     const grid = document.querySelector(SELECTORS.cardGrid);
@@ -1126,6 +1200,10 @@
     if (eurCount) eurCount.textContent = `(${europe})`;
   }
 
+  /**
+   * 7. ACTIVE CARD TRACKING & DRAWER STATE
+   * Highlights the active card while its detail drawer is open.
+   */
   function initCardInteractionTracking() {
     if (window._inspiraTrackingInitialized) return;
     window._inspiraTrackingInitialized = true;
@@ -1139,6 +1217,9 @@
     });
   }
 
+  /**
+   * Helper function to detect any open modal popup or drawer on the page
+   */
   function getActiveModalPopup() {
     const papers = document.querySelectorAll(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle']");
     for (const paper of papers) {
@@ -1159,10 +1240,15 @@
     return null;
   }
 
+  /**
+   * Helper function to locate the close button in any open modal or drawer
+   */
   function findModalCloseButton() {
+    // 1. Preview cards demo close button
     const demoClose = document.getElementById("demoCloseBtn");
     if (demoClose && demoClose.offsetParent !== null) return demoClose;
 
+    // 2. Add To Calendar modal close button (or any standalone MuiModal close button)
     const modalClose = document.querySelector(
       ".MuiModal-root:not(.MuiDrawer-root) button:has(path[d*='205.66']), " +
       ".MuiModal-root:not(.MuiDrawer-root) button.mui-1e6be0u, " +
@@ -1174,62 +1260,76 @@
       return modalClose;
     }
 
-    const drawerBtn = document.querySelector(".MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) > button, .MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) > .MuiIconButton-root, .MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) button.mui-cysavz, .MuiDrawer-paper:not(:has(.singleViewWidgetDetails)) [class*='mui-cysavz']");
+    // 3. Direct Hubilo Drawer paper close button (fastest & most reliable)
+    const drawerBtn = document.querySelector(".MuiDrawer-paper > button, .MuiDrawer-paper > .MuiIconButton-root, .MuiDrawer-paper button.mui-cysavz, .MuiDrawer-paper [class*='mui-cysavz']");
     if (drawerBtn && (drawerBtn.offsetWidth > 0 || drawerBtn.offsetHeight > 0 || drawerBtn.offsetParent !== null)) return drawerBtn;
 
+    // 4. Active open drawer paper on screen (DO NOT check generic .MuiPaper-root cards!)
     const openPapers = document.querySelectorAll(
       ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], .MuiModal-root [role='dialog'], .MuiModal-root .MuiBox-root[tabindex='-1']"
     );
 
     for (const paper of openPapers) {
       if (paper.offsetWidth === 0 && paper.offsetHeight === 0) continue;
-      
-      // NEVER select the close button of the registration form or panel!
-      if (paper.closest(".MuiCard-root, .MuiAccordion-root, #refFormPanel") || paper.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) continue;
+      // Skip if this paper is inside a card, accordion, or ticket panel
+      if (paper.closest(".MuiCard-root, .MuiAccordion-root, #refFormPanel")) continue;
 
+      // Direct child button of drawer paper (Hubilo close button)
       const directBtn = paper.querySelector(":scope > button, :scope > .MuiIconButton-root, button.mui-cysavz, [class*='mui-cysavz']");
       if (directBtn) return directBtn;
 
+      // Injected close button
       const injected = paper.querySelector("#inspiraInjectedCloseBtn, button.inspira-modal-close-btn");
       if (injected) return injected;
 
+      // SVG with close icon or cross path (Phosphor 205.66 or MUI 19 6.41)
       const closeSvgBtn = paper.querySelector(
         "button:has(path[d*='205.66']), button:has(path[d*='19 6.41']), button:has(svg[data-testid='CloseIcon'])"
       );
       if (closeSvgBtn && !closeSvgBtn.closest("[class*='social' i], [class*='Social' i], .tabs-filter-bar")) return closeSvgBtn;
 
+      // Close button with aria-label
       const ariaClose = paper.querySelector(
         "button[aria-label*='close' i], button[aria-label*='fechar' i], [aria-label*='close' i]"
       );
       if (ariaClose) return ariaClose;
+
+      // Registration form close button
+      const regClose = paper.querySelector(
+        ".widgetRegCloseSingleView button, .widgetRegCloseSingleView .MuiIconButton-root, [class*='widgetRegClose'] button"
+      );
+      if (regClose) return regClose;
     }
 
+    // 5. Global search for visible close button
     const globalClose = document.querySelector(
-      ".MuiDrawer-root:not(:has(.singleViewWidgetDetails)) button[aria-label*='close' i], .MuiModal-root:not(:has(.singleViewWidgetDetails)) button[aria-label*='close' i], #demoCloseBtn"
+      ".MuiDrawer-root button[aria-label*='close' i], .MuiModal-root button[aria-label*='close' i], .widgetRegCloseSingleView button, #demoCloseBtn"
     );
     if (globalClose) return globalClose;
 
     return null;
   }
 
+  /**
+   * Helper function to dismiss any open modal/drawer cleanly with re-entrancy protection
+   */
   let isDismissingModal = false;
   function dismissModalPopup() {
-    if (isDismissingModal) return false;
-    // CRITICAL: NEVER dismiss when the user has the registration form open!
-    if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
-      return false;
-    }
+    if (isDismissingModal) return;
     isDismissingModal = true;
 
     try {
+      // 1. Remove active card highlight
       document.querySelectorAll(".card-selected").forEach((c) => c.classList.remove("card-selected"));
 
+      // 2. Hide demo drawer in preview
       const demoDrawer = document.getElementById("demoDrawer");
       if (demoDrawer) {
         demoDrawer.style.display = "none";
         document.body.style.overflow = "";
       }
 
+      // 3. Find Hubilo/MUI close button and trigger it
       const closeBtn = findModalCloseButton();
       if (closeBtn && closeBtn.id !== "demoCloseBtn") {
         const actualBtn = closeBtn.closest("button") || closeBtn;
@@ -1242,6 +1342,7 @@
         actualBtn.click();
       }
 
+      // 4. Dispatch native Escape key (standard MUI modal closer)
       ["keydown", "keyup"].forEach((type) => {
         const escEvent = new KeyboardEvent(type, {
           key: "Escape",
@@ -1263,27 +1364,21 @@
     return true;
   }
 
+  /**
+   * 8. EXHIBITOR DRAWER ENHANCEMENT: PROPERTY PROGRAM BADGE & ALIGNMENT
+   * Re-aligns visual hierarchy (Banner -> Logo -> Title & Location -> Socials -> Programs -> About),
+   * formats programs into a modern Bento card, prevents text truncation, and binds backdrop dismissal.
+   */
   function enhanceExhibitorDrawer() {
-    // If registration form is active on the page, never touch drawers or bind backdrop dismissals
-    if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
-      return;
-    }
 
+    // Direct click-outside dismiss listener on all backdrops & modal containers
     document.querySelectorAll(".MuiBackdrop-root, .MuiDrawer-root, .MuiModal-root, #demoDrawer").forEach((container) => {
-      if (container.querySelector && container.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
-      if (container.closest && container.closest(".MuiDrawer-root:has(.singleViewWidgetDetails)")) return;
       if (!container.dataset.inspiraBackdropBound) {
         container.dataset.inspiraBackdropBound = "true";
         container.style.cursor = "pointer";
         container.style.pointerEvents = "auto";
         container.addEventListener("click", function (e) {
-          if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
-          if (!e.target.closest(
-            ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], " +
-            ".singleViewWidgetDetails, [class*='singleViewWidget'], .popup, " +
-            "[role='listbox'], [role='option'], .MuiPopover-root, .MuiMenu-root, " +
-            ".MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)"
-          )) {
+          if (!e.target.closest(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], .MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)")) {
             e.preventDefault();
             e.stopPropagation();
             dismissModalPopup();
@@ -1302,11 +1397,9 @@
       return;
     }
 
-    // NEVER touch or style the registration form or ticket list drawer!
-    if (drawerPaper.querySelector(".singleViewWidgetDetails, .ticketListActionWrapper, [class*='singleViewWidget']")) {
-      return;
-    }
+    // Hubilo's close button natively dispatches React modal dismissal; no custom listener needed
 
+    // Force 100% width on all inner wrappers to eliminate Hubilo's hardcoded 46rem empty space
     const innerWrappers = drawerPaper.querySelectorAll(
       ":scope > div, :scope > .MuiBox-root, [class*='styleExhibitorSidebarImage'], div[style*='46rem']"
     );
@@ -1319,6 +1412,7 @@
       }
     });
 
+    // Check if Hubilo is still loading skeleton data over network
     if (drawerPaper.querySelector(".MuiSkeleton-root")) {
       return;
     }
@@ -1344,9 +1438,11 @@
 
     chipsContainer.classList.add("inspira-programs-container");
 
+    // 8. ENHANCE ACADEMIC PROGRAMS & MAJORS (STYLE 2: FILTER TABS STANDARD)
     const rawChips = Array.from(chipsContainer.querySelectorAll(".MuiChip-root"));
     if (!rawChips.length) return;
 
+    // Helper: Categorize raw academic majors into standard department tabs
     function categorizeProgram(rawText) {
       const lower = (rawText || "").toLowerCase();
       if (/engineer|computer|tech|software|cyber|data|robotics|ai|mechanic|civil|electric|chemical|industrial|it\b/.test(lower)) {
@@ -1361,6 +1457,7 @@
       return { cat: "hum", label: "Humanities and Arts", shortLabel: "Humanities" };
     }
 
+    // Helper: Format raw shouting ALL-CAPS strings into clean Title Case
     function formatProgramTitle(rawText) {
       let raw = (rawText || "").replace(/_/g, " ").trim();
       const engMatch = raw.match(/^engineering:\s*(.*)/i);
@@ -1374,6 +1471,7 @@
       return name.toLowerCase().replace(/(?:^|\s|\/|-|\()\S/g, (char) => char.toUpperCase());
     }
 
+    // Extract and structure program list
     const programs = [];
     rawChips.forEach((chip) => {
       const label = chip.querySelector(".MuiChip-label") || chip;
@@ -1388,12 +1486,13 @@
         catLabel: catInfo.label,
         catShort: catInfo.shortLabel
       });
-      
+      // Hide raw MUI chips safely without removing from React's DOM tree
       chip.style.setProperty("display", "none", "important");
     });
 
     if (!programs.length) return;
 
+    // Remove any previously injected filter tabs wrapper
     const oldWrapper = chipsContainer.querySelector(".inspira-filter-tabs-wrapper");
     if (oldWrapper) oldWrapper.remove();
     const oldHeader = chipsContainer.querySelector(".inspira-programs-header-badge");
@@ -1402,11 +1501,13 @@
     const tabsWrapper = document.createElement("div");
     tabsWrapper.className = "inspira-filter-tabs-wrapper";
 
+    // Determine unique departments present
     const categoryCounts = {};
     programs.forEach((p) => {
       categoryCounts[p.cat] = (categoryCounts[p.cat] || 0) + 1;
     });
 
+    // Clean vector library icons (Phosphor / Lucide UI style, crisp SVGs without system emojis)
     const SVG_ICONS = {
       filterPill: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
       all: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
@@ -1426,6 +1527,7 @@
       hum: { label: "Humanities", icon: SVG_ICONS.hum }
     };
 
+    // Build chips HTML (collapse items beyond index 5 if > 6 items)
     const hasMore = programs.length > 6;
     let chipsHtml = "";
     programs.forEach((p, idx) => {
@@ -1458,6 +1560,7 @@
 
     chipsContainer.appendChild(tabsWrapper);
 
+    // Interactive expander listener
     const programChips = tabsWrapper.querySelectorAll(".tab-chip");
     const moreBtn = tabsWrapper.querySelector(".tab-more-btn");
     let isExpanded = false;
@@ -1480,53 +1583,52 @@
     }
   }
 
+  /**
+   * 9. BACKDROP / CLICK-OUTSIDE DISMISSAL & ESCAPE KEY
+   * Closes the modal popup when the user clicks anywhere outside the popup card
+   * or presses the Escape key.
+   */
   function initBackdropDismissal() {
     if (window._inspiraBackdropDismissalActive) return;
     window._inspiraBackdropDismissalActive = true;
 
+
     function handleOutsideInteraction(e) {
-      // If registration form is active anywhere on the page, NEVER dismiss!
-      if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
-        return;
-      }
-
-      // 1. If clicking inside ANY registration form element, dropdowns, popups, options, or calendars: NEVER dismiss!
-      if (e.target.closest(
-        ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], " +
-        ".singleViewWidgetDetails, [class*='singleViewWidget'], .popup, " +
-        ".MuiPopover-root, .MuiMenu-root, .MuiAutocomplete-popper, .MuiTooltip-popper, " +
-        ".flatpickr-calendar, [class*='flatpickr'], [role='listbox'], [role='menu'], [role='option'], " +
-        "#demoDrawer .MuiPaper-root, .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root), " +
-        ".cookieBlock, [class*='cookieBlock']"
-      )) {
-        return;
-      }
-
-      // 2. Query visible modal papers
-      const papers = Array.from(document.querySelectorAll(
+      if (!isLandingPage()) return;
+      // Find open modal card on screen
+      const papers = document.querySelectorAll(
         ".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], #demoDrawer .MuiPaper-root, .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root), .MuiModal-root .MuiBox-root[tabindex='-1']"
-      )).filter((p) => {
+      );
+      // On phones and tablets two popups can be open at once (the ticket sheet and the form on
+      // top of it). A click inside ANY open popup is inside; only a click outside all of them
+      // closes. (Checking only the first popup found treated every click in the form as
+      // "outside", which blocked dropdowns, radio buttons and checkboxes.)
+      const openPapers = Array.from(papers).filter((p) => {
         const container = p.closest(".MuiDrawer-root, .MuiModal-root, #demoDrawer");
         if (container && window.getComputedStyle(container).display === "none") return false;
         const rect = p.getBoundingClientRect();
         return rect.width > 0 && rect.height > 0 && window.getComputedStyle(p).display !== "none";
       });
+      if (!openPapers.length) return;
+      if (!(e.target instanceof Element) || !e.target.isConnected) return;
+      if (openPapers.some((p) => p.contains(e.target))) return;
 
-      if (!papers.length) return;
-
-      // 3. If target is inside ANY open paper, DO NOT dismiss!
-      if (papers.some((p) => p.contains(e.target))) {
+      // Don't dismiss if clicked inside popovers, menus, select dropdowns
+      if (e.target.closest(".MuiMenu-root, .MuiPopover-root, .MuiAutocomplete-popper, .MuiTooltip-popper, .flatpickr-calendar, .cookieBlock, [class*='cookieBlock']")) {
         return;
       }
 
+      // User clicked outside the modal card (on backdrop, dimmed area, background cards, screen edges)
       e.stopPropagation();
       dismissModalPopup();
     }
 
+    // Register with capture: true on window so outside click cannot be swallowed
     window.addEventListener("click", handleOutsideInteraction, true);
 
+    // Explicit delegated listener for standalone MuiModal / Add To Calendar close button & backdrop
     document.addEventListener("click", function (e) {
-      if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
+      if (!isLandingPage()) return;
       const calModal = document.querySelector(".MuiModal-root:not(.MuiDrawer-root)");
       if (!calModal) return;
 
@@ -1552,6 +1654,7 @@
         }
       }
 
+      // Check if click was on modal backdrop
       const backdrop = calModal.querySelector(".MuiBackdrop-root");
       if (backdrop && (target === backdrop || backdrop.contains(target))) {
         e.preventDefault();
@@ -1560,14 +1663,16 @@
       }
     }, true);
 
+    // On window (capture) so it runs before the form's own Escape handling
     window.addEventListener("keydown", function (e) {
       if (e.key !== "Escape" && e.key !== "Esc") return;
-      if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) return;
-      
+      if (!isLandingPage()) return;
+      // Ignore the synthetic Escape that dismissModalPopup() dispatches itself
       if (!e.isTrusted || isDismissingModal) return;
-      
+      // An open dropdown, menu or date picker closes first
       if (visibleMatch(".MuiPopover-root, .MuiMenu-root, .MuiAutocomplete-popper, .flatpickr-calendar.open, [role='listbox']")) return;
-
+      // The registration form uses its own dropdowns (a ".popup" box with a list). They close
+      // when the user clicks elsewhere in the form, so Escape does the same instead of closing the form.
       const openList = Array.prototype.find.call(document.querySelectorAll(".popup .MuiList-root"), (el) => el.getClientRects().length > 0);
       if (openList) {
         const host = openList.closest(".singleViewWidgetDetails, .modalContent, .MuiDrawer-paper, .MuiDialog-paper") || document.body;
@@ -1584,6 +1689,9 @@
     }, true);
   }
 
+  /**
+   * HELPER: Basic HTML sanitizer for safe text insertion
+   */
   function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, (tag) => ({
       "&": "&amp;",
@@ -1594,6 +1702,12 @@
     }[tag] || tag));
   }
 
+  /**
+   * 10. EVENT PASS (ticket panel, #refFormPanel)
+   * Shows the platform's registration panel as an event pass: photo header, real event date
+   * and time, the ticket name and "available till" text read from the platform, and buttons
+   * that click the platform's own Register Now and Add To Calendar buttons.
+   */
   function readNativeTicket(panel) {
     const leaves = Array.from(panel.querySelectorAll("p, span, h1, h2, h3, h4, h5, h6, div"))
       .filter((n) => n.children.length === 0 && !n.closest(".inspira-ticket-v2-container"))
@@ -1626,6 +1740,7 @@
     const native = readNativeTicket(panel);
     const heroSub = count ? `${when.date}${SEP}${count} universities` : when.date;
 
+    // Already built: only refresh values that can change
     const existingTicket = panel.querySelector(".inspira-ticket-v2-container");
     if (existingTicket) {
       setHTML(existingTicket.querySelector(".inspira-ticket-hero-subtitle"), heroSub);
@@ -1635,9 +1750,11 @@
       return;
     }
 
+    // Direct child container inside #refFormPanel
     const innerBox = panel.querySelector(":scope > .MuiBox-root") || panel.firstElementChild || panel;
     if (!innerBox) return;
 
+    // Clean any prior partial ticket fragments if any
     panel.querySelectorAll(".inspira-ticket-hero-card, .inspira-ticket-perforation, .inspira-ticket-details-block, .inspira-ticket-barcode-card, .inspira-ticket-v2-container")
       .forEach((el) => el.remove());
 
@@ -1715,6 +1832,7 @@
 
     innerBox.insertBefore(ticketContainer, innerBox.firstChild);
 
+    // Our buttons click the platform's own buttons, so registration keeps working exactly as before
     function clickNative(e, label, ownId) {
       e.preventDefault();
       e.stopPropagation();
@@ -1723,62 +1841,61 @@
       );
       if (orig) orig.click();
     }
-
+    // Phones: the platform first opens a sheet that lists the tickets. When there is only one,
+    // continue straight to the form (with several tickets the sheet stays so the student can choose).
+    function continueSingleTicket(tries) {
+      if (document.querySelector(".singleViewWidgetDetails")) return;
+      const buttons = Array.from(document.querySelectorAll(".MuiDrawer-paper .ticketListActionWrapper button"))
+        .filter((b) => b.getClientRects().length > 0 && /register now/i.test(b.textContent));
+      if (buttons.length === 1) {
+        buttons[0].click();
+      } else if (buttons.length === 0 && tries > 0) {
+        setTimeout(() => continueSingleTicket(tries - 1), 100);
+      }
+    }
     const regBtn = ticketContainer.querySelector("#inspiraTicketRegisterBtn");
     if (regBtn) regBtn.addEventListener("click", (e) => {
       clickNative(e, "register now", "inspiraTicketRegisterBtn");
-      setTimeout(() => continueSingleTicket(25), 60);
+      setTimeout(() => continueSingleTicket(20), 100);
     });
     const calBtn = ticketContainer.querySelector("#inspiraTicketCalendarBtn");
     if (calBtn) calBtn.addEventListener("click", (e) => clickNative(e, "add to calendar", "inspiraTicketCalendarBtn"));
   }
 
-  function continueSingleTicket(tries) {
-    if (document.querySelector(".singleViewWidgetDetails, [class*='singleViewWidget']")) {
-      return;
-    }
-
-    const buttons = Array.from(document.querySelectorAll(".ticketListActionWrapper button"))
-      .filter((b) => b.id !== "inspiraTicketRegisterBtn" && (/register|inscrever|registrar/i.test(b.textContent || "") || b.offsetWidth > 0));
-    if (buttons.length >= 1) {
-      buttons[0].click();
-    } else if (tries > 0) {
-      setTimeout(() => continueSingleTicket(tries - 1), 60);
-    }
+  /**
+   * TICKET SHEET (phones and tablets)
+   * The platform opens a sheet listing the tickets; its Register Now opens the form as a second
+   * popup on top. The sheet is hidden while the form is open (css) and closed together with the
+   * form, so closing the form never reveals a second popup. Works for every Register button.
+   */
+  function closeSheetAfterForm(sheet) {
+    if (!sheet || sheet.__inspiraWatched) return;
+    sheet.__inspiraWatched = true;
+    const started = Date.now();
+    let formSeen = false;
+    const watcher = new MutationObserver(() => {
+      if (document.querySelector(".singleViewWidgetDetails")) { formSeen = true; return; }
+      if (!sheet.isConnected) { watcher.disconnect(); return; }
+      if (!formSeen) {
+        if (Date.now() - started > 15000) { watcher.disconnect(); sheet.__inspiraWatched = false; }
+        return;
+      }
+      watcher.disconnect();
+      const close = sheet.querySelector(":scope > .MuiIconButton-root");
+      if (close) close.click();
+    });
+    watcher.observe(document.body, { childList: true, subtree: true });
   }
 
-  // Global handler for mobile/tablet sticky register buttons and platform triggers
   document.addEventListener("click", function (e) {
-    const mobileReg = e.target.closest(
-      ".toggleOn button, [class*='registerBtnScroll'] button, #refFormPanel .toggleOn button"
-    );
-    if (mobileReg) {
-      setTimeout(() => continueSingleTicket(25), 60);
-    }
+    if (!isLandingPage()) return;
+    const btn = e.target instanceof Element && e.target.closest(".MuiDrawer-paper .ticketListActionWrapper button");
+    if (btn) closeSheetAfterForm(btn.closest(".MuiDrawer-paper"));
   }, true);
 
-  // When user closes the registration form, also close any underlying ticket drawer cleanly
-  document.addEventListener("click", function (e) {
-    const regClose = e.target.closest(
-      ".singleViewWidgetDetails .widgetRegCloseSingleView button, " +
-      ".singleViewWidgetDetails button[aria-label*='close' i], " +
-      ".singleViewWidgetDetails button.widgetRegCloseSingleView, " +
-      "[class*='singleViewWidget'] [class*='widgetRegClose'] button"
-    );
-    if (regClose) {
-      setTimeout(() => {
-        const ticketClose = document.querySelector(
-          ".MuiDrawer-root:has(.ticketListActionWrapper) button[aria-label*='close' i], " +
-          ".MuiDrawer-root:has(.ticketListActionWrapper) button.mui-cysavz, " +
-          ".MuiDrawer-root:has(.ticketListActionWrapper) button"
-        );
-        if (ticketClose) {
-          ticketClose.click();
-        }
-      }, 80);
-    }
-  }, true);
-
+  /**
+   * Continuous drawer polling helper to immediately enhance drawer once chips appear
+   */
   let drawerPollTimer = null;
   function triggerDrawerEnhancement() {
     if (drawerPollTimer) clearInterval(drawerPollTimer);
@@ -1787,12 +1904,6 @@
       attempts++;
       const paper = document.querySelector(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle']");
       if (!paper || attempts > 60) {
-        clearInterval(drawerPollTimer);
-        drawerPollTimer = null;
-        return;
-      }
-      // Never trigger exhibitor enhancement on registration form or ticket drawer
-      if (paper.querySelector(".singleViewWidgetDetails, .ticketListActionWrapper, [class*='singleViewWidget']")) {
         clearInterval(drawerPollTimer);
         drawerPollTimer = null;
         return;
@@ -1807,14 +1918,27 @@
     }, 50);
   }
 
+  // Fast trigger on card clicks
   document.addEventListener("click", function (e) {
-    if (e.target.closest("#refFormPanel, .singleViewWidgetDetails, [class*='singleViewWidget']")) return;
+    if (!isLandingPage() || !(e.target instanceof Element)) return;
     if (e.target.closest(SELECTORS.cards) || e.target.closest(".MuiCard-root, [class*='Card-root']")) {
       setTimeout(triggerDrawerEnhancement, 100);
     }
   }, true);
 
+  /**
+   * 11. INITIALIZATION
+   * Runs once on load and again when the platform changes the page. Changes made by this
+   * script itself are ignored, so the observer cannot keep re-triggering itself.
+   */
+  // The register (landing) page only. The event pages inside the fair use other layouts, so
+  // nothing here runs there even if this file is loaded on every page.
+  function isLandingPage() {
+    return /^\/(register\/?)?$/.test(location.pathname) || !!document.getElementById("headerTop");
+  }
+
   function initializeAll() {
+    if (!isLandingPage()) return;
     [
       removeStickyTabBar,
       enhanceHeaderBrand,
@@ -1836,11 +1960,7 @@
 
   function isOwnMutation(m) {
     const t = m.target && (m.target.nodeType === 1 ? m.target : m.target.parentElement);
-    if (!t || !t.closest) return false;
-    return !!(
-      t.closest(OWN_NODES) ||
-      t.closest(".singleViewWidgetDetails, [class*='singleViewWidget'], .popup, [role='listbox'], .MuiDrawer-paper:has(.singleViewWidgetDetails)")
-    );
+    return !!(t && t.closest && t.closest(OWN_NODES));
   }
 
   if (document.readyState === "loading") {
@@ -1855,13 +1975,8 @@
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(initializeAll, 120);
 
-    const paper = document.querySelector(".MuiDrawer-paper");
-    if (
-      paper &&
-      !paper.querySelector(".singleViewWidgetDetails, .ticketListActionWrapper, [class*='singleViewWidget']") &&
-      !paper.querySelector(".inspira-filter-tabs-wrapper") &&
-      paper.querySelector("[class*='styleExhibitor'], [class*='exhibitor'], .MuiChip-root")
-    ) {
+    const paper = isLandingPage() && document.querySelector(".MuiDrawer-paper");
+    if (paper && !paper.querySelector(".inspira-filter-tabs-wrapper")) {
       enhanceExhibitorDrawer();
     }
   });
