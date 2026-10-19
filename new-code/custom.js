@@ -35,7 +35,7 @@
   function clean(s) { return String(s).replace(/\s+/g, " ").trim(); }
 
   function universityCount() {
-    
+
     try { return parseInt(localStorage.getItem("inspira_univ_count"), 10) || 0; } catch (e) { return 0; }
   }
 
@@ -160,7 +160,7 @@
     const isCode = path.indexOf("/login-with-code") > -1 || !!$("input[name='codeVal'], input[name='code'], input[name='otp']", rightCol);
 
     if (isSignUp || isCode) {
-      
+
       $$(".vip-perk-card, .form-footer-trust, .inspira-form-badge, .inspira-form-subtext, .inspira-input-label", rightCol)
         .forEach(function (el) { el.remove(); });
       return;
@@ -1006,6 +1006,9 @@
       }
       card.dataset.renderedStyle = "style2";
       card.dataset.cardVersion = "v9";
+      card.dataset.country = country;
+      const colWrapper = card.closest(".MuiGrid-item, .MuiGrid-root") || card.parentElement;
+      if (colWrapper) colWrapper.dataset.country = country;
 
       // Clean all existing custom overlays
       card.querySelectorAll(".inspira-card-view").forEach((el) => el.remove());
@@ -1067,10 +1070,69 @@
   }
 
   /**
-   * 6. DIRECTORY LIVE SEARCH, COUNTRY FILTER & CARD DESIGN SWITCHER
-   * Injects an interactive search input, country pills, and design switcher
-   * right above the 32 university cards for effortless exploration.
+   * 6. DIRECTORY LIVE SEARCH & DYNAMIC COUNTRY FILTERS
+   * Injects an interactive search input and dynamic pills for ALL countries
+   * detected across the participating university cards.
    */
+  let currentDirectoryFilter = "all";
+  let currentDirectorySearch = "";
+
+  function normalizeCountry(raw) {
+    if (!raw) return "";
+    const s = String(raw).trim();
+    const lower = s.toLowerCase();
+    if (/^u\.?s\.?a?$/i.test(lower) || lower === "united states" || lower === "usa") return "U.S.";
+    if (/^u\.?k\.?$/i.test(lower) || lower === "united kingdom" || lower === "uk") return "U.K.";
+    if (lower === "canada") return "Canada";
+    if (lower === "finland") return "Finland";
+    if (lower === "belgium") return "Belgium";
+    if (lower === "netherlands" || lower === "holland") return "Netherlands";
+    if (lower === "germany" || lower === "deutschland") return "Germany";
+    if (lower === "france") return "France";
+    if (lower === "spain") return "Spain";
+    if (lower === "italy") return "Italy";
+    if (lower === "ireland") return "Ireland";
+    if (lower === "switzerland") return "Switzerland";
+    if (lower === "australia") return "Australia";
+    if (lower === "japan") return "Japan";
+    if (lower.includes("support") || lower.includes("help desk")) return "Event Support";
+    return s.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+  }
+
+  function getCardCountry(col) {
+    if (!col) return "";
+    if (col.dataset && col.dataset.country) return normalizeCountry(col.dataset.country);
+    const card = col.querySelector(SELECTORS.cards) || col;
+    if (card && card.dataset && card.dataset.country) return normalizeCountry(card.dataset.country);
+
+    const badge = col.querySelector(".inspira-location-badge, [class*='location-badge']");
+    if (badge) {
+      const badgeText = badge.textContent.replace(/[\n\r]+/g, " ").trim();
+      if (badgeText) return normalizeCountry(badgeText);
+    }
+
+    const h3 = col.querySelector("h3, .MuiCardContent-root h3, [class*='mui-aqn2jx']");
+    const h3Text = h3 ? h3.textContent.trim() : "";
+    if (h3Text.includes(BULLET)) {
+      return normalizeCountry(h3Text.split(BULLET)[1]);
+    }
+    if (h3Text.includes(" - ")) {
+      return normalizeCountry(h3Text.split(" - ")[1]);
+    }
+
+    const fullText = col.textContent.toLowerCase();
+    if (fullText.includes("u.s.") || fullText.includes("united states")) return "U.S.";
+    if (fullText.includes("u.k.") || fullText.includes("united kingdom")) return "U.K.";
+    if (fullText.includes("canada")) return "Canada";
+    if (fullText.includes("finland")) return "Finland";
+    if (fullText.includes("belgium")) return "Belgium";
+    if (fullText.includes("netherlands")) return "Netherlands";
+    if (fullText.includes("germany")) return "Germany";
+    if (fullText.includes("support") || fullText.includes("help desk")) return "Event Support";
+
+    return "Global";
+  }
+
   function initDirectorySearchAndFilter() {
     const section = document.querySelector(SELECTORS.universitiesSection);
     const grid = document.querySelector(SELECTORS.cardGrid);
@@ -1080,55 +1142,50 @@
     if (!cardColumns.length) return;
 
     let filterContainer = section.querySelector(".univ-filter-container");
-    if (filterContainer) {
-      updateFilterCounts(cardColumns, filterContainer);
-      return;
+    if (!filterContainer) {
+      filterContainer = document.createElement("div");
+      filterContainer.className = "univ-filter-container";
+      filterContainer.innerHTML = `
+        <div class="univ-search-wrapper">
+          <svg class="univ-search-icon" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <input 
+            type="text" 
+            id="univSearchInput" 
+            class="univ-search-input" 
+            placeholder="Search by university or country" 
+            aria-label="Search participating universities"
+          />
+        </div>
+        <div class="univ-country-filters" role="group" aria-label="Filter universities by country"></div>
+      `;
+      grid.parentNode.insertBefore(filterContainer, grid);
+
+      const searchInput = filterContainer.querySelector("#univSearchInput");
+      searchInput.addEventListener("input", function (e) {
+        currentDirectorySearch = e.target.value;
+        applyFilter();
+      });
     }
-
-    const allCount = cardColumns.length;
-    filterContainer = document.createElement("div");
-    filterContainer.className = "univ-filter-container";
-    filterContainer.innerHTML = `
-      <div class="univ-search-wrapper">
-        <svg class="univ-search-icon" viewBox="0 0 24 24">
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
-        <input 
-          type="text" 
-          id="univSearchInput" 
-          class="univ-search-input" 
-          placeholder="Search by university or country" 
-          aria-label="Search participating universities"
-        />
-      </div>
-      <div class="univ-country-filters" role="group" aria-label="Filter universities by region">
-        <button type="button" class="univ-filter-pill active" data-filter="all">All <span class="univ-filter-count">(${allCount})</span></button>
-        <button type="button" class="univ-filter-pill" data-filter="u.s.">U.S. <span class="univ-filter-count"></span></button>
-        <button type="button" class="univ-filter-pill" data-filter="u.k.">U.K. <span class="univ-filter-count"></span></button>
-        <button type="button" class="univ-filter-pill" data-filter="canada">Canada <span class="univ-filter-count"></span></button>
-        <button type="button" class="univ-filter-pill" data-filter="europe">Europe <span class="univ-filter-count"></span></button>
-      </div>
-    `;
-
-    grid.parentNode.insertBefore(filterContainer, grid);
-
-    updateFilterCounts(cardColumns, filterContainer);
-
-    const searchInput = filterContainer.querySelector("#univSearchInput");
-    const pills = filterContainer.querySelectorAll(".univ-filter-pill");
-
-    let currentFilter = "all";
-    let searchQuery = "";
 
     function applyFilter() {
       let visibleCount = 0;
-      const q = searchQuery.toLowerCase().trim();
+      const q = currentDirectorySearch.toLowerCase().trim();
 
       cardColumns.forEach((col) => {
+        const country = getCardCountry(col);
+        const countryKey = country.toLowerCase();
         const text = col.textContent.toLowerCase();
-        const matchesCountry = inRegion(text, currentFilter);
 
-        const matchesSearch = !q || text.includes(q);
+        let matchesCountry = false;
+        if (currentDirectoryFilter === "all") {
+          matchesCountry = true;
+        } else if (currentDirectoryFilter === countryKey) {
+          matchesCountry = true;
+        }
+
+        const matchesSearch = !q || text.includes(q) || countryKey.includes(q);
 
         if (matchesCountry && matchesSearch) {
           col.style.display = "";
@@ -1149,10 +1206,11 @@
           `;
           grid.appendChild(emptyMsg);
           emptyMsg.querySelector("#resetUnivFilterBtn").addEventListener("click", () => {
-            searchInput.value = "";
-            searchQuery = "";
-            currentFilter = "all";
-            pills.forEach((p) => p.classList.toggle("active", p.dataset.filter === "all"));
+            const searchInput = filterContainer.querySelector("#univSearchInput");
+            if (searchInput) searchInput.value = "";
+            currentDirectorySearch = "";
+            currentDirectoryFilter = "all";
+            renderCountryPills();
             applyFilter();
           });
         }
@@ -1162,42 +1220,64 @@
       }
     }
 
-    searchInput.addEventListener("input", function (e) {
-      searchQuery = e.target.value;
-      applyFilter();
-    });
-
-    pills.forEach((pill) => {
-      pill.addEventListener("click", function () {
-        pills.forEach((p) => p.classList.remove("active"));
-        this.classList.add("active");
-        currentFilter = this.dataset.filter;
-        applyFilter();
+    function renderCountryPills() {
+      const counts = {};
+      cardColumns.forEach((col) => {
+        const c = getCardCountry(col);
+        if (c) {
+          counts[c] = (counts[c] || 0) + 1;
+        }
       });
-    });
-  }
 
-  function updateFilterCounts(columns, container) {
-    let us = 0, uk = 0, canada = 0, europe = 0;
-    columns.forEach((col) => {
-      const text = col.textContent.toLowerCase();
-      if (inRegion(text, "u.s.")) us++;
-      if (inRegion(text, "u.k.")) uk++;
-      if (inRegion(text, "canada")) canada++;
-      if (inRegion(text, "europe")) europe++;
-    });
+      // Show ALL countries present in the fair
+      const countryNames = Object.keys(counts).filter(c => c !== "Event Support");
+      countryNames.sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return a.localeCompare(b);
+      });
 
-    const allPill = container.querySelector('[data-filter="all"] .univ-filter-count');
-    const usCount = container.querySelector('[data-filter="u.s."] .univ-filter-count');
-    const ukCount = container.querySelector('[data-filter="u.k."] .univ-filter-count');
-    const canCount = container.querySelector('[data-filter="canada"] .univ-filter-count');
-    const eurCount = container.querySelector('[data-filter="europe"] .univ-filter-count');
+      if (counts["Event Support"]) {
+        countryNames.push("Event Support");
+      }
 
-    if (allPill) allPill.textContent = `(${columns.length})`;
-    if (usCount) usCount.textContent = `(${us})`;
-    if (ukCount) ukCount.textContent = `(${uk})`;
-    if (canCount) canCount.textContent = `(${canada})`;
-    if (eurCount) eurCount.textContent = `(${europe})`;
+      const pillsContainer = filterContainer.querySelector(".univ-country-filters");
+      if (!pillsContainer) return;
+
+      const totalCount = cardColumns.length;
+      let pillsHtml = `
+        <button type="button" class="univ-filter-pill ${currentDirectoryFilter === 'all' ? 'active' : ''}" data-filter="all">
+          All <span class="univ-filter-count">(${totalCount})</span>
+        </button>
+      `;
+
+      countryNames.forEach((country) => {
+        const key = country.toLowerCase();
+        const active = currentDirectoryFilter === key ? "active" : "";
+        pillsHtml += `
+          <button type="button" class="univ-filter-pill ${active}" data-filter="${escapeHTML(key)}">
+            ${escapeHTML(country)} <span class="univ-filter-count">(${counts[country]})</span>
+          </button>
+        `;
+      });
+
+      // Avoid re-rendering if HTML is identical to preserve focus and DOM
+      if (pillsContainer.__lastHtml !== pillsHtml) {
+        pillsContainer.__lastHtml = pillsHtml;
+        pillsContainer.innerHTML = pillsHtml;
+
+        pillsContainer.querySelectorAll(".univ-filter-pill").forEach((pill) => {
+          pill.addEventListener("click", function () {
+            pillsContainer.querySelectorAll(".univ-filter-pill").forEach((p) => p.classList.remove("active"));
+            this.classList.add("active");
+            currentDirectoryFilter = this.dataset.filter;
+            applyFilter();
+          });
+        });
+      }
+    }
+
+    renderCountryPills();
+    applyFilter();
   }
 
   /**
@@ -1547,7 +1627,7 @@
     tabsWrapper.innerHTML = `
       <div class="c2-filter-header-bar">
         <span class="c2-filter-title">
-          ${SVG_ICONS.filterPill} ACADEMIC PROGRAMS AND MAJORS
+          ${SVG_ICONS.filterPill} POPULAR ACADEMIC PROGRAMS AND MAJORS
         </span>
         <span class="c2-filter-count">
           ${programs.length} ${programs.length === 1 ? "major" : "majors"}
@@ -2018,7 +2098,7 @@
   function focusLater(el) {
     if (!el) return;
     setTimeout(function () {
-      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) {  } }
+      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) { } }
     }, 30);
   }
   function onRoomsPage() { return root.classList.contains('bt-rooms'); }
@@ -2092,50 +2172,70 @@
     });
   }
 
+  /* ---------- 5b. link Enter buttons to open card popup ---------- */
+  function findIconTarget(card) {
+    if (!card) return null;
+
+    var candidates = [
+      card.querySelector('.orgProfile img'),
+      card.querySelector('.orgProfile'),
+      card.querySelector('.roomCardMedia img'),
+      card.querySelector('.roomCardMedia'),
+      card.querySelector('.orgProfile a, a.orgProfile, .roomCardMedia a, a.roomCardMedia'),
+      card.querySelector('.orgName h6, .orgName')
+    ];
+
+    // Priority 1: Check if any candidate has a direct React onClick prop
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      if (!el) continue;
+      for (var k in el) {
+        if (k.indexOf('__reactProps') === 0 || k.indexOf('__reactEventHandlers') === 0) {
+          var p = el[k];
+          if (p && typeof p.onClick === 'function') {
+            return el;
+          }
+        }
+      }
+    }
+
+    // Priority 2: Return first existing candidate (profile icon -> media -> heading)
+    for (var j = 0; j < candidates.length; j++) {
+      if (candidates[j]) return candidates[j];
+    }
+
+    return card;
+  }
+
+  function triggerIconClick(target) {
+    if (!target) return;
+    try {
+      var opts = { bubbles: true, cancelable: true, view: window, detail: 1 };
+      if (typeof PointerEvent !== 'undefined') {
+        try { target.dispatchEvent(new PointerEvent('pointerdown', opts)); } catch (p1) {}
+        try { target.dispatchEvent(new PointerEvent('pointerup', opts)); } catch (p2) {}
+      }
+      try { target.dispatchEvent(new MouseEvent('mousedown', opts)); } catch (m1) {}
+      try { target.dispatchEvent(new MouseEvent('mouseup', opts)); } catch (m2) {}
+      target.dispatchEvent(new MouseEvent('click', opts));
+    } catch (err) {
+      if (window.console) console.warn('[linkEnterButtons] dispatchEvent failed', err);
+    }
+
+    try {
+      if (typeof target.click === 'function') {
+        target.click();
+      }
+    } catch (cErr) {}
+  }
+
   function linkEnterButtons() {
-    $$('.roomsCardsList .roomCard').forEach(function (card) {
-      var iconAnchor = card.querySelector(
-        '.orgProfile a[href], a.orgProfile[href], ' +
-        '.roomCardMedia a[href], a.roomCardMedia[href]'
-      );
+    $$('.roomsCardsList .roomCard, .roomCard').forEach(function (card) {
+      // 1. Remove obsolete overlay from previous code
+      var oldOverlay = card.querySelector('a.bt-enter-overlay');
+      if (oldOverlay) oldOverlay.remove();
 
-      if (!iconAnchor) {
-        var imgs = card.querySelectorAll('.orgProfile img, .roomCardMedia img, .orgProfile, .roomCardMedia');
-        for (var i = 0; i < imgs.length; i++) {
-          var a = imgs[i].closest ? imgs[i].closest('a[href]') : null;
-          if (a && a.getAttribute('href')) {
-            iconAnchor = a;
-            break;
-          }
-        }
-      }
-
-      if (!iconAnchor) {
-        var nameLink = card.querySelector('.orgName a[href], a.orgName[href]');
-        if (nameLink && nameLink.getAttribute('href')) {
-          iconAnchor = nameLink;
-        }
-      }
-
-      if (!iconAnchor) {
-        var allA = card.querySelectorAll('a[href]');
-        for (var j = 0; j < allA.length; j++) {
-          if (!allA[j].closest('.cardBottom')) {
-            iconAnchor = allA[j];
-            break;
-          }
-        }
-      }
-
-      var href = iconAnchor ? (iconAnchor.getAttribute('href') || iconAnchor.href) : '';
-      var target = iconAnchor ? (iconAnchor.getAttribute('target') || '') : '';
-      var rel = iconAnchor ? (iconAnchor.getAttribute('rel') || '') : '';
-
-      if (!href) {
-        var dataEl = card.querySelector('[data-url], [data-href], [data-room-url], [data-link]') || card;
-        href = dataEl.getAttribute('data-url') || dataEl.getAttribute('data-href') || dataEl.getAttribute('data-room-url') || dataEl.getAttribute('data-link') || '';
-      }
-
+      // 2. Ensure cardBottom and cardActions container exist
       var cardBottom = card.querySelector('.cardBottom');
       if (!cardBottom) {
         cardBottom = doc.createElement('div');
@@ -2150,7 +2250,8 @@
         cardBottom.appendChild(cardActions);
       }
 
-      var btn = cardActions.querySelector('.MuiButton-root, button, a:not(.bt-enter-overlay)');
+      // 3. Ensure active Enter button exists
+      var btn = cardActions.querySelector('.MuiButton-root, button, a');
       if (!btn) {
         btn = doc.createElement('button');
         btn.className = 'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary';
@@ -2159,52 +2260,30 @@
         cardActions.appendChild(btn);
       }
 
+      // Strip previous listeners if needed
+      if (btn.__btLinked && !btn.__btBound) {
+        var freshBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(freshBtn, btn);
+        btn = freshBtn;
+      }
+
       if (btn.classList.contains('Mui-disabled')) btn.classList.remove('Mui-disabled');
       if (btn.hasAttribute('disabled')) btn.removeAttribute('disabled');
       if (btn.getAttribute('aria-disabled') === 'true') btn.removeAttribute('aria-disabled');
+      btn.style.pointerEvents = 'auto';
+      btn.style.cursor = 'pointer';
 
-      if (href) {
-        var isExternal = /^https?:\/\//i.test(href) && href.indexOf(window.location.host) === -1;
-        var finalTarget = target || (isExternal ? '_blank' : '_self');
-        var finalRel = rel || (finalTarget === '_blank' ? 'noopener noreferrer' : '');
-
-        if (btn.tagName && btn.tagName.toLowerCase() === 'a') {
-          if (btn.getAttribute('href') !== href) btn.setAttribute('href', href);
-          if (finalTarget && btn.getAttribute('target') !== finalTarget) btn.setAttribute('target', finalTarget);
-          if (finalRel && btn.getAttribute('rel') !== finalRel) btn.setAttribute('rel', finalRel);
-        } else {
-          var overlay = cardActions.querySelector('a.bt-enter-overlay');
-          if (!overlay) {
-            overlay = doc.createElement('a');
-            overlay.className = 'bt-enter-overlay';
-            overlay.setAttribute('aria-label', (btn.textContent || 'Enter').trim());
-            cardActions.insertBefore(overlay, cardActions.firstChild);
+      // 4. Attach click to open the room popup
+      if (!btn.__btBound) {
+        btn.__btBound = true;
+        btn.addEventListener('click', function (e) {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
           }
-          if (overlay.getAttribute('href') !== href) overlay.setAttribute('href', href);
-          if (finalTarget && overlay.getAttribute('target') !== finalTarget) overlay.setAttribute('target', finalTarget);
-          if (finalRel && overlay.getAttribute('rel') !== finalRel) overlay.setAttribute('rel', finalRel);
-        }
-
-        if (!btn.__btLinked) {
-          btn.__btLinked = true;
-          btn.addEventListener('click', function (e) {
-            if (e.target && e.target.classList && e.target.classList.contains('bt-enter-overlay')) return;
-            var curHref = (btn.getAttribute('href')) || (cardActions.querySelector('a.bt-enter-overlay') && cardActions.querySelector('a.bt-enter-overlay').getAttribute('href')) || href;
-            var curTarget = (btn.getAttribute('target')) || (cardActions.querySelector('a.bt-enter-overlay') && cardActions.querySelector('a.bt-enter-overlay').getAttribute('target')) || finalTarget;
-            if (curTarget === '_blank') {
-              window.open(curHref, '_blank', 'noopener,noreferrer');
-            } else {
-              window.location.href = curHref;
-            }
-          });
-        }
-      } else if (iconAnchor) {
-        if (!btn.__btLinked) {
-          btn.__btLinked = true;
-          btn.addEventListener('click', function () {
-            iconAnchor.click();
-          });
-        }
+          var target = findIconTarget(card);
+          triggerIconClick(target);
+        });
       }
     });
   }
@@ -2240,7 +2319,7 @@
     if (s.wrap && visible(s.btn)) {
       if (!s.wrap.classList.contains('active')) s.btn.click();
 
-      if (s.deskInput) { try { s.deskInput.focus({ preventScroll: true }); } catch (e) {  } }
+      if (s.deskInput) { try { s.deskInput.focus({ preventScroll: true }); } catch (e) { } }
       focusLater(s.deskInput);
       return true;
     }
@@ -2273,7 +2352,7 @@
 
   function phoneSheet() {
     try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar)'); }
-    catch (e) { return null; }   
+    catch (e) { return null; }
   }
   function closeSheet(c) {
     var btn = c && $('.drawerCloseButton button', c);
@@ -2286,7 +2365,7 @@
     '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
     '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
     '[role="listbox"]', '.toastWrapper', '.ListMenuPopup', '.roomCard',
-    
+
     'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
     '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]'
   ].join(',');
@@ -2325,9 +2404,9 @@
 
     if (e.key === 'Escape') {
       if (closeSheet(phoneSheet())) { e.preventDefault(); return; }
-      if (anyModalOpen()) return;                       
+      if (anyModalOpen()) return;
       if (closeSortMenu() || closeSearch(e.target)) { e.preventDefault(); return; }
-      if (isEditable(e.target) && e.target.value) return; 
+      if (isEditable(e.target) && e.target.value) return;
       var d = openDrawer();
       if (d && closeDrawer(d)) e.preventDefault();
       return;
@@ -2399,7 +2478,7 @@
   function focusLater(el) {
     if (!el) return;
     setTimeout(function () {
-      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) {  } }
+      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) { } }
     }, 30);
   }
   function onEmbedPage() { return root.classList.contains('bt-embed'); }
@@ -2438,14 +2517,14 @@
     '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
     '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
     '[role="listbox"]', '.toastWrapper', 'iframe',
-    
+
     'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
     '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]'
   ].join(',');
 
   function phoneSheet() {
     try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar)'); }
-    catch (e) { return null; }   
+    catch (e) { return null; }
   }
   function closeSheet(c) {
     var btn = c && $('.drawerCloseButton button', c);
@@ -2486,8 +2565,8 @@
   doc.addEventListener('keydown', function (e) {
     if (e.defaultPrevented || e.key !== 'Escape') return;
     if (closeSheet(phoneSheet())) { e.preventDefault(); return; }
-    if (anyModalOpen()) return;                        
-    if (isEditable(e.target) && e.target.value) return;  
+    if (anyModalOpen()) return;
+    if (isEditable(e.target) && e.target.value) return;
     var d = openDrawer();
     if (d && closeDrawer(d)) e.preventDefault();
   });
@@ -2530,8 +2609,8 @@
     closeDrawerOnOutside: true,
     escapeClosesDrawer: true,
     keyboardBoothNav: true,
-    tagRows: 3,          
-    minHiddenTags: 4,    
+    tagRows: 3,
+    minHiddenTags: 4,
     aboutLines: 8,
     reveal: true
   }, window.BT_CONFIG || {});
@@ -2623,7 +2702,7 @@
     if (!CFG.reveal || reduceMotion || !io || !revealed) return;
     $$(REVEAL, booth).forEach(function (el) {
       if (revealed.has(el)) {
-        
+
         setClass(el, 'bt-reveal', true);
         setClass(el, 'bt-in', true);
         return;
@@ -2665,7 +2744,7 @@
     if (wrap.style.getPropertyValue('--bt-tags-max') !== max) wrap.style.setProperty('--bt-tags-max', max);
     setClass(wrap, 'bt-collapsible', true);
     setClass(wrap, 'bt-collapsed', !expanded);
-    
+
     if (expanded && !wrap.__btReleased) {
       wrap.style.maxHeight = wrap.scrollHeight + 'px';
       wrap.__btReleased = true;
@@ -2679,7 +2758,7 @@
       btn.setAttribute('data-bt', '');
       btn.addEventListener('click', function () {
         if (wrap.__btExpanded) {
-          
+
           wrap.style.maxHeight = wrap.scrollHeight + 'px';
           void wrap.offsetHeight;
           wrap.style.removeProperty('max-height');
@@ -2705,7 +2784,7 @@
     var expanded = !!p.__btExpanded;
 
     var lines = Math.round(p.scrollHeight / lh);
-    var needs = lines > CFG.aboutLines + 1;   
+    var needs = lines > CFG.aboutLines + 1;
 
     if (!needs) { setClass(p, 'bt-clamp', false); if (btn) btn.remove(); return; }
 
@@ -2750,7 +2829,7 @@
       ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
       doc.body.appendChild(ta);
       ta.select();
-      try { if (doc.execCommand('copy')) done(); } catch (e) {  }
+      try { if (doc.execCommand('copy')) done(); } catch (e) { }
       ta.remove();
     }
     if (navigator.clipboard && window.isSecureContext) {
@@ -2815,7 +2894,7 @@
       if (!el) return;
       setAttr(el, 'aria-label', a[1]);
       setAttr(el, 'title', a[1]);
-      
+
       var inner = el.querySelector('button');
       if (inner) { setAttr(inner, 'tabindex', '-1'); setAttr(inner, 'aria-hidden', 'true'); }
     });
@@ -2841,7 +2920,7 @@
     var focusWasInPanel = !doc.activeElement || doc.activeElement === doc.body || d.contains(doc.activeElement);
     back.click();
     if (focusWasInPanel && opener && opener.isConnected) {
-      try { opener.focus({ preventScroll: true }); } catch (e) {  }
+      try { opener.focus({ preventScroll: true }); } catch (e) { }
     }
     return true;
   }
@@ -2850,7 +2929,7 @@
     '.miniSidedrawer', '.headerWrapper', '.ReactModalPortal', '.MuiPopover-root',
     '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
     '[role="listbox"]', '.toastWrapper', '.bottom-drawer',
-    
+
     'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
     '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]',
     '.roomCard', '.peoplesCardWrapper', '.fileBox', '.cursor', '.cursorHand'
@@ -2869,14 +2948,14 @@
   window.addEventListener('click', function (e) {
     if (!pressedOutside) return;
     pressedOutside = false;
-    if (String(window.getSelection ? window.getSelection() : '') !== '') return; 
+    if (String(window.getSelection ? window.getSelection() : '') !== '') return;
     var d = openDrawer();
     if (d && !d.contains(e.target)) closeDrawer(d);
   }, true);
 
   function profileSheet() {
     try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar)'); }
-    catch (e) { return null; }   
+    catch (e) { return null; }
   }
   function closeSheet(c) {
     var btn = c && $('.drawerCloseButton button', c);
@@ -2902,8 +2981,8 @@
     }
 
     if (e.key === 'Escape' && CFG.escapeClosesDrawer) {
-      if (anyModalOpen()) return;                      
-      if (isEditable(e.target) && e.target.value) return; 
+      if (anyModalOpen()) return;
+      if (isEditable(e.target) && e.target.value) return;
       var d = openDrawer();
       if (d && closeDrawer(d)) e.preventDefault();
       return;
@@ -2942,7 +3021,7 @@
     var el = node && (node.nodeType === 1 ? node : node.parentNode);
     return !!(el && el.closest && el.closest('[data-bt]'));
   }
-  
+
   var mo = new MutationObserver(function (list) {
     for (var i = 0; i < list.length; i++) {
       var m = list[i];
@@ -2964,7 +3043,7 @@
       clearTimeout(resizeT);
       resizeT = setTimeout(schedule, 120);
     });
-    
+
     if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(schedule);
   }
 
@@ -3012,7 +3091,7 @@
   function focusLater(el) {
     if (!el) return;
     setTimeout(function () {
-      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) {  } }
+      if (el.isConnected) { try { el.focus({ preventScroll: true }); } catch (e) { } }
     }, 30);
   }
   function onPeoplePage() { return root.classList.contains('bt-people'); }
@@ -3073,7 +3152,7 @@
     if (s.wrap && visible(s.btn)) {
       if (!s.wrap.classList.contains('active')) s.btn.click();
 
-      if (s.deskInput) { try { s.deskInput.focus({ preventScroll: true }); } catch (e) {  } }
+      if (s.deskInput) { try { s.deskInput.focus({ preventScroll: true }); } catch (e) { } }
       focusLater(s.deskInput);
       return true;
     }
@@ -3082,7 +3161,7 @@
 
   function phoneSheet() {
     try { return $('.bottom-sheet__wrapper.open .bottom-sheet__container:has(.mobDelegateSidebar, .mobileFilterDrawer)'); }
-    catch (e) { return null; }   
+    catch (e) { return null; }
   }
   function closeSheet(c) {
     var btn = c && $('.drawerCloseButton button', c);
@@ -3091,7 +3170,7 @@
     return true;
   }
 
-  var lastChip = null;     
+  var lastChip = null;
   doc.addEventListener('click', function (e) {
     var chip = e.target.closest && e.target.closest('.delegatesTab .filterList .MuiChip-root');
     if (chip) lastChip = chip;
@@ -3143,7 +3222,7 @@
     '.MuiModal-root', '.MuiPopper-root', '[role="dialog"]', '[role="menu"]',
     '[role="listbox"]', '.toastWrapper', '.filterDropDown', '.ListMenuPopup',
     '.filtersWrapper', '.bt-top',
-    
+
     'button', 'a', 'input', 'textarea', 'select', 'label', '[role="button"]',
     '[role="tab"]', '[role="link"]', '[contenteditable]', '[tabindex]',
     '.peoplesCardWrapper', '.cursor', '.cursorHand'
@@ -3160,7 +3239,7 @@
   }, true);
 
   window.addEventListener('click', function (e) {
-    
+
     var c = phoneSheet();
     var t = e.target;
     if (c && t instanceof Element && !c.contains(t) && t.closest('.bottom-sheet__wrapper')) {
@@ -3171,7 +3250,7 @@
       }
       return;
     }
-    
+
     if (!pressedOutside) return;
     pressedOutside = false;
     if (e.defaultPrevented) return;
@@ -3185,9 +3264,9 @@
 
     if (e.key === 'Escape') {
       if (closeSheet(phoneSheet())) { e.preventDefault(); return; }
-      if (anyModalOpen()) return;                       
+      if (anyModalOpen()) return;
       if (closeFilterDropdown() || closeSortMenu() || closeSearch(e.target)) { e.preventDefault(); return; }
-      if (isEditable(e.target) && e.target.value) return; 
+      if (isEditable(e.target) && e.target.value) return;
       var d = openDrawer();
       if (d && closeDrawer(d)) e.preventDefault();
       return;
@@ -3249,7 +3328,7 @@
     var el = node && (node.nodeType === 1 ? node : node.parentNode);
     return !!(el && el.closest && el.closest('[data-bt]'));
   }
-  
+
   var mo = new MutationObserver(function (list) {
     for (var i = 0; i < list.length; i++) {
       var m = list[i];

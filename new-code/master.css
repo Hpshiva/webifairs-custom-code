@@ -5511,41 +5511,7 @@ html.bt-scrolled .headerWrapper {
 }
 
 .roomsCardsList .roomStartAt {
-  position: relative;
-  margin-top: 8px !important;
-  font-family: var(--bt-font);
-  font-size: 12px;
-  color: var(--bt-muted);
-}
-
-.roomsCardsList .roomStartAt:empty {
-  display: none;
-}
-
-.roomsCardsList .roomCard:has(.cardActions .MuiButton-root:not(.Mui-disabled)) .roomStartAt {
-  display: block;
-}
-
-.roomsCardsList .roomCard:has(.cardActions .MuiButton-root:not(.Mui-disabled)) .roomStartAt::before {
-  content: "Open now";
-  display: inline-block;
-  padding: 3px 10px 3px 22px;
-  border-radius: var(--bt-r-pill);
-  background: #e6f6ee;
-  color: var(--bt-ok);
-  font: 700 11px/1.5 var(--bt-font);
-}
-
-.roomsCardsList .roomCard:has(.cardActions .MuiButton-root:not(.Mui-disabled)) .roomStartAt::after {
-  content: "";
-  position: absolute;
-  top: 9px;
-  left: 10px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--bt-ok);
-  animation: bt-live 1.8s ease-out infinite;
+  display: none !important;
 }
 
 .roomsCardsList .roomDesc label {
@@ -5631,16 +5597,13 @@ html.bt-scrolled .headerWrapper {
 }
 
 .roomsCardsList .cardActions a.bt-enter-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: 12px;
-  cursor: pointer !important;
-  text-decoration: none !important;
+  display: none !important;
+  pointer-events: none !important;
 }
 
 .roomsCardsList .cardActions .MuiButton-root {
   position: relative;
+  z-index: 1;
   height: 40px;
   padding: 0 18px !important;
   border-radius: 12px !important;
@@ -5650,12 +5613,12 @@ html.bt-scrolled .headerWrapper {
   text-transform: none !important;
   cursor: pointer !important;
   text-decoration: none !important;
+  pointer-events: auto !important;
   background: var(--bt-primary) !important;
   color: #fff !important;
   box-shadow: 0 10px 20px -10px rgba(58, 37, 95, .75);
 }
 
-.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root,
 .roomsCardsList .cardActions .MuiButton-root:hover {
   background: var(--bt-grad-primary-hover, var(--bt-primary)) !important;
   box-shadow: 0 12px 24px -8px rgba(58, 37, 95, .85) !important;
@@ -5672,7 +5635,6 @@ html.bt-scrolled .headerWrapper {
   transition: transform var(--bt-med) var(--bt-ease);
 }
 
-.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root::after,
 .roomsCardsList .cardActions .MuiButton-root:hover::after {
   transform: translateX(3px);
 }
