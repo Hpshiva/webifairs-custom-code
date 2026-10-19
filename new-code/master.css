@@ -5650,27 +5650,18 @@ html.bt-scrolled .headerWrapper {
   text-transform: none !important;
   cursor: pointer !important;
   text-decoration: none !important;
-}
-
-.roomsCardsList .cardActions .MuiButton-root.Mui-disabled {
-  background: #efedf3 !important;
-  color: #8f8a9c !important;
-  cursor: not-allowed !important;
-  pointer-events: auto !important;
-}
-
-.roomsCardsList .cardActions .MuiButton-root:not(.Mui-disabled) {
   background: var(--bt-primary) !important;
   color: #fff !important;
   box-shadow: 0 10px 20px -10px rgba(58, 37, 95, .75);
 }
 
-.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root:not(.Mui-disabled),
-.roomsCardsList .cardActions:hover .MuiButton-root:not(.Mui-disabled) {
+.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root,
+.roomsCardsList .cardActions .MuiButton-root:hover {
   background: var(--bt-grad-primary-hover, var(--bt-primary)) !important;
+  box-shadow: 0 12px 24px -8px rgba(58, 37, 95, .85) !important;
 }
 
-.roomsCardsList .cardActions .MuiButton-root:not(.Mui-disabled)::after {
+.roomsCardsList .cardActions .MuiButton-root::after {
   content: "";
   width: 14px;
   height: 14px;
@@ -5681,9 +5672,8 @@ html.bt-scrolled .headerWrapper {
   transition: transform var(--bt-med) var(--bt-ease);
 }
 
-.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root:not(.Mui-disabled)::after,
-.roomsCardsList .cardActions:hover .MuiButton-root:not(.Mui-disabled)::after,
-.roomsCardsList .cardActions .MuiButton-root:not(.Mui-disabled):hover::after {
+.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root::after,
+.roomsCardsList .cardActions .MuiButton-root:hover::after {
   transform: translateX(3px);
 }
 
@@ -6127,7 +6117,7 @@ html body {
 .roomsHeadBarDesktop .pageSearchWrapper.searchIcon:not(.active) .searchBtn,
 .roomsCardsList .roomCardMedia,
 .roomsCardsList .avatarList .moreCount,
-.roomsCardsList .cardActions .MuiButton-root:not(.Mui-disabled),
+.roomsCardsList .cardActions .MuiButton-root,
 .mobileNav .hubilo-btn {
   background: var(--bt-grad-primary) !important;
 }

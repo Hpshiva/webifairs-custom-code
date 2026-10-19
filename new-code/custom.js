@@ -2026,7 +2026,7 @@
   function openDrawer() { return $('.sidedrawerWrapper.open:not(.profile)'); }
 
   function pageFlags() {
-    var page = $('.roomPageWrapper');
+    var page = $('.roomPageWrapper, .roomsCardsList, .roomListWrapper') || (window.location && window.location.pathname && window.location.pathname.indexOf('/rooms') !== -1);
     setClass(root, 'bt-rooms', !!page);
     setClass(root, 'bt-mobile', !!$('.isMobileContainer, .mainContainerMob'));
     setClass(root, 'bt-drawer-open', !!openDrawer());
@@ -2342,7 +2342,7 @@
   function update() {
     var page = pageFlags();
     onScroll();
-    if (!page) return;
+    if (!page && !$$('.roomsCardsList .roomCard, .roomCard').length) return;
     [showcase, stagger, nameTips, linkEnterButtons].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.warn('[rooms-override]', fn.name, err); }
     });
