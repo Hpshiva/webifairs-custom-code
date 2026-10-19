@@ -2235,6 +2235,10 @@
       var oldOverlay = card.querySelector('a.bt-enter-overlay');
       if (oldOverlay) oldOverlay.remove();
 
+      // Remove "Open now" / roomStartAt element
+      var startAts = card.querySelectorAll('.roomStartAt, [class*="roomStartAt"]');
+      startAts.forEach(function (el) { el.remove(); });
+
       // 2. Ensure cardBottom and cardActions container exist
       var cardBottom = card.querySelector('.cardBottom');
       if (!cardBottom) {

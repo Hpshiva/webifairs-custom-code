@@ -3919,29 +3919,53 @@ body:has(.singleViewWidgetDetails) .MuiModal-root:has(.ticketListActionWrapper):
   text-decoration: underline !important;
 }
 
-.MuiDrawer-paper .continueBtn {
-  position: absolute !important;
+.tmf137 .continueBtn,
+.MuiDrawer-paper .continueBtn,
+:is([class*="tmf137"], .singleViewWidgetDetails) .continueBtn,
+.continueBtn {
+  position: fixed !important;
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
   padding: 16px 28px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
   box-sizing: border-box !important;
-  background: rgba(255, 255, 255, 0.96) !important;
+  background: #FFFFFF !important;
   -webkit-backdrop-filter: blur(16px) !important;
   backdrop-filter: blur(16px) !important;
-  border-top: 1px solid #E2E8F0 !important;
+  border-top: 1px solid rgba(28, 28, 28, 0.15) !important;
   box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08) !important;
-  z-index: 100 !important;
+  z-index: 1000 !important;
 }
 
 @media (max-width: 640px) {
-  .MuiDrawer-paper .continueBtn {
+  .tmf137 .continueBtn,
+  .MuiDrawer-paper .continueBtn,
+  :is([class*="tmf137"], .singleViewWidgetDetails) .continueBtn,
+  .continueBtn {
     padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
-.MuiDrawer-paper .continueBtn>.MuiButton-root {
+@media (min-width: 1920px) {
+  .tmf137 .continueBtn,
+  .MuiDrawer-paper .continueBtn,
+  :is([class*="tmf137"], .singleViewWidgetDetails) .continueBtn,
+  .continueBtn {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    padding: 16px 32px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #FFFFFF !important;
+    border-top: 1px solid rgba(28, 28, 28, 0.15) !important;
+    z-index: 1000 !important;
+  }
+}
+
+:is(.tmf137, [class*="tmf137"], .MuiDrawer-paper) .continueBtn>.MuiButton-root,
+.continueBtn>.MuiButton-root {
   width: 100% !important;
   height: 48px !important;
   border-radius: 12px !important;
@@ -3960,7 +3984,8 @@ body:has(.singleViewWidgetDetails) .MuiModal-root:has(.ticketListActionWrapper):
     box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
-.MuiDrawer-paper .continueBtn>.MuiButton-root::before {
+:is(.tmf137, [class*="tmf137"], .MuiDrawer-paper) .continueBtn>.MuiButton-root::before,
+.continueBtn>.MuiButton-root::before {
   content: "" !important;
   position: absolute !important;
   z-index: 1 !important;
@@ -3971,13 +3996,15 @@ body:has(.singleViewWidgetDetails) .MuiModal-root:has(.ticketListActionWrapper):
   pointer-events: none !important;
 }
 
-.MuiDrawer-paper .continueBtn>.MuiButton-root:hover {
+:is(.tmf137, [class*="tmf137"], .MuiDrawer-paper) .continueBtn>.MuiButton-root:hover,
+.continueBtn>.MuiButton-root:hover {
   background: #CB4E2E !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 16px 32px -12px rgba(224, 92, 58, 0.6), 0 6px 18px rgba(224, 92, 58, 0.45) !important;
 }
 
-.MuiDrawer-paper .continueBtn>.MuiButton-root:active {
+:is(.tmf137, [class*="tmf137"], .MuiDrawer-paper) .continueBtn>.MuiButton-root:active,
+.continueBtn>.MuiButton-root:active {
   transform: translateY(1px) scale(0.99) !important;
 }
 
@@ -5510,8 +5537,39 @@ html.bt-scrolled .headerWrapper {
   color: var(--bt-ink) !important;
 }
 
-.roomsCardsList .roomStartAt {
+.roomsCardsList .roomStartAt,
+.roomsCardsList .roomCard .roomStartAt,
+.roomCard .roomStartAt,
+.roomsCardsList [class*="roomStartAt"],
+.roomsCardsList .roomCard:has(.cardActions .MuiButton-root) .roomStartAt,
+.roomsCardsList .roomCard:has(.cardActions .MuiButton-root:not(.Mui-disabled)) .roomStartAt {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+.roomsCardsList .roomStartAt::before,
+.roomsCardsList .roomStartAt::after,
+.roomsCardsList .roomCard .roomStartAt::before,
+.roomsCardsList .roomCard .roomStartAt::after,
+.roomCard .roomStartAt::before,
+.roomCard .roomStartAt::after,
+.roomsCardsList [class*="roomStartAt"]::before,
+.roomsCardsList [class*="roomStartAt"]::after,
+.roomsCardsList .roomCard:has(.cardActions .MuiButton-root) .roomStartAt::before,
+.roomsCardsList .roomCard:has(.cardActions .MuiButton-root) .roomStartAt::after,
+.roomsCardsList .roomCard:has(.cardActions .MuiButton-root:not(.Mui-disabled)) .roomStartAt::before,
+.roomsCardsList .roomCard:has(.cardActions .MuiButton-root:not(.Mui-disabled)) .roomStartAt::after {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
 }
 
 .roomsCardsList .roomDesc label {
