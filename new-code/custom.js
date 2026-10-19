@@ -2092,6 +2092,124 @@
     });
   }
 
+  function linkEnterButtons() {
+    $$('.roomsCardsList .roomCard').forEach(function (card) {
+      var iconAnchor = card.querySelector(
+        '.orgProfile a[href], a.orgProfile[href], ' +
+        '.roomCardMedia a[href], a.roomCardMedia[href]'
+      );
+
+      if (!iconAnchor) {
+        var imgs = card.querySelectorAll('.orgProfile img, .roomCardMedia img, .orgProfile, .roomCardMedia');
+        for (var i = 0; i < imgs.length; i++) {
+          var a = imgs[i].closest ? imgs[i].closest('a[href]') : null;
+          if (a && a.getAttribute('href')) {
+            iconAnchor = a;
+            break;
+          }
+        }
+      }
+
+      if (!iconAnchor) {
+        var nameLink = card.querySelector('.orgName a[href], a.orgName[href]');
+        if (nameLink && nameLink.getAttribute('href')) {
+          iconAnchor = nameLink;
+        }
+      }
+
+      if (!iconAnchor) {
+        var allA = card.querySelectorAll('a[href]');
+        for (var j = 0; j < allA.length; j++) {
+          if (!allA[j].closest('.cardBottom')) {
+            iconAnchor = allA[j];
+            break;
+          }
+        }
+      }
+
+      var href = iconAnchor ? (iconAnchor.getAttribute('href') || iconAnchor.href) : '';
+      var target = iconAnchor ? (iconAnchor.getAttribute('target') || '') : '';
+      var rel = iconAnchor ? (iconAnchor.getAttribute('rel') || '') : '';
+
+      if (!href) {
+        var dataEl = card.querySelector('[data-url], [data-href], [data-room-url], [data-link]') || card;
+        href = dataEl.getAttribute('data-url') || dataEl.getAttribute('data-href') || dataEl.getAttribute('data-room-url') || dataEl.getAttribute('data-link') || '';
+      }
+
+      var cardBottom = card.querySelector('.cardBottom');
+      if (!cardBottom) {
+        cardBottom = doc.createElement('div');
+        cardBottom.className = 'cardBottom';
+        card.appendChild(cardBottom);
+      }
+
+      var cardActions = cardBottom.querySelector('.cardActions');
+      if (!cardActions) {
+        cardActions = doc.createElement('div');
+        cardActions.className = 'cardActions';
+        cardBottom.appendChild(cardActions);
+      }
+
+      var btn = cardActions.querySelector('.MuiButton-root, button, a:not(.bt-enter-overlay)');
+      if (!btn) {
+        btn = doc.createElement('button');
+        btn.className = 'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary';
+        btn.setAttribute('type', 'button');
+        btn.innerHTML = '<span class="MuiButton-label">Enter</span>';
+        cardActions.appendChild(btn);
+      }
+
+      if (btn.classList.contains('Mui-disabled')) btn.classList.remove('Mui-disabled');
+      if (btn.hasAttribute('disabled')) btn.removeAttribute('disabled');
+      if (btn.getAttribute('aria-disabled') === 'true') btn.removeAttribute('aria-disabled');
+
+      if (href) {
+        var isExternal = /^https?:\/\//i.test(href) && href.indexOf(window.location.host) === -1;
+        var finalTarget = target || (isExternal ? '_blank' : '_self');
+        var finalRel = rel || (finalTarget === '_blank' ? 'noopener noreferrer' : '');
+
+        if (btn.tagName && btn.tagName.toLowerCase() === 'a') {
+          if (btn.getAttribute('href') !== href) btn.setAttribute('href', href);
+          if (finalTarget && btn.getAttribute('target') !== finalTarget) btn.setAttribute('target', finalTarget);
+          if (finalRel && btn.getAttribute('rel') !== finalRel) btn.setAttribute('rel', finalRel);
+        } else {
+          var overlay = cardActions.querySelector('a.bt-enter-overlay');
+          if (!overlay) {
+            overlay = doc.createElement('a');
+            overlay.className = 'bt-enter-overlay';
+            overlay.setAttribute('aria-label', (btn.textContent || 'Enter').trim());
+            cardActions.insertBefore(overlay, cardActions.firstChild);
+          }
+          if (overlay.getAttribute('href') !== href) overlay.setAttribute('href', href);
+          if (finalTarget && overlay.getAttribute('target') !== finalTarget) overlay.setAttribute('target', finalTarget);
+          if (finalRel && overlay.getAttribute('rel') !== finalRel) overlay.setAttribute('rel', finalRel);
+        }
+
+        if (!btn.__btLinked) {
+          btn.__btLinked = true;
+          btn.addEventListener('click', function (e) {
+            if (e.target && e.target.classList && e.target.classList.contains('bt-enter-overlay')) return;
+            var curHref = (btn.getAttribute('href')) || (cardActions.querySelector('a.bt-enter-overlay') && cardActions.querySelector('a.bt-enter-overlay').getAttribute('href')) || href;
+            var curTarget = (btn.getAttribute('target')) || (cardActions.querySelector('a.bt-enter-overlay') && cardActions.querySelector('a.bt-enter-overlay').getAttribute('target')) || finalTarget;
+            if (curTarget === '_blank') {
+              window.open(curHref, '_blank', 'noopener,noreferrer');
+            } else {
+              window.location.href = curHref;
+            }
+          });
+        }
+      } else if (iconAnchor) {
+        if (!btn.__btLinked) {
+          btn.__btLinked = true;
+          btn.addEventListener('click', function () {
+            iconAnchor.click();
+          });
+        }
+      }
+    });
+  }
+
+
   function sortButton() {
     var desk = $('.roomsHeadBarDesktop .sortDropdown button');
     if (visible(desk)) return desk;
@@ -2225,7 +2343,7 @@
     var page = pageFlags();
     onScroll();
     if (!page) return;
-    [showcase, stagger, nameTips].forEach(function (fn) {
+    [showcase, stagger, nameTips, linkEnterButtons].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.warn('[rooms-override]', fn.name, err); }
     });
   }

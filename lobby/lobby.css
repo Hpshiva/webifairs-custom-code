@@ -728,7 +728,7 @@ html.bt-scrolled .headerWrapper {
   color: var(--bt-primary) !important;
 }
 
-/* Footer: hosts + Enter */
+/* Footer: Enter button */
 .roomsCardsList .cardBottom {
   position: relative !important;
   inset: auto !important;
@@ -736,13 +736,17 @@ html.bt-scrolled .headerWrapper {
   order: 2;
   display: flex !important;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 10px;
   min-height: 0 !important;
   margin: 0 !important;
   padding: 12px 18px 14px !important;
   border-top: 1px solid var(--bt-line);
   background: var(--bt-primary-tint) !important;
+}
+
+.roomsCardsList .cardBottom .hostedByBlock {
+  display: none !important;
 }
 
 .roomsCardsList .hostedByBlock p {
@@ -786,7 +790,24 @@ html.bt-scrolled .headerWrapper {
   font: 700 11.5px/1 var(--bt-font) !important;
 }
 
+.roomsCardsList .cardActions {
+  position: relative !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.roomsCardsList .cardActions a.bt-enter-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 12px;
+  cursor: pointer !important;
+  text-decoration: none !important;
+}
+
 .roomsCardsList .cardActions .MuiButton-root {
+  position: relative;
   height: 40px;
   padding: 0 18px !important;
   border-radius: 12px !important;
@@ -794,6 +815,8 @@ html.bt-scrolled .headerWrapper {
   font-size: 14px !important;
   font-weight: 600 !important;
   text-transform: none !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
 }
 
 .roomsCardsList .cardActions .MuiButton-root.Mui-disabled {
@@ -809,6 +832,11 @@ html.bt-scrolled .headerWrapper {
   box-shadow: 0 10px 20px -10px rgba(58, 37, 95, .75);
 }
 
+.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root:not(.Mui-disabled),
+.roomsCardsList .cardActions:hover .MuiButton-root:not(.Mui-disabled) {
+  background: var(--bt-grad-primary-hover, var(--bt-primary)) !important;
+}
+
 /* Open rooms: an arrow on Enter that nudges forward on hover */
 .roomsCardsList .cardActions .MuiButton-root:not(.Mui-disabled)::after {
   content: "";
@@ -821,6 +849,8 @@ html.bt-scrolled .headerWrapper {
   transition: transform var(--bt-med) var(--bt-ease);
 }
 
+.roomsCardsList .cardActions:has(a.bt-enter-overlay:hover) .MuiButton-root:not(.Mui-disabled)::after,
+.roomsCardsList .cardActions:hover .MuiButton-root:not(.Mui-disabled)::after,
 .roomsCardsList .cardActions .MuiButton-root:not(.Mui-disabled):hover::after {
   transform: translateX(3px);
 }
