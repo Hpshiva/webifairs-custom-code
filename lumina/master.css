@@ -11977,3 +11977,10 @@ body:has(#headerTop) .inspira-ticket-v2-container .inspira-ticket-perforation .i
 html body :is(input, textarea):not([type="checkbox"], [type="radio"], [type="range"], [type="file"]):is(:focus, :focus-visible) {
   outline: none !important;
 }
+
+/* Plain text areas (e.g. the registration form) have no box focus style of their own, so they
+   get the theme border + soft ring instead of the removed outline. */
+html body textarea:not(.MuiInputBase-input):not([aria-hidden="true"]):is(:focus, :focus-visible) {
+  border-color: var(--bt-violet) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bt-violet) 18%, transparent) !important;
+}
