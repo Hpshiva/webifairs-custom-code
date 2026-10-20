@@ -11444,3 +11444,10 @@ html body {
 .headerWrapper .menuItem {
   height: 64px !important;
 }
+
+/* Search pill: the page-wide focus ring (box-shadow) also landed on the text field, which starts 13px
+   inside the pill, drawing a second rounded box inside it. The pill's own border + glow show focus. */
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .searchInputWrapper.active .searchInput:is(:focus, :focus-visible) {
+  box-shadow: none !important;
+  outline: none !important;
+}
