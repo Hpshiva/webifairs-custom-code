@@ -11581,7 +11581,7 @@ html body {
   justify-content: center;
   gap: 6px;
   margin: 0;
-  padding: 0 12px;
+  padding: 0;
   border: 1px solid transparent;
   border-radius: 12px;
   background: var(--bt-primary-soft);
