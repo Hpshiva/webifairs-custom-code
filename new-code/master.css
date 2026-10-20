@@ -11402,3 +11402,35 @@ html body {
   color: inherit !important;
   fill: currentColor;
 }
+
+/* People cards (hover): the card is a fixed 240px, and Chat + Meet stacked (96px) covered the name and
+   organization. Put the two buttons side by side so everything fits; long organizations clamp to 2 lines. */
+.delegatesTab .peoplesCardWrapper .hoverButtonWrapper {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 8px 10px !important;
+}
+
+.delegatesTab .peoplesCardWrapper .hoverButtonWrapper .MuiButton-root {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  height: 34px !important;
+  margin: 0 !important;
+  padding: 0 6px !important;
+  font-size: 12.5px !important;
+  white-space: nowrap !important;
+}
+
+.delegatesTab .peoplesCardWrapper .hoverButtonWrapper .MuiButton-startIcon {
+  margin-left: 0 !important;
+  margin-right: 4px !important;
+}
+
+.delegatesTab .peoplesCardWrapper .organization {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
