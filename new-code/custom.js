@@ -2407,16 +2407,10 @@
 
       if (modal.querySelector('.MuiSkeleton-root')) return;
 
-      var allChips = $$(
-        '.tagsWrapper .MuiChip-root, .sponsorsDetails .tagsWrapper .MuiChip-root, ' +
-        '.companyProfileFeeds .MuiChip-root, .MuiChip-root',
-        modal
-      ).filter(function (c) { return !c.classList.contains('tab-chip'); });
-
-      if (!allChips.length) return;
-
-      var chipsContainer = modal.querySelector('.tagsWrapper, .sponsorsDetails .tagsWrapper') || allChips[0].parentElement;
-      if (!chipsContainer) return;
+      // Only a university's own programs/majors tag list becomes the majors panel. People popups also use
+      // .tagsWrapper + MuiChip for their meeting time slots, which must stay native (they book meetings).
+      var chipsContainer = modal.querySelector('.companyProfileArea .tagsWrapper, .sponsorsDetails .tagsWrapper');
+      if (!chipsContainer || chipsContainer.closest('.meeting-sec, .meetbox, .DelegateSidebar')) return;
 
       var rawChips = $$(
         ':scope > .MuiChip-root:not(.tab-chip), .MuiChip-root:not(.tab-chip)',
