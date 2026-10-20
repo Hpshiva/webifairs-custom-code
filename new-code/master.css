@@ -11434,3 +11434,13 @@ html body {
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+
+/* Header menu: the platform sizes the menu row from the screen height (about 7 x --vh, so 70-76px on
+   1000-1080px tall screens) while the header is 64px, so the active tab's underline hung below the
+   header. Keep the row at the header height so the underline sits on the header's bottom edge. */
+.headerWrapper .headerInnerWrapper,
+.headerWrapper .menuWrapper,
+.headerWrapper .menuInnerWrapper,
+.headerWrapper .menuItem {
+  height: 64px !important;
+}
