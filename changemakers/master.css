@@ -70,7 +70,7 @@ body:has(.logInBlockWrapper) #__next {
     radial-gradient(circle at 18% 20%, rgba(91, 103, 201, 0.45) 0%, transparent 55%),
     radial-gradient(circle at 85% 80%, rgba(76, 88, 180, 0.28) 0%, transparent 55%),
     linear-gradient(165deg, rgba(2, 6, 32, 0.88) 0%, rgba(3, 7, 45, 0.82) 50%, rgba(4, 9, 52, 0.90) 100%),
-    url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1600&auto=format&fit=crop&q=80') !important;
+    url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&auto=format&fit=crop&q=80') !important;
   background-size: cover !important;
   background-position: center !important;
   color: #FFFFFF !important;
