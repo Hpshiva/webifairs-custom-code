@@ -9,7 +9,8 @@
     end: "2026-10-28T19:00:00+04:00",
     timeZone: "Asia/Dubai",
     timeZoneLabel: "GST",
-    registerUrl: "/register"
+    registerUrl: "/register",
+    logo: "https://cdn.prod.website-files.com/64760766fa26f8bd63c8fee5/6ad5d9a86ddbb8d775280cb2_Gems.svg"
   }, window.INSPIRA_EVENT_CONFIG || {});
 
   const START = new Date(EVENT.start).getTime();
@@ -82,7 +83,7 @@
   function heroMarkup(count) {
     return '' +
       '<div class="hero-top-brand">' +
-      '<div class="hero-brand-logo">change<span>makers</span></div>' +
+      '<div class="hero-brand-logo"><img src="' + EVENT.logo + '" alt="GEMS Education"></div>' +
       '<div class="hero-live-badge">' + badge() + "</div>" +
       "</div>" +
       '<div class="hero-content-center">' +
@@ -273,7 +274,8 @@
     end: "2026-10-28T19:00:00+04:00",
     timeZone: "Asia/Dubai",
     timeZoneLabel: "GST",
-    passImage: "https://cdn.hubilo.com/banner/community_login_banner/3380930/1120/4118_9621_371323001791367601.png"
+    passImage: "https://cdn.hubilo.com/banner/community_login_banner/3380930/1120/4118_9621_371323001791367601.png",
+    logo: "https://cdn.prod.website-files.com/64760766fa26f8bd63c8fee5/6ad5d9a86ddbb8d775280cb2_Gems.svg"
   }, window.INSPIRA_EVENT_CONFIG || {});
 
   // Platform data uses a bullet between name and country ("Cardiff University <bullet> U.K.").
@@ -390,7 +392,7 @@
     logoBox.dataset.inspiraEnhanced = "true";
     logoBox.innerHTML = `
       <a href="#" class="inspira-nav-brand" title="Changemakers - GEMS Education Virtual University Fair" style="text-decoration: none;">
-        <span class="inspira-nav-badge">CHANGEMAKERS</span>
+        <img class="inspira-nav-logo" src="${EVENT.logo}" alt="GEMS Education">
         <div class="inspira-nav-title">
           <span class="inspira-nav-title-main">Virtual University Fair</span>
           <span class="inspira-nav-title-sub">${brandSubtitle(count)}</span>

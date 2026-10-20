@@ -2487,7 +2487,7 @@ div[id="refFormPanel"] {
 }
 
 .inspira-ticket-btn-primary:hover {
-  background: #CB4E2E !important;
+  background: #3F4AA0 !important;
   box-shadow: 0 16px 32px -10px rgba(91, 103, 201, 0.6), 0 6px 18px rgba(91, 103, 201, 0.45) !important;
   transform: translateY(-2px) !important;
 }
@@ -4002,7 +4002,7 @@ body:has(.singleViewWidgetDetails) .MuiModal-root:has(.ticketListActionWrapper):
 
 :is(.tmf137, [class*="tmf137"], .MuiDrawer-paper) .continueBtn>.MuiButton-root:hover,
 .continueBtn>.MuiButton-root:hover {
-  background: #CB4E2E !important;
+  background: #3F4AA0 !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 16px 32px -12px rgba(91, 103, 201, 0.6), 0 6px 18px rgba(91, 103, 201, 0.45) !important;
 }
@@ -11657,5 +11657,35 @@ html body {
 
   .roomsCardsList .roomCard:hover .bt-room-title {
     color: var(--bt-primary);
+  }
+}
+
+/* =====================================================================
+   GEMS Education logo (login hero + register header)
+   ===================================================================== */
+.inspira-hero-injected .hero-brand-logo img {
+  display: block;
+  height: 46px;
+  width: auto;
+  /* navy logo -> white on the dark hero */
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 767.98px) {
+  .inspira-hero-injected .hero-brand-logo img {
+    height: 38px;
+  }
+}
+
+.inspira-nav-brand .inspira-nav-logo {
+  display: block;
+  height: 40px;
+  width: auto;
+  flex: none;
+}
+
+@media (max-width: 767.98px) {
+  .inspira-nav-brand .inspira-nav-logo {
+    height: 32px;
   }
 }
