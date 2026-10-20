@@ -11972,3 +11972,413 @@ html body textarea:not(.MuiInputBase-input):not([aria-hidden="true"]):is(:focus,
   border-color: var(--bt-violet) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bt-violet) 18%, transparent) !important;
 }
+
+/* =====================================================================
+   Student UX extras (see the matching block at the end of custom.js)
+   ===================================================================== */
+/* ---- Virtual Lobby toolbar ---- */
+.lx-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 0 24px;
+  font-family: var(--bt-font);
+}
+
+.lx-toolbar > * {
+  min-width: 0;
+}
+
+/* "How it works" guide */
+.lx-guide {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 22px 22px;
+  border-radius: 22px;
+  color: #fff;
+  background:
+    radial-gradient(260px 200px at 100% 0%, rgba(165, 174, 245, .35) 0%, rgba(165, 174, 245, 0) 70%),
+    linear-gradient(135deg, #0F1128 0%, #252C66 60%, #4C58B4 100%);
+  box-shadow: 0 24px 48px -28px rgba(15, 17, 40, .7);
+  animation: lx-in .45s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.lx-toolbar.lx-guide-hidden .lx-guide {
+  display: none;
+}
+
+.lx-guide-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.lx-guide-kicker {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #A5AEF5;
+}
+
+.lx-guide-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.lx-guide-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lx-guide-close:hover {
+  background: rgba(255, 255, 255, .2);
+}
+
+.lx-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.lx-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.lx-step-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(165, 174, 245, .2);
+  color: #C9CEF5;
+}
+
+.lx-steps strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lx-steps li span:not(.lx-step-ico) {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, .78);
+}
+
+.lx-guide-ok {
+  height: 38px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  color: #343E88;
+  font: 700 14px/1 var(--bt-font);
+  cursor: pointer;
+}
+
+.lx-guide-ok:hover {
+  background: #F1F2FB;
+}
+
+/* progress + country chips */
+.lx-panel {
+  padding: 16px 18px;
+  border: 1px solid var(--bt-line);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 28px -20px rgba(15, 17, 40, .35);
+}
+
+.lx-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.lx-progress-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bt-ink);
+}
+
+.lx-progress-track {
+  flex: 1 1 160px;
+  min-width: 120px;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #E7E9F7;
+}
+
+.lx-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5C68C4 0%, #4C58B4 60%, #343E88 100%);
+  transition: width .6s cubic-bezier(.22, 1, .36, 1);
+}
+
+.lx-guide-open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bt-primary);
+  font: 700 13px/1 var(--bt-font);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lx-toolbar:not(.lx-guide-hidden) .lx-guide-open {
+  display: none;
+}
+
+.lx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.lx-chip {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--bt-line-strong);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bt-text);
+  font: 600 13px/1 var(--bt-font);
+  cursor: pointer;
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+
+.lx-chip:hover {
+  border-color: var(--bt-primary);
+  color: var(--bt-primary);
+}
+
+.lx-chip.is-active {
+  border-color: transparent;
+  background: linear-gradient(135deg, #5C68C4 0%, #4C58B4 55%, #343E88 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px -10px rgba(76, 88, 180, .8);
+}
+
+/* ---- "Visited" badge on lobby + University Info cards ---- */
+.exibitorCard.lx-visited {
+  position: relative;
+}
+
+.lx-visited-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  color: #1F7A4D;
+  font: 700 11.5px/1 var(--bt-font);
+  box-shadow: 0 6px 14px -8px rgba(15, 17, 40, .55);
+  pointer-events: none;
+}
+
+.lx-visited-badge svg {
+  padding: 2px;
+  border-radius: 50%;
+  background: #1F7A4D;
+  color: #fff;
+}
+
+.exibitorCard .lx-visited-badge {
+  top: 14px;
+  left: 14px;
+}
+
+/* ---- floating fair status + help ---- */
+.lx-dock {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--bt-font);
+  animation: lx-in .45s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.lx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--bt-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .96);
+  color: var(--bt-ink);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px -14px rgba(15, 17, 40, .5);
+  white-space: nowrap;
+}
+
+.lx-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4C58B4;
+}
+
+.lx-status.lx-live .lx-dot {
+  background: #E5484D;
+  box-shadow: 0 0 0 0 rgba(229, 72, 77, .55);
+  animation: lx-pulse 1.6s ease-out infinite;
+}
+
+.lx-status.lx-live {
+  color: #B4232A;
+}
+
+.lx-status.lx-ended .lx-dot {
+  background: #9AA0B4;
+}
+
+.lx-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #5C68C4 0%, #4C58B4 55%, #343E88 100%);
+  color: #fff;
+  font: 700 13px/1 var(--bt-font);
+  box-shadow: 0 12px 26px -12px rgba(76, 88, 180, .9);
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.lx-help:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px rgba(76, 88, 180, 1);
+}
+
+.lx-help:focus-visible,
+.lx-chip:focus-visible,
+.lx-guide-ok:focus-visible,
+.lx-guide-close:focus-visible,
+.lx-guide-open:focus-visible {
+  outline: 3px solid rgba(76, 88, 180, .45);
+  outline-offset: 2px;
+}
+
+/* stay out of the way of popups, drawers and the registration sheet */
+body:has(.ReactModal__Overlay--after-open) .lx-dock,
+body:has(.MuiModal-root:not(.MuiModal-hidden)) .lx-dock,
+body:has(.sidedrawerWrapper.open) .lx-dock {
+  display: none;
+}
+
+@keyframes lx-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes lx-pulse {
+  70% { box-shadow: 0 0 0 8px rgba(229, 72, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-guide, .lx-dock { animation: none; }
+  .lx-status.lx-live .lx-dot { animation: none; }
+}
+
+/* tablet / phone */
+@media (max-width: 900px) {
+  .lx-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .lx-toolbar {
+    margin-bottom: 16px;
+  }
+
+  .lx-guide {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .lx-guide-title {
+    font-size: 17px;
+  }
+
+  .lx-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .lx-chip {
+    flex: none;
+  }
+
+  .lx-dock {
+    left: 12px;
+    bottom: 84px;
+  }
+
+  .lx-status {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .lx-help {
+    height: 34px;
+  }
+}
