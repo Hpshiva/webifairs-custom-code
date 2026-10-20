@@ -3995,7 +3995,9 @@
   }
 
   /* ---------- lobby toolbar: guide + progress + country chips ---------- */
-  var activeCountry = "";
+  // The highlighted chip always follows what is in the platform's search box
+  // ("" = All, null = the student typed something else).
+  var currentCountry = "";
   var chipsSig = "";
 
   function buildToolbar() {
@@ -4035,11 +4037,8 @@
       var chip = e.target.closest && e.target.closest(".lx-chip");
       if (!chip) return;
       var country = chip.getAttribute("data-country") || "";
-      if (country === activeCountry) country = "";
-      if (!runSearch(country ? searchTerm(country) : "")) return;
-      activeCountry = country;
-      chipsSig = "";
-      schedule();
+      if (country === currentCountry) country = "";
+      if (runSearch(country ? searchTerm(country) : "")) schedule();
     });
     bar.classList.toggle("lx-guide-hidden", !!load(KEY_GUIDE, false));
     return bar;
@@ -4050,16 +4049,10 @@
     var list = lobbyList();
     if (!onRooms() || !list) {
       if (old) old.remove();
-      activeCountry = "";
       return;
     }
     var bar = old || buildToolbar();
     if (bar.nextElementSibling !== list) list.parentNode.insertBefore(bar, list);
-
-    // keep the chips in step with the search box (the student may type or clear it)
-    var inp = searchInput();
-    var val = inp ? inp.value : "";
-    if (activeCountry && val !== searchTerm(activeCountry)) { activeCountry = ""; chipsSig = ""; }
 
     var unis = universities();
     var counts = {};
@@ -4076,12 +4069,18 @@
 
     var countries = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a] || a.localeCompare(b); });
     if (hasSupport) countries.push("Event Support");
-    var sig = countries.join("|") + "#" + activeCountry;
+
+    var inp = searchInput();
+    var val = inp ? inp.value.trim().toLowerCase() : "";
+    currentCountry = val ? null : "";
+    countries.forEach(function (c) { if (val && searchTerm(c).toLowerCase() === val) currentCountry = c; });
+
+    var sig = countries.join("|") + "#" + currentCountry;
     if (sig !== chipsSig) {
       chipsSig = sig;
-      var html = '<button type="button" class="lx-chip' + (activeCountry ? "" : " is-active") + '" data-country="" aria-pressed="' + (!activeCountry) + '">All</button>';
+      var html = '<button type="button" class="lx-chip' + (currentCountry === "" ? " is-active" : "") + '" data-country="" aria-pressed="' + (currentCountry === "") + '">All</button>';
       countries.forEach(function (c) {
-        var on = c === activeCountry;
+        var on = c === currentCountry;
         html += '<button type="button" class="lx-chip' + (on ? " is-active" : "") + '" data-country="' + c.replace(/"/g, "&quot;") + '" aria-pressed="' + on + '">' + c.replace(/</g, "&lt;") + "</button>";
       });
       bar.querySelector(".lx-chips").innerHTML = html;
