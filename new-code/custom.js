@@ -2330,21 +2330,30 @@
         }
       }
 
-      // 5. Card image + logo join the room (same as the Start button), no popup
-      [card.querySelector('.roomCardMedia'), card.querySelector('.orgProfile')].forEach(function (zone) {
-        if (!zone) return;
-        zone.style.cursor = 'pointer';
-        if (zone.__btJoinBound) return;
-        zone.__btJoinBound = true;
-        zone.addEventListener('click', function (e) {
-          if (e.target && e.target.closest && e.target.closest('button, a')) return;
-          var joinBtn = card.querySelector('.cardActions .MuiButton-root, .cardActions button');
-          if (!joinBtn) return;
-          e.preventDefault();
-          e.stopPropagation();
-          joinBtn.click();
-        });
-      });
+      // 5. Card image + logo open the university popup; only the Start button joins the room.
+      // The logo (.orgProfile) opens the popup natively, so it is left alone; the banner image has no
+      // native handler, so a click on it is passed to the logo.
+      var orgLogo = card.querySelector('.orgProfile');
+      if (orgLogo) orgLogo.style.cursor = 'pointer';
+      var media = card.querySelector('.roomCardMedia');
+      if (media) {
+        media.style.cursor = 'pointer';
+        if (!media.__btPopupBound) {
+          media.__btPopupBound = true;
+          media.addEventListener('click', function (e) {
+            if (e.target && e.target.closest && e.target.closest('button, a')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            triggerIconClick(findIconTarget(card));
+            setTimeout(fixCardModalScroll, 50);
+            setTimeout(fixCardModalScroll, 200);
+            setTimeout(fixCardModalScroll, 500);
+            setTimeout(enhancePopupMajors, 80);
+            setTimeout(enhancePopupMajors, 250);
+            setTimeout(enhancePopupMajors, 600);
+          });
+        }
+      }
     });
   }
 
