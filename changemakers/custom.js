@@ -2421,7 +2421,84 @@
           });
         }
       }
+
+      // 6. Virtual Lobby cards only: name + location line, an "Info" button next to Start,
+      // and a "View university info" hint on the banner.
+      if (card.closest('.roomsCardsList') && !card.closest('.sidedrawerWrapper, .ReactModalPortal, .sponsorsProfileWrapper')) {
+        enhanceRoomCard(card);
+      }
     });
+  }
+
+  var ROOM_ICONS = {
+    info: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'
+  };
+
+  function openRoomCardInfo(card) {
+    triggerIconClick(findIconTarget(card));
+    setTimeout(fixCardModalScroll, 50);
+    setTimeout(fixCardModalScroll, 200);
+    setTimeout(fixCardModalScroll, 500);
+    setTimeout(enhancePopupMajors, 80);
+    setTimeout(enhancePopupMajors, 250);
+    setTimeout(enhancePopupMajors, 600);
+  }
+
+  function enhanceRoomCard(card) {
+    // "Brock University • Canada" -> name, then a pin + "Canada" line (the platform h6 stays in the DOM, hidden).
+    var h = card.querySelector('.orgName h6');
+    var nameBox = h && h.parentNode;
+    if (nameBox) {
+      var full = (h.textContent || '').trim();
+      if (nameBox.__btFull !== full) {
+        nameBox.__btFull = full;
+        var parts = full.split(/\s+•\s+/);
+        var title = nameBox.querySelector('.bt-room-title');
+        var loc = nameBox.querySelector('.bt-room-loc');
+        if (parts.length > 1 && parts[0]) {
+          if (!title) { title = doc.createElement('div'); title.className = 'bt-room-title'; nameBox.appendChild(title); }
+          if (!loc) { loc = doc.createElement('div'); loc.className = 'bt-room-loc'; nameBox.appendChild(loc); }
+          title.textContent = parts[0];
+          title.setAttribute('title', parts[0]);
+          loc.innerHTML = ROOM_ICONS.pin + '<span></span>';
+          loc.lastChild.textContent = parts.slice(1).join(', ');
+          nameBox.classList.add('bt-split');
+        } else {
+          if (title) title.remove();
+          if (loc) loc.remove();
+          nameBox.classList.remove('bt-split');
+        }
+      }
+    }
+
+    // "Info" button before the Start button; opens the same university popup as the banner/logo.
+    var bottom = card.querySelector('.cardBottom');
+    var actions = bottom && bottom.querySelector('.cardActions');
+    if (actions && !bottom.querySelector('.bt-room-info')) {
+      var info = doc.createElement('button');
+      info.type = 'button';
+      info.className = 'bt-room-info';
+      info.setAttribute('aria-label', 'View university info');
+      info.innerHTML = ROOM_ICONS.info + '<span>Info</span>';
+      info.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openRoomCardInfo(card);
+      });
+      bottom.insertBefore(info, actions);
+    }
+
+    // Hover hint on the banner (the banner click itself is handled in step 5).
+    var media = card.querySelector('.roomCardMedia');
+    if (media && !media.querySelector('.bt-media-hint')) {
+      var hint = doc.createElement('span');
+      hint.className = 'bt-media-hint';
+      hint.setAttribute('aria-hidden', 'true');
+      hint.innerHTML = ROOM_ICONS.eye + '<span>View university info</span>';
+      media.appendChild(hint);
+    }
   }
 
   function fixCardModalScroll() {

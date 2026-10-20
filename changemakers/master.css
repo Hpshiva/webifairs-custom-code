@@ -11517,3 +11517,137 @@ html body {
     radial-gradient(120% 100% at 100% 0%, rgba(165, 174, 245, 0.35) 0%, rgba(165, 174, 245, 0) 55%) top / 100% 136px no-repeat,
     linear-gradient(135deg, #0F1128 0%, #252C66 55%, #4C58B4 100%) top / 100% 136px no-repeat !important;
 }
+
+/* =====================================================================
+   Virtual Lobby room cards - "Info" + "Start" (option A)
+   custom.js adds .bt-room-title / .bt-room-loc, the .bt-room-info button
+   and the .bt-media-hint banner overlay.
+   ===================================================================== */
+/* Name + location line */
+.roomsCardsList .orgName.bt-split {
+  min-height: 66px;
+}
+
+.roomsCardsList .orgName.bt-split h6 {
+  display: none !important;
+}
+
+.roomsCardsList .bt-room-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-family: var(--bt-font);
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--bt-ink);
+  transition: color .3s var(--bt-ease);
+}
+
+.roomsCardsList .bt-room-loc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  font: 500 13px/1.3 var(--bt-font);
+  color: var(--bt-muted);
+}
+
+.roomsCardsList .bt-room-loc svg {
+  flex: none;
+  color: var(--bt-primary);
+}
+
+.roomsCardsList .bt-room-loc span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Footer: Info (secondary) + Start (primary) side by side */
+.roomsCardsList .cardBottom:has(.bt-room-info) {
+  justify-content: stretch;
+}
+
+.roomsCardsList .cardBottom .bt-room-info {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--bt-primary-soft);
+  color: var(--bt-primary-press);
+  font: 600 14px/1 var(--bt-font);
+  cursor: pointer;
+  transition: background-color .2s var(--bt-ease), border-color .2s var(--bt-ease), color .2s var(--bt-ease);
+}
+
+.roomsCardsList .cardBottom .bt-room-info:hover {
+  background: var(--bt-primary-soft-hover);
+  border-color: rgba(76, 88, 180, .35);
+  color: var(--bt-ink);
+}
+
+.roomsCardsList .cardBottom .bt-room-info:focus-visible {
+  outline: none;
+  box-shadow: var(--bt-ring);
+}
+
+.roomsCardsList .cardBottom:has(.bt-room-info) .cardActions {
+  flex: 1.3 1 0;
+  min-width: 0;
+}
+
+.roomsCardsList .cardBottom:has(.bt-room-info) .cardActions .MuiButton-root {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Start: video-camera icon before the label (replaces the arrow) */
+.roomsCardsList .roomCard .cardActions .MuiButton-root::after {
+  order: -1;
+  width: 18px;
+  height: 18px;
+  margin: 0 8px 0 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='6' width='13' height='12' rx='2.5'/%3E%3Cpath d='m15.5 10.5 6-3.5v10l-6-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='6' width='13' height='12' rx='2.5'/%3E%3Cpath d='m15.5 10.5 6-3.5v10l-6-3.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.roomsCardsList .roomCard .cardActions .MuiButton-root:hover::after {
+  transform: scale(1.12);
+}
+
+/* Banner hover hint: "View university info" */
+.roomsCardsList .roomCardMedia .bt-media-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(15, 17, 40, .55);
+  color: #fff;
+  font: 600 14px/1 var(--bt-font);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s var(--bt-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .roomsCardsList .roomCardMedia:hover .bt-media-hint {
+    opacity: 1;
+  }
+
+  .roomsCardsList .roomCard:hover .bt-room-title {
+    color: var(--bt-primary);
+  }
+}
