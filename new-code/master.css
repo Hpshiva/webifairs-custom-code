@@ -2071,8 +2071,12 @@ div[class*="mui-ciknye"] {
 .inspira-card-fav-circle,
 [class*="chat-circle"],
 [class*="chat-frosted"],
-button[aria-label*="Chat"],
-button[title*="Chat"] {
+.roomCard button[aria-label*="Chat"],
+.roomCard button[title*="Chat"],
+.roomsCardsList button[aria-label*="Chat"],
+.roomsCardsList button[title*="Chat"],
+.c2-card button[aria-label*="Chat"],
+.c2-card button[title*="Chat"] {
   display: none !important;
   visibility: hidden !important;
   width: 0 !important;
@@ -10996,4 +11000,177 @@ html body {
 .miniSidedrawerInn .svgBox:last-child:not(.totalPeople),
 .miniSidedrawer .miniSidedrawerInn .svgBox:last-child:not(.totalPeople) {
   margin-bottom: 14px !important;
+}
+
+/* =====================================================================
+   Header Right Action Icons - Perfect Alignment & Message Button Restore
+   ===================================================================== */
+.headerWrapper {
+  display: flex !important;
+  align-items: center !important;
+  height: 64px !important;
+  box-sizing: border-box !important;
+}
+
+.headerWrapper .rightActionWrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  height: 100% !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure Chat / Message Button in Header is 100% Visible & Interactive */
+.headerWrapper button[aria-label*="Chat"],
+.headerWrapper button[title*="Chat"],
+.headerWrapper button[aria-label*="Message"],
+.headerWrapper button[title*="Message"],
+.headerWrapper [class*="chat"],
+.headerWrapper [class*="message"],
+.headerWrapper .actionIcon:has(button[aria-label*="Chat"]),
+.headerWrapper .actionIcon:has(button[title*="Chat"]) {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Uniform container item wrappers in header */
+.headerWrapper .rightActionWrapper > div,
+.headerWrapper .rightActionWrapper .actionIcon,
+.headerWrapper .rightActionWrapper .mr20 {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 38px !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: middle !important;
+  position: relative !important;
+}
+
+/* All icon buttons (Calendar, Messages, Notifications): 38px x 38px, centered */
+.headerWrapper .rightActionWrapper .MuiIconButton-root,
+.headerWrapper .rightActionWrapper button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+  color: var(--bt-muted, #64748b) !important;
+  background: transparent !important;
+  transition: background-color var(--bt-fast, 0.2s) var(--bt-ease, ease),
+              color var(--bt-fast, 0.2s) var(--bt-ease, ease),
+              transform var(--bt-fast, 0.2s) var(--bt-ease, ease) !important;
+  position: relative !important;
+}
+
+.headerWrapper .rightActionWrapper .MuiIconButton-root:hover,
+.headerWrapper .rightActionWrapper button:hover {
+  background: var(--bt-primary-tint, rgba(109, 74, 194, 0.08)) !important;
+  color: var(--bt-primary, #6d4ac2) !important;
+}
+
+.headerWrapper .rightActionWrapper .MuiIconButton-root:active,
+.headerWrapper .rightActionWrapper button:active {
+  transform: scale(0.93) !important;
+}
+
+.headerWrapper .rightActionWrapper .MuiIconButton-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* SVG Icons: consistent 22px sizing and perfect centering */
+.headerWrapper .rightActionWrapper svg,
+.headerWrapper .rightActionWrapper .iconSVG svg,
+.headerWrapper .rightActionWrapper .MuiIconButton-label svg {
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  display: block !important;
+  margin: auto !important;
+  vertical-align: middle !important;
+}
+
+/* MuiBadge: Anchor cleanly to top-right corner of bell/message icon */
+.headerWrapper .rightActionWrapper .MuiBadge-root {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+}
+
+.headerWrapper .rightActionWrapper .MuiBadge-badge {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  transform: translate(25%, -25%) !important;
+  transform-origin: 100% 0% !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  padding: 0 5px !important;
+  border-radius: 9999px !important;
+  font-family: var(--bt-font, sans-serif) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 18px !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--bt-primary, #4a2c82) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 2px #ffffff !important;
+  z-index: 10 !important;
+  pointer-events: none !important;
+}
+
+/* Profile Avatar: 38px matching buttons, vertically centered */
+.headerWrapper .avtarWrapper {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 10px !important;
+  margin-right: 0 !important;
+  height: 38px !important;
+  vertical-align: middle !important;
+}
+
+.headerWrapper .avtarWrapper .MuiAvatar-root {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary-soft, rgba(109, 74, 194, 0.15)) !important;
+  transition: box-shadow var(--bt-fast, 0.2s) var(--bt-ease, ease),
+              transform var(--bt-fast, 0.2s) var(--bt-ease, ease) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.headerWrapper .avtarWrapper .MuiAvatar-root:hover {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary, #6d4ac2) !important;
+  transform: scale(1.04) !important;
 }
