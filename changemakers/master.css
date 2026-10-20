@@ -11629,23 +11629,30 @@ html body {
 /* Banner hover hint: "View university info" */
 .roomsCardsList .roomCardMedia .bt-media-hint {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
   z-index: 2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(15, 17, 40, .55);
-  color: #fff;
-  font: 600 14px/1 var(--bt-font);
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bt-primary-press);
+  font: 600 13.5px/1 var(--bt-font);
+  white-space: nowrap;
+  /* the spread shadow dims the rest of the banner (clipped by the banner's overflow) */
+  box-shadow: 0 8px 20px -8px rgba(15, 17, 40, .55), 0 0 0 999px rgba(15, 17, 40, .5);
+  transform: translate(-50%, -50%) scale(.96);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .25s var(--bt-ease);
+  transition: opacity .25s var(--bt-ease), transform .25s var(--bt-ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .roomsCardsList .roomCardMedia:hover .bt-media-hint {
     opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 
   .roomsCardsList .roomCard:hover .bt-room-title {
