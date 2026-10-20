@@ -11959,3 +11959,15 @@ body:has(#headerTop) .inspira-ticket-v2-container .inspira-ticket-perforation .i
   background: #F9ECEC !important;
   border-color: #F3DCDC !important;
 }
+
+/* Register page: universities still on the platform's default cover image get a branded cover */
+.inspira-card-split-media:has(> img[src*="exhibitor_cover"]) {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 10 12 5 2 10l10 5 10-5Z'/%3E%3Cpath d='M6 12v5c3 2 9 2 12 0v-5'/%3E%3Cpath d='M22 10v6'/%3E%3C/svg%3E") center / 56px 56px no-repeat,
+    radial-gradient(120% 100% at 100% 0%, rgba(245, 165, 165, .35) 0%, rgba(245, 165, 165, 0) 55%),
+    linear-gradient(135deg, #0F1128 0%, #662625 55%, #B44C4C 100%) !important;
+}
+
+.inspira-card-split-media > img[src*="exhibitor_cover"] {
+  opacity: 0 !important;
+}
