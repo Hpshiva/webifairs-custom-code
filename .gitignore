@@ -1,7 +1,7 @@
 .DS_Store
 */.DS_Store
 
-# Only new-code/ and changemakers/ are published; everything else stays local.
+# Only the live event folders are published; everything else stays local.
 /*
 !/.gitignore
 !/new-code/
