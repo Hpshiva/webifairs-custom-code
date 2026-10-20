@@ -1484,26 +1484,8 @@
     drawerPaper.style.setProperty("overflow-x", "hidden", "important");
     drawerPaper.style.setProperty("-webkit-overflow-scrolling", "touch", "important");
     drawerPaper.style.setProperty("overscroll-behavior-y", "contain", "important");
-    drawerPaper.style.setProperty("scroll-behavior", "smooth", "important");
     drawerPaper.style.setProperty("scrollbar-width", "thin", "important");
     drawerPaper.style.setProperty("scrollbar-color", "#6D4AC2 rgba(109, 74, 194, 0.08)", "important");
-
-    if (!drawerPaper.__btSmoothWheelBound) {
-      drawerPaper.__btSmoothWheelBound = true;
-      drawerPaper.addEventListener('wheel', function (e) {
-        var delta = e.deltaY;
-        if (!delta) return;
-        if (drawerPaper.scrollHeight > drawerPaper.clientHeight) {
-          var canScrollDown = delta > 0 && (drawerPaper.scrollTop + drawerPaper.clientHeight < drawerPaper.scrollHeight - 1);
-          var canScrollUp = delta < 0 && drawerPaper.scrollTop > 1;
-          if (canScrollDown || canScrollUp) {
-            drawerPaper.scrollTop += delta;
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        }
-      }, { passive: false });
-    }
 
     // Force 100% width on all inner wrappers to eliminate Hubilo's hardcoded 46rem empty space
     const innerWrappers = drawerPaper.querySelectorAll(
@@ -2392,7 +2374,6 @@
         modal.style.setProperty('overflow-x', 'hidden', 'important');
         modal.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
         modal.style.setProperty('overscroll-behavior-y', 'contain', 'important');
-        modal.style.setProperty('scroll-behavior', 'smooth', 'important');
         modal.style.setProperty('scrollbar-width', 'thin', 'important');
         modal.style.setProperty('scrollbar-color', '#6D4AC2 rgba(109, 74, 194, 0.08)', 'important');
       }
@@ -2409,37 +2390,6 @@
           inner.style.setProperty('overflow', 'visible', 'important');
         }
       });
-
-      // Bind smooth mouse scroll handler to guarantee effortless mouse-wheel scrolling
-      if (!modal.__btSmoothWheelBound) {
-        modal.__btSmoothWheelBound = true;
-        modal.addEventListener('wheel', function (e) {
-          var delta = e.deltaY;
-          if (!delta) return;
-
-          // Determine scrollable target (modal or scrollable inner feed)
-          var target = modal;
-          if (modal.scrollHeight <= modal.clientHeight + 4) {
-            var feed = modal.querySelector(
-              '.companyProfileFeeds, .DelegateSidebar, .profileContent, .sideDrawerScroll, .sponsorsDetails, [class*="feed"]'
-            );
-            if (feed && feed.scrollHeight > feed.clientHeight + 4) {
-              target = feed;
-            }
-          }
-
-          if (target && target.scrollHeight > target.clientHeight) {
-            var canScrollDown = delta > 0 && (target.scrollTop + target.clientHeight < target.scrollHeight - 1);
-            var canScrollUp = delta < 0 && target.scrollTop > 1;
-
-            if (canScrollDown || canScrollUp) {
-              target.scrollTop += delta;
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }
-        }, { passive: false });
-      }
     });
   }
   window.fixCardModalScroll = fixCardModalScroll;
