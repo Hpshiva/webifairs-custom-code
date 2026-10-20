@@ -11495,3 +11495,25 @@ html body {
   --cmx-gradient-cta: linear-gradient(135deg, #5B67C9 0%, #6F7BDB 100%);
   --cmx-gradient-hover: linear-gradient(135deg, #0A0B1C 0%, #3F4AA0 55%, #4C58B4 100%);
 }
+
+/* =====================================================================
+   Cards without a banner image (Changemakers has some) - branded fallback
+   ===================================================================== */
+/* /booths (University Info) */
+.exibitorCard .boothBanner.noMedia {
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(165, 174, 245, 0.35) 0%, rgba(165, 174, 245, 0) 55%),
+    linear-gradient(135deg, #0F1128 0%, #252C66 55%, #4C58B4 100%) !important;
+  border-color: transparent !important;
+}
+.exibitorCard .boothBanner.noMedia .bannerImageBorder { display: none !important; }
+.exibitorCard .boothBanner.noMedia .logoTextWrapper h3 { color: #fff !important; }
+
+/* /rooms (Virtual Lobby) */
+.roomsCardsList .roomCard:not(:has(.roomCardMedia)) .circles { display: none !important; }
+.roomsCardsList .roomCard:not(:has(.roomCardMedia)) .roomCardBody {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='.85' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 10 12 5 2 10l10 5 10-5Z'/%3E%3Cpath d='M6 12v5c3 2 9 2 12 0v-5'/%3E%3Cpath d='M22 10v6'/%3E%3C/svg%3E") center 40px / 56px 56px no-repeat,
+    radial-gradient(120% 100% at 100% 0%, rgba(165, 174, 245, 0.35) 0%, rgba(165, 174, 245, 0) 55%) top / 100% 136px no-repeat,
+    linear-gradient(135deg, #0F1128 0%, #252C66 55%, #4C58B4 100%) top / 100% 136px no-repeat !important;
+}

@@ -999,7 +999,7 @@
         if (rawText.includes(" " + BULLET + " ")) {
           const parts = rawText.split(" " + BULLET + " ");
           univName = parts[0].trim();
-          country = parts[1].trim();
+          country = parts[parts.length - 1].trim();
         } else if (rawText.includes(" - ")) {
           const parts = rawText.split(" - ");
           univName = parts[0].trim();
