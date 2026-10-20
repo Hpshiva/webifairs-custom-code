@@ -1479,6 +1479,32 @@
 
     // Hubilo's close button natively dispatches React modal dismissal; no custom listener needed
 
+    // Ensure vertical scrolling and custom colored scrollbar
+    drawerPaper.style.setProperty("overflow-y", "auto", "important");
+    drawerPaper.style.setProperty("overflow-x", "hidden", "important");
+    drawerPaper.style.setProperty("-webkit-overflow-scrolling", "touch", "important");
+    drawerPaper.style.setProperty("overscroll-behavior-y", "contain", "important");
+    drawerPaper.style.setProperty("scroll-behavior", "smooth", "important");
+    drawerPaper.style.setProperty("scrollbar-width", "thin", "important");
+    drawerPaper.style.setProperty("scrollbar-color", "#6D4AC2 rgba(109, 74, 194, 0.08)", "important");
+
+    if (!drawerPaper.__btSmoothWheelBound) {
+      drawerPaper.__btSmoothWheelBound = true;
+      drawerPaper.addEventListener('wheel', function (e) {
+        var delta = e.deltaY;
+        if (!delta) return;
+        if (drawerPaper.scrollHeight > drawerPaper.clientHeight) {
+          var canScrollDown = delta > 0 && (drawerPaper.scrollTop + drawerPaper.clientHeight < drawerPaper.scrollHeight - 1);
+          var canScrollUp = delta < 0 && drawerPaper.scrollTop > 1;
+          if (canScrollDown || canScrollUp) {
+            drawerPaper.scrollTop += delta;
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }
+      }, { passive: false });
+    }
+
     // Force 100% width on all inner wrappers to eliminate Hubilo's hardcoded 46rem empty space
     const innerWrappers = drawerPaper.querySelectorAll(
       ":scope > div, :scope > .MuiBox-root, [class*='styleExhibitorSidebarImage'], div[style*='46rem']"
@@ -1489,6 +1515,10 @@
         container.style.setProperty("width", "100%", "important");
         container.style.setProperty("max-width", "100%", "important");
         container.style.setProperty("box-sizing", "border-box", "important");
+        container.style.setProperty("height", "auto", "important");
+        container.style.setProperty("min-height", "0px", "important");
+        container.style.setProperty("max-height", "none", "important");
+        container.style.setProperty("overflow", "visible", "important");
       }
     });
 
@@ -2176,16 +2206,19 @@
   function findIconTarget(card) {
     if (!card) return null;
 
+    var profileTarget = card.querySelector('.orgProfile img, .orgProfile, .orgProfile a, a.orgProfile');
+    var orgNameTarget = card.querySelector('.orgName h6, .orgName a, .orgName');
+
     var candidates = [
       card.querySelector('.orgProfile img'),
       card.querySelector('.orgProfile'),
+      card.querySelector('.orgProfile a, a.orgProfile'),
+      orgNameTarget,
       card.querySelector('.roomCardMedia img'),
-      card.querySelector('.roomCardMedia'),
-      card.querySelector('.orgProfile a, a.orgProfile, .roomCardMedia a, a.roomCardMedia'),
-      card.querySelector('.orgName h6, .orgName')
+      card.querySelector('.roomCardMedia')
     ];
 
-    // Priority 1: Check if any candidate has a direct React onClick prop
+    // Priority 1: Check if any candidate has a direct React onClick prop or fiber prop
     for (var i = 0; i < candidates.length; i++) {
       var el = candidates[i];
       if (!el) continue;
@@ -2196,10 +2229,19 @@
             return el;
           }
         }
+        if (k.indexOf('__reactFiber') === 0 || k.indexOf('__reactInternalInstance') === 0) {
+          var f = el[k];
+          if (f && f.memoizedProps && typeof f.memoizedProps.onClick === 'function') {
+            return el;
+          }
+        }
       }
     }
 
-    // Priority 2: Return first existing candidate (profile icon -> media -> heading)
+    // Priority 2: Return profile icon target if present (main element opening the popup)
+    if (profileTarget) return profileTarget;
+
+    // Priority 3: Return first existing candidate (profile icon -> media -> heading)
     for (var j = 0; j < candidates.length; j++) {
       if (candidates[j]) return candidates[j];
     }
@@ -2254,39 +2296,309 @@
         cardBottom.appendChild(cardActions);
       }
 
-      // 3. Ensure active Enter button exists
+      // 3. Keep Start vs Enter constant:
+      // For admin/host, Hubilo shows "Start". For attendee, it shows "Enter".
       var btn = cardActions.querySelector('.MuiButton-root, button, a');
+      var btnText = btn ? (btn.textContent || '').trim() : '';
+      var isStart = /start/i.test(btnText) || /iniciar/i.test(btnText);
+
       if (!btn) {
         btn = doc.createElement('button');
         btn.className = 'MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary';
         btn.setAttribute('type', 'button');
         btn.innerHTML = '<span class="MuiButton-label">Enter</span>';
         cardActions.appendChild(btn);
+        btnText = 'Enter';
+        isStart = false;
       }
 
-      // Strip previous listeners if needed
-      if (btn.__btLinked && !btn.__btBound) {
-        var freshBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(freshBtn, btn);
-        btn = freshBtn;
-      }
-
+      // Ensure button is active and styled
       if (btn.classList.contains('Mui-disabled')) btn.classList.remove('Mui-disabled');
       if (btn.hasAttribute('disabled')) btn.removeAttribute('disabled');
       if (btn.getAttribute('aria-disabled') === 'true') btn.removeAttribute('aria-disabled');
       btn.style.pointerEvents = 'auto';
       btn.style.cursor = 'pointer';
 
-      // 4. Attach click to open the room popup
-      if (!btn.__btBound) {
-        btn.__btBound = true;
-        btn.addEventListener('click', function (e) {
-          if (e) {
-            e.preventDefault();
-            e.stopPropagation();
+      // 4. Button behavior:
+      // If "Start": DO NOT hijack or preventDefault! Let Hubilo's native React handler start the room.
+      // If "Enter": clicking opens the room/exhibitor popup.
+      if (!isStart) {
+        if (!btn.__btBound) {
+          btn.__btBound = true;
+          btn.addEventListener('click', function (e) {
+            var curText = (btn.textContent || '').trim();
+            if (/start/i.test(curText) || /iniciar/i.test(curText)) {
+              return; // Start button: let native Hubilo React click handler start the room
+            }
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            var target = findIconTarget(card);
+            triggerIconClick(target);
+            setTimeout(fixCardModalScroll, 50);
+            setTimeout(fixCardModalScroll, 200);
+            setTimeout(fixCardModalScroll, 500);
+            setTimeout(enhancePopupMajors, 80);
+            setTimeout(enhancePopupMajors, 250);
+            setTimeout(enhancePopupMajors, 600);
+          });
+        }
+      }
+
+      // 5. Attach click to .roomCardMedia to open popup
+      var media = card.querySelector('.roomCardMedia');
+      if (media) {
+        media.style.cursor = 'pointer';
+        if (!media.__btBound) {
+          media.__btBound = true;
+          media.addEventListener('click', function (e) {
+            if (e.target && e.target.closest && e.target.closest('button, a')) return;
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+            var target = findIconTarget(card);
+            triggerIconClick(target);
+            setTimeout(fixCardModalScroll, 50);
+            setTimeout(fixCardModalScroll, 200);
+            setTimeout(fixCardModalScroll, 500);
+            setTimeout(enhancePopupMajors, 80);
+            setTimeout(enhancePopupMajors, 250);
+            setTimeout(enhancePopupMajors, 600);
+          });
+        }
+      }
+    });
+  }
+
+  function fixCardModalScroll() {
+    var modalSelectors = [
+      '.sidedrawerWrapper',
+      '.sidedrawerWrapper.profile',
+      '.sidedrawerWrapper.open',
+      '.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper',
+      '.ReactModalPortal .sidedrawerWrapper',
+      '.MuiDrawer-root .MuiDrawer-paper',
+      '.MuiDrawer-paper',
+      '.sponsorsProfileWrapper',
+      '.MuiDialog-paper',
+      '.cu-modal-dialog',
+      '[class*="modalContentStyle"]',
+      '.MuiModal-root [role="dialog"]',
+      '.sideBarUserPanel [class*="sidedrawer"]'
+    ].join(', ');
+
+    var modals = Array.from(document.querySelectorAll(modalSelectors));
+    if (!modals.length) return;
+
+    modals.forEach(function (modal) {
+      if (modal.style.overflowY !== 'auto') {
+        modal.style.setProperty('overflow-y', 'auto', 'important');
+        modal.style.setProperty('overflow-x', 'hidden', 'important');
+        modal.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+        modal.style.setProperty('overscroll-behavior-y', 'contain', 'important');
+        modal.style.setProperty('scroll-behavior', 'smooth', 'important');
+        modal.style.setProperty('scrollbar-width', 'thin', 'important');
+        modal.style.setProperty('scrollbar-color', '#6D4AC2 rgba(109, 74, 194, 0.08)', 'important');
+      }
+
+      var inners = modal.querySelectorAll(
+        '.companyProfileFeeds, .DelegateSidebar, .profileHeaderRow, .profileContent, ' +
+        '.drawerTabWrapper, .tagsWrapper, .sponsorsDetails, :scope > div'
+      );
+      inners.forEach(function (inner) {
+        if (inner.style.height !== 'auto') {
+          inner.style.setProperty('height', 'auto', 'important');
+          inner.style.setProperty('min-height', '0px', 'important');
+          inner.style.setProperty('max-height', 'none', 'important');
+          inner.style.setProperty('overflow', 'visible', 'important');
+        }
+      });
+
+      // Bind smooth mouse scroll handler to guarantee effortless mouse-wheel scrolling
+      if (!modal.__btSmoothWheelBound) {
+        modal.__btSmoothWheelBound = true;
+        modal.addEventListener('wheel', function (e) {
+          var delta = e.deltaY;
+          if (!delta) return;
+
+          // Determine scrollable target (modal or scrollable inner feed)
+          var target = modal;
+          if (modal.scrollHeight <= modal.clientHeight + 4) {
+            var feed = modal.querySelector(
+              '.companyProfileFeeds, .DelegateSidebar, .profileContent, .sideDrawerScroll, .sponsorsDetails, [class*="feed"]'
+            );
+            if (feed && feed.scrollHeight > feed.clientHeight + 4) {
+              target = feed;
+            }
           }
-          var target = findIconTarget(card);
-          triggerIconClick(target);
+
+          if (target && target.scrollHeight > target.clientHeight) {
+            var canScrollDown = delta > 0 && (target.scrollTop + target.clientHeight < target.scrollHeight - 1);
+            var canScrollUp = delta < 0 && target.scrollTop > 1;
+
+            if (canScrollDown || canScrollUp) {
+              target.scrollTop += delta;
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }
+        }, { passive: false });
+      }
+    });
+  }
+  window.fixCardModalScroll = fixCardModalScroll;
+
+  function enhancePopupMajors() {
+    var modals = $$(
+      '.sidedrawerWrapper, .sidedrawerWrapper.profile, .ReactModal__Overlay.sideBarUserPanel, .companyProfileFeeds, ' +
+      '.sponsorsProfileWrapper, .MuiDrawer-paper, .MuiDialog-paper, [class*="modalContentStyle"], .cu-modal-dialog'
+    );
+    if (!modals.length) return;
+
+    modals.forEach(function (modal) {
+      var title = modal.querySelector('h3, h4, h5, h6, [class*="styleExhibitorNameSidebar"], .orgName h6, .profileHeaderRow h6, .profileHeaderRow h4, .profileHeaderRow h3');
+      var titleText = title ? title.textContent.trim() : '';
+
+      if (modal.dataset.inspiraEnhancedTitle === titleText && modal.querySelector('.inspira-filter-tabs-wrapper')) {
+        return;
+      }
+
+      if (modal.querySelector('.MuiSkeleton-root')) return;
+
+      var allChips = $$(
+        '.tagsWrapper .MuiChip-root, .sponsorsDetails .tagsWrapper .MuiChip-root, ' +
+        '.companyProfileFeeds .MuiChip-root, .MuiChip-root',
+        modal
+      ).filter(function (c) { return !c.classList.contains('tab-chip'); });
+
+      if (!allChips.length) return;
+
+      var chipsContainer = modal.querySelector('.tagsWrapper, .sponsorsDetails .tagsWrapper') || allChips[0].parentElement;
+      if (!chipsContainer) return;
+
+      var rawChips = $$(
+        ':scope > .MuiChip-root:not(.tab-chip), .MuiChip-root:not(.tab-chip)',
+        chipsContainer
+      );
+      if (!rawChips.length) return;
+
+      function categorizeProgram(rawText) {
+        var lower = (rawText || '').toLowerCase();
+        if (/engineer|computer|tech|software|cyber|data|robotics|ai|mechanic|civil|electric|chemical|industrial|it\b/.test(lower)) {
+          return { cat: 'eng', label: 'Engineering and Tech', shortLabel: 'Engineering' };
+        }
+        if (/business|admin|management|finance|account|market|entrepreneur|economics|mba|commerce|hospitality|leadership/.test(lower)) {
+          return { cat: 'biz', label: 'Business and Leadership', shortLabel: 'Business' };
+        }
+        if (/science|biology|biomed|health|nursing|medicine|pharma|physics|chemistry|psychology|environment/.test(lower)) {
+          return { cat: 'sci', label: 'Sciences and Health', shortLabel: 'Sciences' };
+        }
+        return { cat: 'hum', label: 'Humanities and Arts', shortLabel: 'Humanities' };
+      }
+
+      function formatProgramTitle(rawText) {
+        var raw = (rawText || '').replace(/_/g, ' ').trim();
+        var engMatch = raw.match(/^engineering:\s*(.*)/i);
+        if (engMatch) {
+          var spec = engMatch[1].trim();
+          return spec.toLowerCase().replace(/(?:^|\s|\/|-|\()\S/g, function (char) { return char.toUpperCase(); }) + ' Engineering';
+        }
+        var name = raw.replace(/^(?:department of|school of|major in):\s*/i, '');
+        if (/computer science.*information tech/i.test(name)) return 'Computer Science and IT';
+        if (/business admin.*intl business/i.test(name)) return 'Business Administration and International Business';
+        return name.toLowerCase().replace(/(?:^|\s|\/|-|\()\S/g, function (char) { return char.toUpperCase(); });
+      }
+
+      function escapeStr(str) {
+        return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      var programs = [];
+      rawChips.forEach(function (chip) {
+        var label = chip.querySelector('.MuiChip-label') || chip;
+        var raw = (label.textContent || '').trim();
+        if (!raw) return;
+        var cleanName = formatProgramTitle(raw);
+        var catInfo = categorizeProgram(raw);
+        programs.push({
+          raw: raw,
+          cleanName: cleanName,
+          cat: catInfo.cat,
+          catLabel: catInfo.label,
+          catShort: catInfo.shortLabel
+        });
+        chip.style.setProperty('display', 'none', 'important');
+      });
+
+      if (!programs.length) return;
+
+      modal.dataset.inspiraEnhancedTitle = titleText;
+      chipsContainer.classList.add('inspira-programs-container');
+
+      var oldWrapper = chipsContainer.querySelector('.inspira-filter-tabs-wrapper');
+      if (oldWrapper) oldWrapper.remove();
+      var oldBtn = chipsContainer.parentNode && chipsContainer.parentNode.querySelector('.bt-tags-toggle');
+      if (oldBtn) oldBtn.remove();
+
+      var tabsWrapper = doc.createElement('div');
+      tabsWrapper.className = 'inspira-filter-tabs-wrapper';
+
+      var SVG_ICONS = {
+        filterPill: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:-1px; margin-right:4px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>',
+        chevronDown: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:3px;"><polyline points="6 9 12 15 18 9"/></svg>',
+        chevronUp: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:0px; margin-left:3px;"><polyline points="18 15 12 9 6 15"/></svg>'
+      };
+
+      var hasMore = programs.length > 6;
+      var chipsHtml = '';
+      programs.forEach(function (p, idx) {
+        var isCollapsed = hasMore && idx >= 6;
+        chipsHtml += '<span class="tab-chip ' + (isCollapsed ? 'tab-chip-collapsed' : '') + '" data-cat="' + p.cat + '" title="' + escapeStr(p.raw) + '">' + escapeStr(p.cleanName) + '</span>';
+      });
+
+      if (hasMore) {
+        var moreCount = programs.length - 6;
+        chipsHtml += '<button type="button" class="tab-more-btn" id="modalDrawerMoreBtn">' +
+          '<span>Show ' + moreCount + ' more</span> ' + SVG_ICONS.chevronDown +
+          '</button>';
+      }
+
+      tabsWrapper.innerHTML =
+        '<div class="c2-filter-header-bar">' +
+          '<span class="c2-filter-title">' +
+            SVG_ICONS.filterPill + ' POPULAR ACADEMIC PROGRAMS AND MAJORS' +
+          '</span>' +
+          '<span class="c2-filter-count">' +
+            programs.length + ' ' + (programs.length === 1 ? 'major' : 'majors') +
+          '</span>' +
+        '</div>' +
+        '<div class="tab-chips-container" style="justify-content: flex-start; gap: 6px; display: flex; flex-wrap: wrap;">' +
+          chipsHtml +
+        '</div>';
+
+      chipsContainer.appendChild(tabsWrapper);
+
+      var programChips = tabsWrapper.querySelectorAll('.tab-chip');
+      var moreBtn = tabsWrapper.querySelector('.tab-more-btn');
+      var isExpanded = false;
+
+      if (moreBtn) {
+        moreBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          isExpanded = !isExpanded;
+          if (isExpanded) {
+            programChips.forEach(function (c) { c.classList.remove('tab-chip-collapsed'); });
+            moreBtn.innerHTML = '<span>Show Less</span> ' + SVG_ICONS.chevronUp;
+          } else {
+            programChips.forEach(function (c, idx) {
+              if (idx >= 6) c.classList.add('tab-chip-collapsed');
+            });
+            var moreCount = programs.length - 6;
+            moreBtn.innerHTML = '<span>Show ' + moreCount + ' more</span> ' + SVG_ICONS.chevronDown;
+          }
+          setTimeout(fixCardModalScroll, 30);
         });
       }
     });
@@ -2425,9 +2737,14 @@
   function update() {
     var page = pageFlags();
     onScroll();
-    if (!page && !$$('.roomsCardsList .roomCard, .roomCard').length) return;
-    [showcase, stagger, nameTips, linkEnterButtons].forEach(function (fn) {
-      try { fn(); } catch (err) { if (window.console) console.warn('[rooms-override]', fn.name, err); }
+    var hasRoomCards = $$('.roomsCardsList .roomCard, .roomCard').length > 0;
+    if (page || hasRoomCards) {
+      [showcase, stagger, nameTips, linkEnterButtons].forEach(function (fn) {
+        try { fn(); } catch (err) { if (window.console) console.warn('[rooms-override]', fn.name, err); }
+      });
+    }
+    [fixCardModalScroll, enhancePopupMajors].forEach(function (fn) {
+      try { fn(); } catch (err) { if (window.console) console.warn('[modal-override]', fn.name, err); }
     });
   }
 
@@ -2446,6 +2763,29 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', schedule);
     if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(schedule);
+
+    doc.addEventListener('click', function (e) {
+      if (e.target && e.target.closest && (
+        e.target.closest('.roomCard') ||
+        e.target.closest('.roomCardMedia') ||
+        e.target.closest('.orgProfile') ||
+        e.target.closest('.MuiCard-root') ||
+        e.target.closest('.inspira-card-cta-btn') ||
+        e.target.closest('.inspira-card-view') ||
+        e.target.closest('.inspira-split-btn-group') ||
+        e.target.closest('[class*="Card"]')
+      )) {
+        setTimeout(fixCardModalScroll, 20);
+        setTimeout(fixCardModalScroll, 80);
+        setTimeout(fixCardModalScroll, 200);
+        setTimeout(fixCardModalScroll, 450);
+        setTimeout(fixCardModalScroll, 800);
+        setTimeout(enhancePopupMajors, 80);
+        setTimeout(enhancePopupMajors, 250);
+        setTimeout(enhancePopupMajors, 600);
+        setTimeout(enhancePopupMajors, 1000);
+      }
+    }, true);
   }
 
   if (doc.readyState === 'complete') {
@@ -2726,6 +3066,13 @@
     if (!wrap) return;
     var btn = wrap.nextElementSibling && wrap.nextElementSibling.classList.contains('bt-tags-toggle')
       ? wrap.nextElementSibling : null;
+    if (wrap.querySelector('.inspira-filter-tabs-wrapper')) {
+      if (btn) btn.remove();
+      setClass(wrap, 'bt-collapsible', false);
+      setClass(wrap, 'bt-collapsed', false);
+      wrap.style.removeProperty('max-height');
+      return;
+    }
     var chips = $$('.MuiChip-root', wrap);
     if (!chips.length) { if (btn) btn.remove(); return; }
 

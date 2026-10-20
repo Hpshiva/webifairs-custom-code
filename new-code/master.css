@@ -5458,6 +5458,7 @@ html.bt-scrolled .headerWrapper {
   overflow: hidden;
   border-radius: 0 !important;
   background: var(--bt-primary) !important;
+  cursor: pointer !important;
 }
 
 .roomsCardsList .roomCardMedia::before {
@@ -5479,6 +5480,7 @@ html.bt-scrolled .headerWrapper {
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, .7), 0 14px 28px -12px rgba(26, 21, 35, .55);
+  cursor: pointer !important;
 }
 
 .roomsCardsList .roomCardBody {
@@ -5691,6 +5693,7 @@ html.bt-scrolled .headerWrapper {
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
   transition: transform var(--bt-med) var(--bt-ease);
+  pointer-events: none !important;
 }
 
 .roomsCardsList .cardActions .MuiButton-root:hover::after {
@@ -5803,12 +5806,26 @@ html.bt-scrolled .headerWrapper {
   width: min(520px, calc(100vw - 32px)) !important;
   height: fit-content !important;
   max-height: min(760px, calc(100vh - 48px)) !important;
-  overflow: auto !important;
+  max-height: min(760px, calc(100dvh - 48px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain;
   transform: none !important;
   border-radius: 22px !important;
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
+}
+
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile > div,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .companyProfileFeeds,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .DelegateSidebar {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
 }
 
 .ReactModal__Overlay--before-close.sideBarUserPanel {
@@ -6684,12 +6701,26 @@ html.bt-scrolled .headerWrapper {
   width: min(520px, calc(100vw - 32px)) !important;
   height: fit-content !important;
   max-height: min(760px, calc(100vh - 48px)) !important;
-  overflow: auto !important;
+  max-height: min(760px, calc(100dvh - 48px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain;
   transform: none !important;
   border-radius: 22px !important;
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
+}
+
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile > div,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .companyProfileFeeds,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .DelegateSidebar {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
 }
 
 .ReactModal__Overlay--before-close.sideBarUserPanel {
@@ -8269,12 +8300,26 @@ html.bt-scrolled .headerWrapper {
   width: min(520px, calc(100vw - 32px)) !important;
   height: fit-content !important;
   max-height: min(760px, calc(100vh - 48px)) !important;
-  overflow: auto !important;
+  max-height: min(760px, calc(100dvh - 48px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain;
   transform: none !important;
   border-radius: 22px !important;
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
+}
+
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile > div,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .companyProfileFeeds,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .DelegateSidebar {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
 }
 
 .ReactModal__Overlay--before-close.sideBarUserPanel {
@@ -9833,12 +9878,26 @@ html.bt-scrolled .headerWrapper {
   width: min(520px, calc(100vw - 32px)) !important;
   height: fit-content !important;
   max-height: min(760px, calc(100vh - 48px)) !important;
-  overflow: auto !important;
+  max-height: min(760px, calc(100dvh - 48px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain;
   transform: none !important;
   border-radius: 22px !important;
   box-shadow: var(--bt-shadow-lg) !important;
   animation: bt-pop-in .34s var(--bt-ease-out) both;
+}
+
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile > div,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .companyProfileFeeds,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .DelegateSidebar {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
 }
 
 .ReactModal__Overlay--before-close.sideBarUserPanel {
@@ -10573,4 +10632,218 @@ html body {
     animation: none !important;
     transition-duration: .01ms !important;
   }
+}
+
+/* =====================================================================
+   Card Popup Vertical Scroll & Colored UI Scrollbar Fix
+   (University Lobby / Exhibitor / Booth / Delegate / Room / Dialogs)
+   ===================================================================== */
+
+/* 1. Modal Containers: centered popup with guaranteed vertical scrolling */
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper,
+.ReactModalPortal .sidedrawerWrapper,
+.sidedrawerWrapper.profile,
+.sidedrawerWrapper.open:has(.profileHeaderRow),
+.sidedrawerWrapper.open:has(.companyProfileFeeds),
+.sidedrawerWrapper.open:has(.DelegateSidebar),
+.MuiDrawer-root .MuiDrawer-paper,
+.MuiDrawer-paper,
+.sponsorsProfileWrapper,
+.MuiDialog-paper,
+.cu-modal-dialog,
+[class*="modalContentStyle"] {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  width: min(560px, calc(100vw - 32px)) !important;
+  max-width: min(560px, calc(100vw - 32px)) !important;
+  height: auto !important;
+  max-height: min(780px, calc(100vh - 48px), calc(100dvh - 48px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  scroll-behavior: smooth !important;
+  border-radius: 22px !important;
+  box-shadow: 0 24px 64px -12px rgba(26, 21, 35, 0.4), 0 0 0 1px rgba(109, 74, 194, 0.08) !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #6D4AC2 rgba(109, 74, 194, 0.08) !important;
+}
+
+/* 2. Inner Hubilo wrappers: remove fixed 100vh, 100% height, and overflow locks */
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper > div,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper .companyProfileFeeds,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper .DelegateSidebar,
+.sidedrawerWrapper > div,
+.sidedrawerWrapper .companyProfileFeeds,
+.sidedrawerWrapper .DelegateSidebar,
+.sidedrawerWrapper .profileContent,
+.sidedrawerWrapper .drawerTabWrapper,
+.MuiDrawer-paper > div,
+.MuiDrawer-paper .mui-0,
+.sponsorsProfileWrapper > div,
+.sponsorsProfileWrapper .sponsorsDetails {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.sidedrawerWrapper .companyProfileFeeds,
+.sidedrawerWrapper.profile .companyProfileFeeds,
+.sidedrawerWrapper .DelegateSidebar {
+  padding-bottom: 28px !important;
+}
+
+/* 3. Close button positioning inside scrollable card popup */
+.sidedrawerWrapper .closeBox,
+.sidedrawerWrapper.profile .closeBox {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  left: auto !important;
+  z-index: 60 !important;
+  pointer-events: auto !important;
+}
+
+/* 4. Universal MuiDialog / cu-modal-dialog scroll protection */
+.MuiDialog-paper,
+.MuiDialogContent-root,
+.cu-modal-dialog {
+  max-height: calc(100vh - 64px) !important;
+  max-height: calc(100dvh - 64px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #6D4AC2 rgba(109, 74, 194, 0.08) !important;
+}
+
+/* 5. Custom Colored UI Scrollbar for ALL Modal Popups & Drawers */
+.sidedrawerWrapper::-webkit-scrollbar,
+.sidedrawerWrapper.profile::-webkit-scrollbar,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar,
+.ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar,
+.MuiDrawer-paper::-webkit-scrollbar,
+.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar,
+.sponsorsProfileWrapper::-webkit-scrollbar,
+.companyProfileFeeds::-webkit-scrollbar,
+.DelegateSidebar::-webkit-scrollbar,
+.cu-modal-dialog::-webkit-scrollbar,
+.MuiDialog-paper::-webkit-scrollbar,
+[class*="modalContentStyle"]::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+  display: block !important;
+}
+
+.sidedrawerWrapper::-webkit-scrollbar-track,
+.sidedrawerWrapper.profile::-webkit-scrollbar-track,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-track,
+.ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-track,
+.MuiDrawer-paper::-webkit-scrollbar-track,
+.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-track,
+.sponsorsProfileWrapper::-webkit-scrollbar-track,
+.companyProfileFeeds::-webkit-scrollbar-track,
+.DelegateSidebar::-webkit-scrollbar-track,
+.cu-modal-dialog::-webkit-scrollbar-track,
+.MuiDialog-paper::-webkit-scrollbar-track,
+[class*="modalContentStyle"]::-webkit-scrollbar-track {
+  background: rgba(109, 74, 194, 0.08) !important;
+  border-radius: 9999px !important;
+  margin: 8px 0 !important;
+}
+
+.sidedrawerWrapper::-webkit-scrollbar-thumb,
+.sidedrawerWrapper.profile::-webkit-scrollbar-thumb,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-thumb,
+.ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-thumb,
+.MuiDrawer-paper::-webkit-scrollbar-thumb,
+.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-thumb,
+.sponsorsProfileWrapper::-webkit-scrollbar-thumb,
+.companyProfileFeeds::-webkit-scrollbar-thumb,
+.DelegateSidebar::-webkit-scrollbar-thumb,
+.cu-modal-dialog::-webkit-scrollbar-thumb,
+.MuiDialog-paper::-webkit-scrollbar-thumb,
+[class*="modalContentStyle"]::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7C5CE0 0%, #6D4AC2 100%) !important;
+  border-radius: 9999px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 1px 4px rgba(109, 74, 194, 0.3) !important;
+  transition: background 0.2s ease, border-color 0.2s ease !important;
+}
+
+.sidedrawerWrapper::-webkit-scrollbar-thumb:hover,
+.sidedrawerWrapper.profile::-webkit-scrollbar-thumb:hover,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-thumb:hover,
+.ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-thumb:hover,
+.MuiDrawer-paper::-webkit-scrollbar-thumb:hover,
+.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-thumb:hover,
+.sponsorsProfileWrapper::-webkit-scrollbar-thumb:hover,
+.companyProfileFeeds::-webkit-scrollbar-thumb:hover,
+.DelegateSidebar::-webkit-scrollbar-thumb:hover,
+.cu-modal-dialog::-webkit-scrollbar-thumb:hover,
+.MuiDialog-paper::-webkit-scrollbar-thumb:hover,
+[class*="modalContentStyle"]::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6545B8 0%, #523199 100%) !important;
+  border-color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(109, 74, 194, 0.5) !important;
+}
+
+.sidedrawerWrapper::-webkit-scrollbar-thumb:active,
+.sidedrawerWrapper.profile::-webkit-scrollbar-thumb:active,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-thumb:active,
+.ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-thumb:active,
+.MuiDrawer-paper::-webkit-scrollbar-thumb:active,
+.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-thumb:active,
+.sponsorsProfileWrapper::-webkit-scrollbar-thumb:active,
+.companyProfileFeeds::-webkit-scrollbar-thumb:active,
+.DelegateSidebar::-webkit-scrollbar-thumb:active,
+.cu-modal-dialog::-webkit-scrollbar-thumb:active,
+.MuiDialog-paper::-webkit-scrollbar-thumb:active,
+[class*="modalContentStyle"]::-webkit-scrollbar-thumb:active {
+  background: #4E2E99 !important;
+}
+
+/* =====================================================================
+   Popup Academic Programs and Majors (Bento Card Styling)
+   ===================================================================== */
+.sidedrawerWrapper.profile .inspira-programs-container,
+.sidedrawerWrapper.profile .tagsWrapper.inspira-programs-container,
+.companyProfileFeeds .inspira-programs-container,
+.companyProfileFeeds .tagsWrapper.inspira-programs-container,
+.sponsorsProfileWrapper .inspira-programs-container,
+.sponsorsProfileWrapper .tagsWrapper.inspira-programs-container,
+.ReactModal__Overlay.sideBarUserPanel .inspira-programs-container,
+.inspira-programs-container {
+  margin: 14px 0 20px 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  align-self: center !important;
+  background: #F8FAFC !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 16px !important;
+  padding: 16px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
+}
+
+.sidedrawerWrapper.profile .tagsWrapper:has(.inspira-filter-tabs-wrapper),
+.companyProfileFeeds .tagsWrapper:has(.inspira-filter-tabs-wrapper),
+.sponsorsProfileWrapper .tagsWrapper:has(.inspira-filter-tabs-wrapper) {
+  display: block !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.tagsWrapper:has(.inspira-filter-tabs-wrapper) + .bt-tags-toggle,
+.inspira-programs-container + .bt-tags-toggle {
+  display: none !important;
 }
