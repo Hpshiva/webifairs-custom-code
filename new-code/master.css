@@ -11451,3 +11451,9 @@ html body {
   box-shadow: none !important;
   outline: none !important;
 }
+
+/* Text fields show focus on their own box (border + soft ring). The extra outline on the
+   input itself drew a second, inner box; buttons, links and checkboxes keep their outline. */
+html body :is(input, textarea):not([type="checkbox"], [type="radio"], [type="range"], [type="file"]):is(:focus, :focus-visible) {
+  outline: none !important;
+}

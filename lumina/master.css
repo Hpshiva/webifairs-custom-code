@@ -11971,3 +11971,9 @@ body:has(#headerTop) .inspira-ticket-v2-container .inspira-ticket-perforation .i
 .inspira-card-split-media > img[src*="exhibitor_cover"] {
   opacity: 0 !important;
 }
+
+/* Text fields show focus on their own box (border + soft ring). The extra outline on the
+   input itself drew a second, inner box; buttons, links and checkboxes keep their outline. */
+html body :is(input, textarea):not([type="checkbox"], [type="radio"], [type="range"], [type="file"]):is(:focus, :focus-visible) {
+  outline: none !important;
+}
