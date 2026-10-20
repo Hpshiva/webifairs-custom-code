@@ -11005,14 +11005,14 @@ html body {
 /* =====================================================================
    Header Right Action Icons - Perfect Alignment & Message Button Restore
    ===================================================================== */
-.headerWrapper {
+.headerWrapper:not(.dropDownWrapper, .dropDownWrapper *) {
   display: flex !important;
   align-items: center !important;
   height: 64px !important;
   box-sizing: border-box !important;
 }
 
-.headerWrapper .rightActionWrapper {
+.headerWrapper .rightActionWrapper:not(.dropDownWrapper, .dropDownWrapper *) {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-end !important;
@@ -11023,14 +11023,14 @@ html body {
 }
 
 /* Ensure Chat / Message Button in Header is 100% Visible & Interactive */
-.headerWrapper button[aria-label*="Chat"],
-.headerWrapper button[title*="Chat"],
-.headerWrapper button[aria-label*="Message"],
-.headerWrapper button[title*="Message"],
-.headerWrapper [class*="chat"],
-.headerWrapper [class*="message"],
-.headerWrapper .actionIcon:has(button[aria-label*="Chat"]),
-.headerWrapper .actionIcon:has(button[title*="Chat"]) {
+.headerWrapper button[aria-label*="Chat"]:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper button[title*="Chat"]:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper button[aria-label*="Message"]:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper button[title*="Message"]:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper [class*="chat"]:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper [class*="message"]:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .actionIcon:has(button[aria-label*="Chat"]):not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .actionIcon:has(button[title*="Chat"]):not(.dropDownWrapper, .dropDownWrapper *) {
   display: inline-flex !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -11044,9 +11044,9 @@ html body {
 }
 
 /* Uniform container item wrappers in header */
-.headerWrapper .rightActionWrapper > div,
-.headerWrapper .rightActionWrapper .actionIcon,
-.headerWrapper .rightActionWrapper .mr20 {
+.headerWrapper .rightActionWrapper > div:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper .actionIcon:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper .mr20:not(.dropDownWrapper, .dropDownWrapper *) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -11059,8 +11059,8 @@ html body {
 }
 
 /* All icon buttons (Calendar, Messages, Notifications): 38px x 38px, centered */
-.headerWrapper .rightActionWrapper .MuiIconButton-root,
-.headerWrapper .rightActionWrapper button {
+.headerWrapper .rightActionWrapper .MuiIconButton-root:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper button:not(.dropDownWrapper, .dropDownWrapper *) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -11080,18 +11080,18 @@ html body {
   position: relative !important;
 }
 
-.headerWrapper .rightActionWrapper .MuiIconButton-root:hover,
-.headerWrapper .rightActionWrapper button:hover {
+.headerWrapper .rightActionWrapper .MuiIconButton-root:hover:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper button:hover:not(.dropDownWrapper, .dropDownWrapper *) {
   background: var(--bt-primary-tint, rgba(109, 74, 194, 0.08)) !important;
   color: var(--bt-primary, #6d4ac2) !important;
 }
 
-.headerWrapper .rightActionWrapper .MuiIconButton-root:active,
-.headerWrapper .rightActionWrapper button:active {
+.headerWrapper .rightActionWrapper .MuiIconButton-root:active:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper button:active:not(.dropDownWrapper, .dropDownWrapper *) {
   transform: scale(0.93) !important;
 }
 
-.headerWrapper .rightActionWrapper .MuiIconButton-label {
+.headerWrapper .rightActionWrapper .MuiIconButton-label:not(.dropDownWrapper, .dropDownWrapper *) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -11100,9 +11100,9 @@ html body {
 }
 
 /* SVG Icons: consistent 22px sizing and perfect centering */
-.headerWrapper .rightActionWrapper svg,
-.headerWrapper .rightActionWrapper .iconSVG svg,
-.headerWrapper .rightActionWrapper .MuiIconButton-label svg {
+.headerWrapper .rightActionWrapper svg:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper .iconSVG svg:not(.dropDownWrapper, .dropDownWrapper *),
+.headerWrapper .rightActionWrapper .MuiIconButton-label svg:not(.dropDownWrapper, .dropDownWrapper *) {
   width: 22px !important;
   height: 22px !important;
   max-width: 22px !important;
@@ -11113,7 +11113,7 @@ html body {
 }
 
 /* MuiBadge: Anchor cleanly to top-right corner of bell/message icon */
-.headerWrapper .rightActionWrapper .MuiBadge-root {
+.headerWrapper .rightActionWrapper .MuiBadge-root:not(.dropDownWrapper, .dropDownWrapper *) {
   position: relative !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -11121,7 +11121,7 @@ html body {
   vertical-align: middle !important;
 }
 
-.headerWrapper .rightActionWrapper .MuiBadge-badge {
+.headerWrapper .rightActionWrapper .MuiBadge-badge:not(.dropDownWrapper, .dropDownWrapper *) {
   position: absolute !important;
   top: -2px !important;
   right: -2px !important;
@@ -11147,7 +11147,7 @@ html body {
 }
 
 /* Profile Avatar: 38px matching buttons, vertically centered */
-.headerWrapper .avtarWrapper {
+.headerWrapper .avtarWrapper:not(.dropDownWrapper, .dropDownWrapper *) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -11157,7 +11157,7 @@ html body {
   vertical-align: middle !important;
 }
 
-.headerWrapper .avtarWrapper .MuiAvatar-root {
+.headerWrapper .avtarWrapper .MuiAvatar-root:not(.dropDownWrapper, .dropDownWrapper *) {
   width: 38px !important;
   height: 38px !important;
   border-radius: 12px !important;
@@ -11170,7 +11170,7 @@ html body {
   justify-content: center !important;
 }
 
-.headerWrapper .avtarWrapper .MuiAvatar-root:hover {
+.headerWrapper .avtarWrapper .MuiAvatar-root:hover:not(.dropDownWrapper, .dropDownWrapper *) {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary, #6d4ac2) !important;
   transform: scale(1.04) !important;
 }
@@ -11216,4 +11216,20 @@ html body {
 .roomsCardsList .roomCard .roomDesc {
   display: block !important;
   opacity: 1 !important;
+}
+
+/* Popups (university + people profile): Hubilo's wheel guard only lets the mouse wheel scroll inside
+   its own inner area, so that area is the scroll box (capped like the popup, so never full height).
+   position: static anchors the close button to the popup corner so it stays visible while scrolling. */
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile > :is(.companyProfileFeeds, .DelegateSidebar),
+.ReactModalPortal .sidedrawerWrapper.profile > :is(.companyProfileFeeds, .DelegateSidebar),
+.sidedrawerWrapper.profile > :is(.companyProfileFeeds, .DelegateSidebar) {
+  position: static !important;
+  max-height: min(580px, calc(100vh - 120px)) !important;
+  max-height: min(580px, calc(100dvh - 120px)) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #6D4AC2 rgba(109, 74, 194, 0.08);
 }

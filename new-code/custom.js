@@ -2377,6 +2377,9 @@
         '.drawerTabWrapper, .tagsWrapper, .sponsorsDetails, :scope > div'
       );
       inners.forEach(function (inner) {
+        // .companyProfileFeeds / .DelegateSidebar are Hubilo's own scroll areas (its wheel guard only lets the
+        // mouse wheel scroll inside them), so master.css keeps them scrollable instead of flattening them here.
+        if (inner.classList.contains('companyProfileFeeds') || inner.classList.contains('DelegateSidebar')) return;
         if (inner.style.height !== 'auto') {
           inner.style.setProperty('height', 'auto', 'important');
           inner.style.setProperty('min-height', '0px', 'important');
