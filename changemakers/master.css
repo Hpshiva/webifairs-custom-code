@@ -151,9 +151,9 @@ body:has(.logInBlockWrapper) #__next {
 }
 
 .inspira-hero-injected .hero-heading .hero-highlight-word {
-  color: #FFA588 !important;
+  color: #A5AEF5 !important;
   background: none !important;
-  -webkit-text-fill-color: #FFA588 !important;
+  -webkit-text-fill-color: #A5AEF5 !important;
 }
 
 .inspira-hero-injected .hero-subheading {
@@ -634,7 +634,7 @@ body:has(.logInBlockWrapper) #__next {
 
 .inspira-hero-injected .hero-badge-pill svg {
   flex: none;
-  color: #FFA588;
+  color: #A5AEF5;
 }
 
 .inspira-hero-injected .hero-countdown-strip[hidden] {
