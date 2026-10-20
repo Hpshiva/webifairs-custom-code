@@ -2372,6 +2372,9 @@
     if (!modals.length) return;
 
     modals.forEach(function (modal) {
+      // On /booth pages .sponsorsProfileWrapper is the page itself, not a popup: making it a contained
+      // scroll box traps the mouse wheel and the page stops scrolling.
+      if (modal.classList.contains('sponsorsProfileWrapper') && !modal.closest('.ReactModalPortal, .ReactModal__Overlay, .sidedrawerWrapper')) return;
       if (modal.style.overflowY !== 'auto') {
         modal.style.setProperty('overflow-y', 'auto', 'important');
         modal.style.setProperty('overflow-x', 'hidden', 'important');
