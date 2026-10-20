@@ -2292,6 +2292,7 @@
         cardActions.appendChild(btn);
         btnText = 'Enter';
         isStart = false;
+        btn.__btFallback = true;
       }
 
       // Ensure button is active and styled
@@ -2302,9 +2303,10 @@
       btn.style.cursor = 'pointer';
 
       // 4. Button behavior:
-      // If "Start": DO NOT hijack or preventDefault! Let Hubilo's native React handler start the room.
-      // If "Enter": clicking opens the room/exhibitor popup.
-      if (!isStart) {
+      // Native Hubilo buttons ("Start" and "Enter", both labelled "Start" via CSS) keep their
+      // native React handler, so every card button starts/joins the room the same way.
+      // Only the fallback button we injected (no native handler) opens the room/exhibitor popup.
+      if (btn.__btFallback && !isStart) {
         if (!btn.__btBound) {
           btn.__btBound = true;
           btn.addEventListener('click', function (e) {
@@ -2328,29 +2330,21 @@
         }
       }
 
-      // 5. Attach click to .roomCardMedia to open popup
-      var media = card.querySelector('.roomCardMedia');
-      if (media) {
-        media.style.cursor = 'pointer';
-        if (!media.__btBound) {
-          media.__btBound = true;
-          media.addEventListener('click', function (e) {
-            if (e.target && e.target.closest && e.target.closest('button, a')) return;
-            if (e) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-            var target = findIconTarget(card);
-            triggerIconClick(target);
-            setTimeout(fixCardModalScroll, 50);
-            setTimeout(fixCardModalScroll, 200);
-            setTimeout(fixCardModalScroll, 500);
-            setTimeout(enhancePopupMajors, 80);
-            setTimeout(enhancePopupMajors, 250);
-            setTimeout(enhancePopupMajors, 600);
-          });
-        }
-      }
+      // 5. Card image + logo join the room (same as the Start button), no popup
+      [card.querySelector('.roomCardMedia'), card.querySelector('.orgProfile')].forEach(function (zone) {
+        if (!zone) return;
+        zone.style.cursor = 'pointer';
+        if (zone.__btJoinBound) return;
+        zone.__btJoinBound = true;
+        zone.addEventListener('click', function (e) {
+          if (e.target && e.target.closest && e.target.closest('button, a')) return;
+          var joinBtn = card.querySelector('.cardActions .MuiButton-root, .cardActions button');
+          if (!joinBtn) return;
+          e.preventDefault();
+          e.stopPropagation();
+          joinBtn.click();
+        });
+      });
     });
   }
 

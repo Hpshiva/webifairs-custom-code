@@ -11174,3 +11174,39 @@ html body {
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--bt-primary, #6d4ac2) !important;
   transform: scale(1.04) !important;
 }
+
+/* =====================================================================
+   Rooms Page (/rooms) - Badge, Name Width & Tablet Gutter Fixes
+   ===================================================================== */
+/* Hide MUI's empty "invisible" badge (bell with no notifications) */
+.headerWrapper .rightActionWrapper .MuiBadge-badge.MuiBadge-invisible {
+  display: none !important;
+}
+
+/* Let room names use the full card width instead of the platform's 60% cap */
+.roomsCardsList .orgName {
+  max-width: 100% !important;
+}
+
+/* Tablet / small desktop: platform drops mainContainer left padding, so add a gutter */
+@media (min-width: 768px) and (max-width: 1279.98px) {
+  .layoutWrapper:has(.miniSidedrawerInn) .mainContainer:has(.roomPageWrapper) .roomsWrapper.container {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Rooms: show every card button as "Start" (platform renders "Start" for hosts, "Enter" otherwise) */
+.roomsCardsList .roomCard .cardActions .MuiButton-root {
+  font-size: 0 !important;
+}
+
+.roomsCardsList .roomCard .cardActions .MuiButton-root::before {
+  content: "Start";
+  font-family: var(--bt-font) !important;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}
