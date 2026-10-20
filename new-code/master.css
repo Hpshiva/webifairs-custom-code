@@ -11210,3 +11210,10 @@ html body {
   line-height: 1;
   pointer-events: none;
 }
+
+/* Rooms: platform reveals the room tag only on hover, which grows the card and pushes
+   the Start button away from the cursor. Keep it always visible so buttons stay put. */
+.roomsCardsList .roomCard .roomDesc {
+  display: block !important;
+  opacity: 1 !important;
+}
