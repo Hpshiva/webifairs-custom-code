@@ -10636,106 +10636,127 @@ html body {
 
 /* =====================================================================
    Card Popup Vertical Scroll & Colored UI Scrollbar Fix
-   (University Lobby / Exhibitor / Booth / Delegate / Room / Dialogs)
    ===================================================================== */
 
-/* 1. Modal Containers: centered popup with guaranteed vertical scrolling */
+/* 1. Modal Containers: keep exact default size & positioning, enable vertical scroll */
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper,
+.ReactModalPortal .sidedrawerWrapper.profile,
 .ReactModalPortal .sidedrawerWrapper,
 .sidedrawerWrapper.profile,
 .sidedrawerWrapper.open:has(.profileHeaderRow),
 .sidedrawerWrapper.open:has(.companyProfileFeeds),
-.sidedrawerWrapper.open:has(.DelegateSidebar),
-.MuiDrawer-root .MuiDrawer-paper,
-.MuiDrawer-paper,
-.sponsorsProfileWrapper,
-.MuiDialog-paper,
-.cu-modal-dialog,
-[class*="modalContentStyle"] {
+.sidedrawerWrapper.open:has(.DelegateSidebar) {
   position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translate(-50%, -50%) !important;
-  margin: 0 !important;
-  width: min(560px, calc(100vw - 32px)) !important;
-  max-width: min(560px, calc(100vw - 32px)) !important;
-  height: auto !important;
-  max-height: min(780px, calc(100vh - 48px), calc(100dvh - 48px)) !important;
+  inset: 0 !important;
+  margin: auto !important;
+  width: min(520px, calc(100vw - 32px)) !important;
+  height: fit-content !important;
+  max-height: min(760px, calc(100vh - 48px)) !important;
+  max-height: min(760px, calc(100dvh - 48px)) !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: contain !important;
-  scroll-behavior: smooth !important;
+  overscroll-behavior: contain;
+  transform: none !important;
   border-radius: 22px !important;
-  box-shadow: 0 24px 64px -12px rgba(26, 21, 35, 0.4), 0 0 0 1px rgba(109, 74, 194, 0.08) !important;
+  box-shadow: var(--bt-shadow-lg) !important;
   scrollbar-width: thin !important;
   scrollbar-color: #6D4AC2 rgba(109, 74, 194, 0.08) !important;
 }
 
-/* 2. Inner Hubilo wrappers: remove fixed 100vh, 100% height, and overflow locks */
+/* 2. Inner Hubilo wrappers: remove fixed 100vh and overflow traps */
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile > div,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .companyProfileFeeds,
+.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper.profile .DelegateSidebar,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper > div,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper .companyProfileFeeds,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper .DelegateSidebar,
+.sidedrawerWrapper.profile > div,
+.sidedrawerWrapper.profile .companyProfileFeeds,
+.sidedrawerWrapper.profile .DelegateSidebar,
 .sidedrawerWrapper > div,
 .sidedrawerWrapper .companyProfileFeeds,
-.sidedrawerWrapper .DelegateSidebar,
-.sidedrawerWrapper .profileContent,
-.sidedrawerWrapper .drawerTabWrapper,
-.MuiDrawer-paper > div,
-.MuiDrawer-paper .mui-0,
-.sponsorsProfileWrapper > div,
-.sponsorsProfileWrapper .sponsorsDetails {
+.sidedrawerWrapper .DelegateSidebar {
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
   overflow: visible !important;
+  padding-top: 0 !important;
+  padding-bottom: 24px !important;
   box-sizing: border-box !important;
 }
 
-.sidedrawerWrapper .companyProfileFeeds,
-.sidedrawerWrapper.profile .companyProfileFeeds,
-.sidedrawerWrapper .DelegateSidebar {
-  padding-bottom: 28px !important;
-}
-
-/* 3. Close button positioning inside scrollable card popup */
+/* 3. Close button: always fully visible and clickable in top-right */
+.sidedrawerWrapper.profile .closeBox,
 .sidedrawerWrapper .closeBox,
-.sidedrawerWrapper.profile .closeBox {
+.sidedrawerWrapper [class*="closeBox"],
+.ReactModalPortal .sidedrawerWrapper .closeBox,
+.ReactModal__Overlay.sideBarUserPanel .closeBox {
   position: absolute !important;
   top: 14px !important;
   right: 14px !important;
   left: auto !important;
-  z-index: 60 !important;
+  z-index: 9999 !important;
   pointer-events: auto !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
-/* 4. Universal MuiDialog / cu-modal-dialog scroll protection */
-.MuiDialog-paper,
-.MuiDialogContent-root,
-.cu-modal-dialog {
-  max-height: calc(100vh - 64px) !important;
-  max-height: calc(100dvh - 64px) !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-  scrollbar-width: thin !important;
-  scrollbar-color: #6D4AC2 rgba(109, 74, 194, 0.08) !important;
+.sidedrawerWrapper.profile .closeBox :is(button, .MuiIconButton-root),
+.sidedrawerWrapper .closeBox :is(button, .MuiIconButton-root),
+.sidedrawerWrapper [class*="closeBox"] :is(button, .MuiIconButton-root),
+.ReactModalPortal .sidedrawerWrapper .closeBox :is(button, .MuiIconButton-root),
+.ReactModal__Overlay.sideBarUserPanel .closeBox :is(button, .MuiIconButton-root) {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, .95) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  padding: 0 !important;
+  outline: none !important;
+  transition: transform 0.2s ease, background 0.2s ease !important;
 }
 
-/* 5. Custom Colored UI Scrollbar for ALL Modal Popups & Drawers */
+.sidedrawerWrapper.profile .closeBox :is(button, .MuiIconButton-root):hover,
+.sidedrawerWrapper .closeBox :is(button, .MuiIconButton-root):hover,
+.sidedrawerWrapper [class*="closeBox"] :is(button, .MuiIconButton-root):hover,
+.ReactModalPortal .sidedrawerWrapper .closeBox :is(button, .MuiIconButton-root):hover,
+.ReactModal__Overlay.sideBarUserPanel .closeBox :is(button, .MuiIconButton-root):hover {
+  background: #ffffff !important;
+  transform: rotate(90deg) !important;
+}
+
+.sidedrawerWrapper.profile .closeBox svg,
+.sidedrawerWrapper .closeBox svg,
+.sidedrawerWrapper [class*="closeBox"] svg,
+.ReactModalPortal .sidedrawerWrapper .closeBox svg,
+.ReactModal__Overlay.sideBarUserPanel .closeBox svg {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  color: #1e293b !important;
+  fill: currentColor !important;
+  display: block !important;
+}
+
+/* 4. Styled colored UI scrollbar */
 .sidedrawerWrapper::-webkit-scrollbar,
 .sidedrawerWrapper.profile::-webkit-scrollbar,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar,
 .ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar,
-.MuiDrawer-paper::-webkit-scrollbar,
-.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar,
-.sponsorsProfileWrapper::-webkit-scrollbar,
 .companyProfileFeeds::-webkit-scrollbar,
-.DelegateSidebar::-webkit-scrollbar,
-.cu-modal-dialog::-webkit-scrollbar,
-.MuiDialog-paper::-webkit-scrollbar,
-[class*="modalContentStyle"]::-webkit-scrollbar {
+.DelegateSidebar::-webkit-scrollbar {
   width: 8px !important;
   height: 8px !important;
   display: block !important;
@@ -10745,14 +10766,8 @@ html body {
 .sidedrawerWrapper.profile::-webkit-scrollbar-track,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-track,
 .ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-track,
-.MuiDrawer-paper::-webkit-scrollbar-track,
-.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-track,
-.sponsorsProfileWrapper::-webkit-scrollbar-track,
 .companyProfileFeeds::-webkit-scrollbar-track,
-.DelegateSidebar::-webkit-scrollbar-track,
-.cu-modal-dialog::-webkit-scrollbar-track,
-.MuiDialog-paper::-webkit-scrollbar-track,
-[class*="modalContentStyle"]::-webkit-scrollbar-track {
+.DelegateSidebar::-webkit-scrollbar-track {
   background: rgba(109, 74, 194, 0.08) !important;
   border-radius: 9999px !important;
   margin: 8px 0 !important;
@@ -10762,14 +10777,8 @@ html body {
 .sidedrawerWrapper.profile::-webkit-scrollbar-thumb,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-thumb,
 .ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-thumb,
-.MuiDrawer-paper::-webkit-scrollbar-thumb,
-.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-thumb,
-.sponsorsProfileWrapper::-webkit-scrollbar-thumb,
 .companyProfileFeeds::-webkit-scrollbar-thumb,
-.DelegateSidebar::-webkit-scrollbar-thumb,
-.cu-modal-dialog::-webkit-scrollbar-thumb,
-.MuiDialog-paper::-webkit-scrollbar-thumb,
-[class*="modalContentStyle"]::-webkit-scrollbar-thumb {
+.DelegateSidebar::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #7C5CE0 0%, #6D4AC2 100%) !important;
   border-radius: 9999px !important;
   border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
@@ -10781,14 +10790,8 @@ html body {
 .sidedrawerWrapper.profile::-webkit-scrollbar-thumb:hover,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-thumb:hover,
 .ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-thumb:hover,
-.MuiDrawer-paper::-webkit-scrollbar-thumb:hover,
-.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-thumb:hover,
-.sponsorsProfileWrapper::-webkit-scrollbar-thumb:hover,
 .companyProfileFeeds::-webkit-scrollbar-thumb:hover,
-.DelegateSidebar::-webkit-scrollbar-thumb:hover,
-.cu-modal-dialog::-webkit-scrollbar-thumb:hover,
-.MuiDialog-paper::-webkit-scrollbar-thumb:hover,
-[class*="modalContentStyle"]::-webkit-scrollbar-thumb:hover {
+.DelegateSidebar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #6545B8 0%, #523199 100%) !important;
   border-color: #FFFFFF !important;
   box-shadow: 0 2px 8px rgba(109, 74, 194, 0.5) !important;
@@ -10798,14 +10801,8 @@ html body {
 .sidedrawerWrapper.profile::-webkit-scrollbar-thumb:active,
 .ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper::-webkit-scrollbar-thumb:active,
 .ReactModalPortal .sidedrawerWrapper::-webkit-scrollbar-thumb:active,
-.MuiDrawer-paper::-webkit-scrollbar-thumb:active,
-.MuiDrawer-root .MuiDrawer-paper::-webkit-scrollbar-thumb:active,
-.sponsorsProfileWrapper::-webkit-scrollbar-thumb:active,
 .companyProfileFeeds::-webkit-scrollbar-thumb:active,
-.DelegateSidebar::-webkit-scrollbar-thumb:active,
-.cu-modal-dialog::-webkit-scrollbar-thumb:active,
-.MuiDialog-paper::-webkit-scrollbar-thumb:active,
-[class*="modalContentStyle"]::-webkit-scrollbar-thumb:active {
+.DelegateSidebar::-webkit-scrollbar-thumb:active {
   background: #4E2E99 !important;
 }
 

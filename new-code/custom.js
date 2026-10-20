@@ -1458,7 +1458,7 @@
         container.style.cursor = "pointer";
         container.style.pointerEvents = "auto";
         container.addEventListener("click", function (e) {
-          if (!e.target.closest(".MuiDrawer-paper, .MuiDialog-paper, [class*='modalContentStyle'], .MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)")) {
+          if (!e.target.closest(".MuiDrawer-paper, [class*='modalContentStyle'], .MuiModal-root .MuiBox-root[tabindex='-1'], .MuiModal-root:not(.MuiDrawer-root) > div:not(.MuiBackdrop-root)")) {
             e.preventDefault();
             e.stopPropagation();
             dismissModalPopup();
@@ -1468,7 +1468,7 @@
     });
 
     const drawerPaper = document.querySelector(
-      ".MuiDrawer-root .MuiDrawer-paper, .MuiDrawer-paper, .MuiModal-root [class*='modalContentStyle'], .MuiDialog-paper"
+      ".MuiDrawer-root .MuiDrawer-paper, .MuiDrawer-paper"
     );
     if (!drawerPaper || drawerPaper.offsetHeight === 0) {
       const cached = document.querySelectorAll("[data-inspira-exhibitor-enhanced]");
@@ -2374,18 +2374,12 @@
 
   function fixCardModalScroll() {
     var modalSelectors = [
-      '.sidedrawerWrapper',
-      '.sidedrawerWrapper.profile',
-      '.sidedrawerWrapper.open',
       '.ReactModal__Overlay.sideBarUserPanel .sidedrawerWrapper',
       '.ReactModalPortal .sidedrawerWrapper',
-      '.MuiDrawer-root .MuiDrawer-paper',
-      '.MuiDrawer-paper',
+      '.sidedrawerWrapper.profile',
+      '.sidedrawerWrapper.open',
+      '.sidedrawerWrapper',
       '.sponsorsProfileWrapper',
-      '.MuiDialog-paper',
-      '.cu-modal-dialog',
-      '[class*="modalContentStyle"]',
-      '.MuiModal-root [role="dialog"]',
       '.sideBarUserPanel [class*="sidedrawer"]'
     ].join(', ');
 
@@ -2452,8 +2446,7 @@
 
   function enhancePopupMajors() {
     var modals = $$(
-      '.sidedrawerWrapper, .sidedrawerWrapper.profile, .ReactModal__Overlay.sideBarUserPanel, .companyProfileFeeds, ' +
-      '.sponsorsProfileWrapper, .MuiDrawer-paper, .MuiDialog-paper, [class*="modalContentStyle"], .cu-modal-dialog'
+      '.sidedrawerWrapper, .sidedrawerWrapper.profile, .ReactModal__Overlay.sideBarUserPanel, .companyProfileFeeds, .sponsorsProfileWrapper'
     );
     if (!modals.length) return;
 
