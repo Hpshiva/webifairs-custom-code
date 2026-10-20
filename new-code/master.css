@@ -11235,17 +11235,17 @@ html body {
 }
 
 /* =====================================================================
-   Rooms search bar (desktop, open state) - one clean pill
+   Rooms + People search bar (desktop, open state) - one clean pill
    Platform stacks a 48px box, a 40px input with 9px/1px padding and a white 40px icon
    button at different offsets, so the icon covers the placeholder and pokes out below.
    ===================================================================== */
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active {
   top: -4px !important;
   bottom: auto !important;
   height: 48px !important;
 }
 
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchInputWrapper.active {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchInputWrapper.active {
   inset: 0 !important;
   height: 48px !important;
   display: flex !important;
@@ -11257,12 +11257,12 @@ html body {
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchInputWrapper.active:focus-within {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchInputWrapper.active:focus-within {
   border-color: #6d4ac2 !important;
   box-shadow: 0 0 0 4px rgba(109, 74, 194, .14), 0 12px 28px -14px rgba(58, 37, 95, .45) !important;
 }
 
-.roomsHeadBarDesktop .searchInputWrapper.active form {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .searchInputWrapper.active form {
   flex: 1 1 auto;
   height: 100% !important;
   margin: 0 !important;
@@ -11270,7 +11270,7 @@ html body {
   align-items: center;
 }
 
-.roomsHeadBarDesktop .searchInputWrapper.active .searchInput {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .searchInputWrapper.active .searchInput {
   width: 100% !important;
   height: 100% !important;
   padding: 0 56px 0 50px !important;
@@ -11284,14 +11284,14 @@ html body {
   caret-color: #6d4ac2;
 }
 
-.roomsHeadBarDesktop .searchInputWrapper.active .searchInput::placeholder {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .searchInputWrapper.active .searchInput::placeholder {
   color: #8b84a0 !important;
   opacity: 1 !important;
   font-weight: 500;
 }
 
 /* Search icon: transparent and purple, centred in the left of the pill */
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchBtn {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchBtn {
   top: 4px !important;
   left: 6px !important;
   right: auto !important;
@@ -11305,17 +11305,17 @@ html body {
   pointer-events: none;
 }
 
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchBtn svg {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchBtn svg {
   width: 20px !important;
   height: 20px !important;
 }
 
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchBtn svg path {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchBtn svg path {
   fill: currentColor !important;
 }
 
 /* Close button: soft purple square, centred on the right of the pill */
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchCloseBtn {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchCloseBtn {
   position: absolute !important;
   top: 8px !important;
   right: 8px !important;
@@ -11331,12 +11331,12 @@ html body {
   transition: background-color .2s ease, transform .2s ease;
 }
 
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchCloseBtn:hover {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchCloseBtn:hover {
   background: rgba(109, 74, 194, .16) !important;
   transform: rotate(90deg);
 }
 
-.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchCloseBtn svg {
+:is(.roomsHeadBarDesktop, .peopleTabHeader) .pageSearchWrapper.active .searchCloseBtn svg {
   width: 14px !important;
   height: 14px !important;
 }
@@ -11344,4 +11344,61 @@ html body {
 /* While the search is open, hide the toggle + Sort button it covers (their shadow leaked under the pill) */
 .roomsHeadBarDesktop .dFlex:has(> .pageSearchWrapper.searchIcon.active) > :is(.toggleSwitchBlock, .sortDropdown) {
   visibility: hidden !important;
+}
+
+/* People popup: meeting time slots look like clickable time buttons (they were small grey chips) */
+.DelegateSidebar .meeting-sec .tagsWrapper {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.DelegateSidebar .meeting-sec .tagsWrapper .MuiChip-root {
+  height: 34px !important;
+  margin: 0 !important;
+  padding: 0 14px !important;
+  border: 1px solid #e2d9f3 !important;
+  border-radius: 999px !important;
+  background: #f6f2fc !important;
+  color: #3a255f !important;
+  cursor: pointer !important;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.DelegateSidebar .meeting-sec .tagsWrapper .MuiChip-root:hover {
+  background: #6d4ac2 !important;
+  border-color: #6d4ac2 !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px -10px rgba(58, 37, 95, .8);
+}
+
+.DelegateSidebar .meeting-sec .MuiChip-root .MuiChip-label {
+  padding: 0 !important;
+  color: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em;
+}
+
+/* "More Slots": outlined purple button instead of a grey chip */
+.DelegateSidebar .meeting-sec .moreFilter .MuiChip-root {
+  height: 32px !important;
+  padding: 0 12px !important;
+  border: 1px solid #d9d1ea !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #6d4ac2 !important;
+  cursor: pointer !important;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+
+.DelegateSidebar .meeting-sec .moreFilter .MuiChip-root:hover {
+  background: #f6f2fc !important;
+  border-color: #6d4ac2 !important;
+}
+
+.DelegateSidebar .meeting-sec .moreFilter .MuiChip-root svg {
+  color: inherit !important;
+  fill: currentColor;
 }
