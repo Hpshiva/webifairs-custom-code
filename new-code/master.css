@@ -11233,3 +11233,115 @@ html body {
   scrollbar-width: thin;
   scrollbar-color: #6D4AC2 rgba(109, 74, 194, 0.08);
 }
+
+/* =====================================================================
+   Rooms search bar (desktop, open state) - one clean pill
+   Platform stacks a 48px box, a 40px input with 9px/1px padding and a white 40px icon
+   button at different offsets, so the icon covers the placeholder and pokes out below.
+   ===================================================================== */
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active {
+  top: -4px !important;
+  bottom: auto !important;
+  height: 48px !important;
+}
+
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchInputWrapper.active {
+  inset: 0 !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  background: #fff !important;
+  border: 1.5px solid #d9d1ea !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 28px -14px rgba(58, 37, 95, .45), 0 1px 2px rgba(26, 21, 35, .06) !important;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchInputWrapper.active:focus-within {
+  border-color: #6d4ac2 !important;
+  box-shadow: 0 0 0 4px rgba(109, 74, 194, .14), 0 12px 28px -14px rgba(58, 37, 95, .45) !important;
+}
+
+.roomsHeadBarDesktop .searchInputWrapper.active form {
+  flex: 1 1 auto;
+  height: 100% !important;
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+}
+
+.roomsHeadBarDesktop .searchInputWrapper.active .searchInput {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 56px 0 50px !important;
+  line-height: normal !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: transparent !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #1a1523 !important;
+  caret-color: #6d4ac2;
+}
+
+.roomsHeadBarDesktop .searchInputWrapper.active .searchInput::placeholder {
+  color: #8b84a0 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+/* Search icon: transparent and purple, centred in the left of the pill */
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchBtn {
+  top: 4px !important;
+  left: 6px !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #6d4ac2 !important;
+  pointer-events: none;
+}
+
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchBtn svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchBtn svg path {
+  fill: currentColor !important;
+}
+
+/* Close button: soft purple square, centred on the right of the pill */
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchCloseBtn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 3 !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  background: rgba(109, 74, 194, .08) !important;
+  color: #4a2c82 !important;
+  transition: background-color .2s ease, transform .2s ease;
+}
+
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchCloseBtn:hover {
+  background: rgba(109, 74, 194, .16) !important;
+  transform: rotate(90deg);
+}
+
+.roomsHeadBarDesktop .pageSearchWrapper.searchIcon.active .searchCloseBtn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* While the search is open, hide the toggle + Sort button it covers (their shadow leaked under the pill) */
+.roomsHeadBarDesktop .dFlex:has(> .pageSearchWrapper.searchIcon.active) > :is(.toggleSwitchBlock, .sortDropdown) {
+  visibility: hidden !important;
+}
