@@ -3998,7 +3998,6 @@
   // The highlighted chip always follows what is in the platform's search box
   // ("" = All, null = the student typed something else).
   var currentCountry = "";
-  var chipsSig = "";
 
   function buildToolbar() {
     var bar = doc.createElement("div");
@@ -4075,9 +4074,10 @@
     currentCountry = val ? null : "";
     countries.forEach(function (c) { if (val && searchTerm(c).toLowerCase() === val) currentCountry = c; });
 
+    // the signature lives on the toolbar, so a toolbar rebuilt after a platform re-render redraws its chips
     var sig = countries.join("|") + "#" + currentCountry;
-    if (sig !== chipsSig) {
-      chipsSig = sig;
+    if (sig !== bar.__lxSig) {
+      bar.__lxSig = sig;
       var html = '<button type="button" class="lx-chip' + (currentCountry === "" ? " is-active" : "") + '" data-country="" aria-pressed="' + (currentCountry === "") + '">All</button>';
       countries.forEach(function (c) {
         var on = c === currentCountry;
