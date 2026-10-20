@@ -5106,6 +5106,12 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   border-left: 1px solid var(--bt-line) !important;
   padding-top: 8px !important;
+  padding-bottom: 28px !important;
+  box-sizing: border-box !important;
+  height: calc(100vh - 64px) !important;
+  height: calc(100dvh - 64px) !important;
+  max-height: calc(100vh - 64px) !important;
+  max-height: calc(100dvh - 64px) !important;
 }
 
 .miniSidedrawerInn .svgBox {
@@ -5119,6 +5125,22 @@ html.bt-scrolled .headerWrapper {
   justify-content: center;
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
+}
+
+.miniSidedrawerInn .svgBox.totalPeople {
+  margin: 3px auto 38px auto !important;
+  position: relative !important;
+}
+
+.miniSidedrawerInn .svgBox.totalPeople .totalAttendees {
+  position: absolute !important;
+  bottom: -28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 36px !important;
+  padding: 3px 8px !important;
+  border-radius: 12px !important;
+  z-index: 2 !important;
 }
 
 .miniSidedrawerInn .svgBox:hover {
@@ -6496,6 +6518,12 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   border-left: 1px solid var(--bt-line) !important;
   padding-top: 8px !important;
+  padding-bottom: 28px !important;
+  box-sizing: border-box !important;
+  height: calc(100vh - 64px) !important;
+  height: calc(100dvh - 64px) !important;
+  max-height: calc(100vh - 64px) !important;
+  max-height: calc(100dvh - 64px) !important;
 }
 
 .miniSidedrawerInn .svgBox {
@@ -6509,6 +6537,22 @@ html.bt-scrolled .headerWrapper {
   justify-content: center;
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
+}
+
+.miniSidedrawerInn .svgBox.totalPeople {
+  margin: 3px auto 38px auto !important;
+  position: relative !important;
+}
+
+.miniSidedrawerInn .svgBox.totalPeople .totalAttendees {
+  position: absolute !important;
+  bottom: -28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 36px !important;
+  padding: 3px 8px !important;
+  border-radius: 12px !important;
+  z-index: 2 !important;
 }
 
 .miniSidedrawerInn .svgBox:hover {
@@ -7372,6 +7416,12 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   border-left: 1px solid var(--bt-line) !important;
   padding-top: 8px !important;
+  padding-bottom: 28px !important;
+  box-sizing: border-box !important;
+  height: calc(100vh - 64px) !important;
+  height: calc(100dvh - 64px) !important;
+  max-height: calc(100vh - 64px) !important;
+  max-height: calc(100dvh - 64px) !important;
 }
 
 .miniSidedrawerInn .svgBox {
@@ -7385,6 +7435,22 @@ html.bt-scrolled .headerWrapper {
   justify-content: center;
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
+}
+
+.miniSidedrawerInn .svgBox.totalPeople {
+  margin: 3px auto 38px auto !important;
+  position: relative !important;
+}
+
+.miniSidedrawerInn .svgBox.totalPeople .totalAttendees {
+  position: absolute !important;
+  bottom: -28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 36px !important;
+  padding: 3px 8px !important;
+  border-radius: 12px !important;
+  z-index: 2 !important;
 }
 
 .miniSidedrawerInn .svgBox:hover {
@@ -9350,6 +9416,12 @@ html.bt-scrolled .headerWrapper {
   background: var(--bt-surface) !important;
   border-left: 1px solid var(--bt-line) !important;
   padding-top: 8px !important;
+  padding-bottom: 28px !important;
+  box-sizing: border-box !important;
+  height: calc(100vh - 64px) !important;
+  height: calc(100dvh - 64px) !important;
+  max-height: calc(100vh - 64px) !important;
+  max-height: calc(100dvh - 64px) !important;
 }
 
 .miniSidedrawerInn .svgBox {
@@ -9363,6 +9435,22 @@ html.bt-scrolled .headerWrapper {
   justify-content: center;
   cursor: pointer;
   transition: background-color var(--bt-fast) var(--bt-ease), transform var(--bt-fast) var(--bt-ease);
+}
+
+.miniSidedrawerInn .svgBox.totalPeople {
+  margin: 3px auto 38px auto !important;
+  position: relative !important;
+}
+
+.miniSidedrawerInn .svgBox.totalPeople .totalAttendees {
+  position: absolute !important;
+  bottom: -28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 36px !important;
+  padding: 3px 8px !important;
+  border-radius: 12px !important;
+  z-index: 2 !important;
 }
 
 .miniSidedrawerInn .svgBox:hover {
@@ -10845,4 +10933,67 @@ html body {
 .tagsWrapper:has(.inspira-filter-tabs-wrapper) + .bt-tags-toggle,
 .inspira-programs-container + .bt-tags-toggle {
   display: none !important;
+}
+
+/* =====================================================================
+   Right Navigation Rail (.miniSidedrawerInn) - Bottom Icon Overflow Fix
+   ===================================================================== */
+.miniSidedrawer,
+.miniSidedrawer .miniSidedrawerInn,
+.miniSidedrawerInn {
+  height: calc(100vh - 64px) !important;
+  height: calc(100dvh - 64px) !important;
+  max-height: calc(100vh - 64px) !important;
+  max-height: calc(100dvh - 64px) !important;
+  bottom: 0 !important;
+  padding-bottom: 28px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.miniSidedrawer::-webkit-scrollbar,
+.miniSidedrawer .miniSidedrawerInn::-webkit-scrollbar,
+.miniSidedrawerInn::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.miniSidedrawerInn > div:last-child {
+  padding-bottom: 12px !important;
+  box-sizing: border-box !important;
+}
+
+.miniSidedrawerInn .svgBox.totalPeople,
+.miniSidedrawer .miniSidedrawerInn .svgBox.totalPeople {
+  margin: 3px auto 38px auto !important;
+  position: relative !important;
+}
+
+.miniSidedrawerInn .svgBox.totalPeople .totalAttendees,
+.miniSidedrawer .miniSidedrawerInn .svgBox.totalPeople .totalAttendees {
+  position: absolute !important;
+  bottom: -28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 36px !important;
+  padding: 3px 8px !important;
+  border-radius: 12px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  z-index: 2 !important;
+}
+
+.miniSidedrawerInn .svgBox:last-child:not(.totalPeople),
+.miniSidedrawer .miniSidedrawerInn .svgBox:last-child:not(.totalPeople) {
+  margin-bottom: 14px !important;
 }
