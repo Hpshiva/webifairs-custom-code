@@ -939,6 +939,8 @@
       banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
     }
   ];
+  // Shared with the Lumina lobby extras at the end of this file (country chips, progress).
+  window.__INSPIRA_UNIVERSITIES__ = REAL_WEBSITE_UNIVERSITIES;
 
   window._inspiraCardViewMode = "style2";
 
@@ -3831,3 +3833,362 @@
   }
 })();
 ;
+
+/* =====================================================================
+   Lumina student UX extras (additive only; uses the page DOM and this
+   browser's localStorage, never the platform's data or buttons' logic):
+   1. Virtual Lobby "How it works" guide (shown until dismissed)
+   2. Country chips above the lobby cards (they drive the platform's own search)
+   3. "Visited" badges + "x of 42 universities explored" progress
+   4. Floating fair status (opens in / live now / ended) + "Need help?" button
+   ===================================================================== */
+(function () {
+  "use strict";
+  if (window.__LUMINA_UX__) return;
+  window.__LUMINA_UX__ = true;
+
+  var doc = document;
+  var CFG = Object.assign({
+    start: "2026-10-29T16:30:00+04:00",
+    end: "2026-10-29T19:00:00+04:00",
+    timeZone: "Asia/Dubai",
+    timeZoneLabel: "GST",
+    helpDesk: "Technology Help Desk"
+  }, window.INSPIRA_EVENT_CONFIG || {});
+  var START = new Date(CFG.start).getTime();
+  var END = new Date(CFG.end).getTime();
+  var BULLET = "•";
+  var KEY_GUIDE = "lumina_ux_guide_done";
+  var KEY_VISITED = "lumina_ux_visited";
+  var OWN = ".lx-toolbar, .lx-dock, .lx-visited-badge";
+
+  var ICON = {
+    school: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg>',
+    info: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+    video: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg>',
+    check: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7.5"/></svg>',
+    help: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>'
+  };
+
+  function load(key, def) {
+    try { var v = JSON.parse(localStorage.getItem(key)); return v == null ? def : v; } catch (e) { return def; }
+  }
+  function save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { }
+  }
+  function setText(el, text) { if (el && el.textContent !== text) el.textContent = text; }
+
+  /* ---------- names and countries ---------- */
+  function baseName(text) { return String(text || "").split(BULLET)[0].replace(/\s+/g, " ").trim(); }
+  function nameKey(text) { return baseName(text).toLowerCase(); }
+  function isSupport(text) { return /help\s*desk|support/i.test(text || ""); }
+  function normCountry(c) {
+    var s = String(c || "").replace(/\s+/g, " ").trim();
+    var compact = s.replace(/\s+/g, "").toLowerCase();
+    if (/^u\.?s\.?a?\.?$/.test(compact)) return "U.S.";
+    if (/^u\.?k\.?$/.test(compact)) return "U.K.";
+    if (/^u\.?a\.?e\.?$/.test(compact)) return "U.A.E.";
+    return s;
+  }
+  function countryOf(text) {
+    var parts = String(text || "").split(BULLET);
+    return parts.length > 1 ? normCountry(parts[parts.length - 1]) : "";
+  }
+  // What to type into the platform search for a country chip.
+  function searchTerm(country) {
+    if (country === "U.K.") return "K."; // matches both "U.K." and "U. K."
+    if (country === "Event Support") return "Help Desk";
+    return country;
+  }
+
+  /* ---------- lobby DOM ---------- */
+  function onRooms() { return /^\/rooms\/?$/.test(location.pathname); }
+  function lobbyList() { return doc.querySelector(".roomsCardsList"); }
+  function lobbyCards() {
+    return Array.prototype.filter.call(doc.querySelectorAll(".roomsCardsList .roomCard"), function (c) {
+      return !c.closest(".sidedrawerWrapper, .ReactModalPortal, .sponsorsProfileWrapper");
+    });
+  }
+  function cardTitle(card) {
+    var h = card && card.querySelector(".orgName h6");
+    return h ? h.textContent : "";
+  }
+  function searchInput() {
+    var all = doc.querySelectorAll('.roomsHeadBarDesktop input[type="text"], .roomsHeadBarMobile input[type="text"], input[placeholder*="Virtual Lobby"]');
+    for (var i = 0; i < all.length; i++) { if (all[i].getClientRects().length) return all[i]; }
+    return all[0] || null;
+  }
+  function runSearch(q) {
+    var inp = searchInput();
+    if (!inp) return false;
+    var setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+    setter.call(inp, q);
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+    return true;
+  }
+
+  // Every university we know of: the fair's list plus any lobby card already loaded.
+  function universities() {
+    var map = {};
+    (window.__INSPIRA_UNIVERSITIES__ || []).forEach(function (u) {
+      if (!u || !u.name) return;
+      map[nameKey(u.name)] = { country: u.isSupport ? "Event Support" : normCountry(u.country), support: !!u.isSupport };
+    });
+    lobbyCards().forEach(function (card) {
+      var t = cardTitle(card);
+      var k = nameKey(t);
+      if (k && !map[k]) map[k] = { country: isSupport(t) ? "Event Support" : countryOf(t), support: isSupport(t) };
+    });
+    return map;
+  }
+
+  /* ---------- visited tracker ---------- */
+  var visited = load(KEY_VISITED, []);
+  if (!Array.isArray(visited)) visited = [];
+  function isVisited(text) { return !isSupport(text) && visited.indexOf(nameKey(text)) !== -1; }
+  function markVisited(text) {
+    var k = nameKey(text);
+    if (!k || isSupport(text) || visited.indexOf(k) !== -1) return;
+    visited.push(k);
+    save(KEY_VISITED, visited);
+    schedule();
+  }
+  // Capture phase, no preventDefault: the platform's own clicks run exactly as before.
+  doc.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var room = t.closest(".roomsCardsList .roomCard");
+    if (room && t.closest(".bt-room-info, .roomCardMedia, .orgProfile, .cardActions, .orgName")) {
+      markVisited(cardTitle(room));
+      return;
+    }
+    var booth = t.closest(".exibitorCard");
+    if (booth) {
+      var h = booth.querySelector(".logoTextWrapper h3, h3");
+      if (h) markVisited(h.textContent);
+    }
+  }, true);
+
+  function badge(host, on) {
+    var b = host.querySelector(":scope > .lx-visited-badge");
+    if (on && !b) {
+      b = doc.createElement("span");
+      b.className = "lx-visited-badge";
+      b.innerHTML = ICON.check + "<span>Visited</span>";
+      host.appendChild(b);
+    } else if (!on && b) {
+      b.remove();
+    }
+  }
+  function badges() {
+    lobbyCards().forEach(function (card) {
+      var on = isVisited(cardTitle(card));
+      card.classList.toggle("lx-visited", on);
+      badge(card, on);
+    });
+    Array.prototype.forEach.call(doc.querySelectorAll(".exibitorCard"), function (card) {
+      var h = card.querySelector(".logoTextWrapper h3, h3");
+      var on = !!h && isVisited(h.textContent);
+      card.classList.toggle("lx-visited", on);
+      badge(card, on);
+    });
+  }
+
+  /* ---------- lobby toolbar: guide + progress + country chips ---------- */
+  var activeCountry = "";
+  var chipsSig = "";
+
+  function buildToolbar() {
+    var bar = doc.createElement("div");
+    bar.className = "lx-toolbar";
+    bar.innerHTML =
+      '<section class="lx-guide" aria-label="How the Virtual Lobby works">' +
+        '<div class="lx-guide-head">' +
+          '<div><span class="lx-guide-kicker">New here?</span>' +
+          '<h3 class="lx-guide-title">How the Virtual Lobby works</h3></div>' +
+          '<button type="button" class="lx-guide-close" aria-label="Hide this guide">&times;</button>' +
+        "</div>" +
+        '<ol class="lx-steps">' +
+          '<li><span class="lx-step-ico">' + ICON.school + '</span><div><strong>1. Pick a university</strong><span>Browse the cards or filter by country below.</span></div></li>' +
+          '<li><span class="lx-step-ico">' + ICON.info + '</span><div><strong>2. Tap Info</strong><span>See programmes, contacts and the admissions team.</span></div></li>' +
+          '<li><span class="lx-step-ico">' + ICON.video + '</span><div><strong>3. Press Start</strong><span>Join the university\'s live video room and ask your questions.</span></div></li>' +
+        "</ol>" +
+        '<button type="button" class="lx-guide-ok">Got it</button>' +
+      "</section>" +
+      '<section class="lx-panel" aria-label="Your progress and country filter">' +
+        '<div class="lx-progress">' +
+          '<p class="lx-progress-text"></p>' +
+          '<div class="lx-progress-track" aria-hidden="true"><span class="lx-progress-fill"></span></div>' +
+          '<button type="button" class="lx-guide-open">How it works</button>' +
+        "</div>" +
+        '<div class="lx-chips" role="group" aria-label="Filter universities by country"></div>' +
+      "</section>";
+
+    function setGuide(done) {
+      save(KEY_GUIDE, done);
+      bar.classList.toggle("lx-guide-hidden", done);
+    }
+    bar.querySelector(".lx-guide-close").addEventListener("click", function () { setGuide(true); });
+    bar.querySelector(".lx-guide-ok").addEventListener("click", function () { setGuide(true); });
+    bar.querySelector(".lx-guide-open").addEventListener("click", function () { setGuide(false); });
+    bar.querySelector(".lx-chips").addEventListener("click", function (e) {
+      var chip = e.target.closest && e.target.closest(".lx-chip");
+      if (!chip) return;
+      var country = chip.getAttribute("data-country") || "";
+      if (country === activeCountry) country = "";
+      if (!runSearch(country ? searchTerm(country) : "")) return;
+      activeCountry = country;
+      chipsSig = "";
+      schedule();
+    });
+    bar.classList.toggle("lx-guide-hidden", !!load(KEY_GUIDE, false));
+    return bar;
+  }
+
+  function lobby() {
+    var old = doc.querySelector(".lx-toolbar");
+    var list = lobbyList();
+    if (!onRooms() || !list) {
+      if (old) old.remove();
+      activeCountry = "";
+      return;
+    }
+    var bar = old || buildToolbar();
+    if (bar.nextElementSibling !== list) list.parentNode.insertBefore(bar, list);
+
+    // keep the chips in step with the search box (the student may type or clear it)
+    var inp = searchInput();
+    var val = inp ? inp.value : "";
+    if (activeCountry && val !== searchTerm(activeCountry)) { activeCountry = ""; chipsSig = ""; }
+
+    var unis = universities();
+    var counts = {};
+    var hasSupport = false;
+    var total = 0;
+    var done = 0;
+    Object.keys(unis).forEach(function (k) {
+      var u = unis[k];
+      if (u.support) { hasSupport = true; return; }
+      total++;
+      if (visited.indexOf(k) !== -1) done++;
+      if (u.country) counts[u.country] = (counts[u.country] || 0) + 1;
+    });
+
+    var countries = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a] || a.localeCompare(b); });
+    if (hasSupport) countries.push("Event Support");
+    var sig = countries.join("|") + "#" + activeCountry;
+    if (sig !== chipsSig) {
+      chipsSig = sig;
+      var html = '<button type="button" class="lx-chip' + (activeCountry ? "" : " is-active") + '" data-country="" aria-pressed="' + (!activeCountry) + '">All</button>';
+      countries.forEach(function (c) {
+        var on = c === activeCountry;
+        html += '<button type="button" class="lx-chip' + (on ? " is-active" : "") + '" data-country="' + c.replace(/"/g, "&quot;") + '" aria-pressed="' + on + '">' + c.replace(/</g, "&lt;") + "</button>";
+      });
+      bar.querySelector(".lx-chips").innerHTML = html;
+    }
+
+    var text = done === 0
+      ? "Start exploring: 0 of " + total + " universities visited"
+      : done >= total
+        ? "You've explored all " + total + " universities. Great job!"
+        : "You've explored " + done + " of " + total + " universities";
+    setText(bar.querySelector(".lx-progress-text"), text);
+    var pct = total ? Math.round(done / total * 100) : 0;
+    var fill = bar.querySelector(".lx-progress-fill");
+    if (fill.style.width !== pct + "%") fill.style.width = pct + "%";
+
+    // "Need help?" pressed on another page: open the help desk once the lobby is here
+    var pending = false;
+    try { pending = sessionStorage.getItem("lx_open_help") === "1"; } catch (e) { }
+    if (pending && openHelpCard()) {
+      try { sessionStorage.removeItem("lx_open_help"); } catch (e) { }
+    }
+  }
+
+  /* ---------- fair status + help dock ---------- */
+  function fmtEnd() {
+    try {
+      return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: CFG.timeZone }).format(new Date(END)) + " " + CFG.timeZoneLabel;
+    } catch (e) { return "7:00 PM " + CFG.timeZoneLabel; }
+  }
+  function untilText(ms) {
+    var m = Math.max(1, Math.round(ms / 60000));
+    var d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
+    if (d > 0) return d + "d " + h + "h";
+    if (h > 0) return h + "h " + mm + "m";
+    return mm + "m";
+  }
+  function status() {
+    var now = Date.now();
+    if (now < START) return { cls: "lx-soon", text: "Fair opens in " + untilText(START - now) };
+    if (now < END) return { cls: "lx-live", text: "Live now · until " + fmtEnd() };
+    return { cls: "lx-ended", text: "The fair has ended · thanks for joining" };
+  }
+
+  function openHelpCard() {
+    var want = nameKey(CFG.helpDesk);
+    var card = lobbyCards().filter(function (c) { return nameKey(cardTitle(c)) === want; })[0];
+    if (!card) return false;
+    var btn = card.querySelector(".bt-room-info") || card.querySelector(".roomCardMedia") || card.querySelector(".orgProfile");
+    if (btn) btn.click();
+    return !!btn;
+  }
+  function openHelpDesk() {
+    if (onRooms() && openHelpCard()) return;
+    try { sessionStorage.setItem("lx_open_help", "1"); } catch (e) { }
+    var nav = Array.prototype.filter.call(doc.querySelectorAll(".headerWrapper .menuItem, .headerWrapper a, .mobileNav a"), function (el) {
+      return /virtual lobby/i.test(el.textContent || "");
+    })[0];
+    if (nav) nav.click();
+    else location.assign("/rooms");
+  }
+
+  function dock() {
+    var el = doc.querySelector(".lx-dock");
+    var show = !!doc.querySelector(".headerWrapper, .mobileNav") && !/^\/room\//.test(location.pathname);
+    if (!show) { if (el) el.remove(); return; }
+    if (!el) {
+      el = doc.createElement("div");
+      el.className = "lx-dock";
+      el.innerHTML =
+        '<span class="lx-status" role="status"><span class="lx-dot" aria-hidden="true"></span><span class="lx-status-text"></span></span>' +
+        '<button type="button" class="lx-help">' + ICON.help + "<span>Need help?</span></button>";
+      el.querySelector(".lx-help").addEventListener("click", openHelpDesk);
+      doc.body.appendChild(el);
+    }
+    var s = status();
+    var st = el.querySelector(".lx-status");
+    if (st.getAttribute("data-state") !== s.cls) {
+      st.className = "lx-status " + s.cls;
+      st.setAttribute("data-state", s.cls);
+    }
+    setText(el.querySelector(".lx-status-text"), s.text);
+  }
+
+  /* ---------- run ---------- */
+  var queued = false;
+  function tick() {
+    [lobby, badges, dock].forEach(function (fn) {
+      try { fn(); } catch (err) { if (window.console) console.warn("[lumina-ux]", err); }
+    });
+  }
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    setTimeout(function () { queued = false; tick(); }, 150);
+  }
+  function start() {
+    tick();
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var t = muts[i].target;
+        if (t && t.nodeType === 1 && t.closest && t.closest(OWN)) continue;
+        schedule();
+        return;
+      }
+    }).observe(doc.body, { childList: true, subtree: true });
+    setInterval(dock, 30000);
+  }
+  if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
