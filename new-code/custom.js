@@ -36,7 +36,7 @@
 
   function universityCount() {
 
-    try { return parseInt(localStorage.getItem("inspira_univ_count"), 10) || 0; } catch (e) { return 0; }
+    try { return parseInt(localStorage.getItem("inspira_univ_count_v2"), 10) || 0; } catch (e) { return 0; }
   }
 
   function eventDateLabel() {
@@ -294,17 +294,38 @@
     return Array.prototype.some.call(document.querySelectorAll(sel), function (el) { return el.getClientRects().length > 0; });
   }
 
+  // Help desks ("Event Support" cards) are listed with the universities but are not universities.
+  function isSupportCard(card) {
+    const title = card.querySelector(".MuiCardContent-root h3");
+    return /help\s*desk|support/i.test(title ? title.textContent : "");
+  }
+
   function getUniversityCount() {
-    const n = document.querySelectorAll(SELECTORS.cards).length;
+    const cards = document.querySelectorAll(SELECTORS.cards);
+    const n = Array.prototype.filter.call(cards, function (card) { return !isSupportCard(card); }).length;
     try {
-      if (n > 0) {
-        if (localStorage.getItem("inspira_univ_count") !== String(n)) localStorage.setItem("inspira_univ_count", String(n));
+      if (cards.length > 0) {
+        if (localStorage.getItem("inspira_univ_count_v2") !== String(n)) localStorage.setItem("inspira_univ_count_v2", String(n));
         return n;
       }
-      return parseInt(localStorage.getItem("inspira_univ_count"), 10) || 0;
+      return parseInt(localStorage.getItem("inspira_univ_count_v2"), 10) || 0;
     } catch (e) {
       return n;
     }
+  }
+
+  // The platform's "43 Participating Universities" badge counts the help desks too; only its
+  // number text node is changed.
+  function fixParticipatingCount() {
+    const count = getUniversityCount();
+    if (!count) return;
+    document.querySelectorAll(SELECTORS.universitiesSection + " h4 span").forEach(function (span) {
+      if (!/Participating Universities/i.test(span.textContent)) return;
+      const num = Array.prototype.find.call(span.childNodes, function (node) {
+        return node.nodeType === 3 && /^\s*\d+\s*$/.test(node.nodeValue);
+      });
+      if (num && num.nodeValue.trim() !== String(count)) num.nodeValue = String(count);
+    });
   }
 
   function brandSubtitle(count) {
@@ -1202,7 +1223,7 @@
           emptyMsg.className = "univ-empty-state";
           emptyMsg.innerHTML = `
             <p class="univ-empty-title">No universities match your search.</p>
-            <button type="button" id="resetUnivFilterBtn" class="univ-empty-reset">Show all ${cardColumns.length} universities</button>
+            <button type="button" id="resetUnivFilterBtn" class="univ-empty-reset">Show all ${cardColumns.filter(col => getCardCountry(col) !== "Event Support").length} universities</button>
           `;
           grid.appendChild(emptyMsg);
           emptyMsg.querySelector("#resetUnivFilterBtn").addEventListener("click", () => {
@@ -1243,7 +1264,7 @@
       const pillsContainer = filterContainer.querySelector(".univ-country-filters");
       if (!pillsContainer) return;
 
-      const totalCount = cardColumns.length;
+      const totalCount = cardColumns.filter(col => getCardCountry(col) !== "Event Support").length;
       let pillsHtml = `
         <button type="button" class="univ-filter-pill ${currentDirectoryFilter === 'all' ? 'active' : ''}" data-filter="all">
           All <span class="univ-filter-count">(${totalCount})</span>
@@ -2041,7 +2062,8 @@
       initCardInteractionTracking,
       enhanceExhibitorDrawer,
       enhanceEventTicketPanel,
-      initBackdropDismissal
+      initBackdropDismissal,
+      fixParticipatingCount
     ].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.warn("[inspira-register]", fn.name, err); }
     });
