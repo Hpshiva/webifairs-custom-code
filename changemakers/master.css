@@ -1016,7 +1016,7 @@ body.cmx-scrolled #headerTop,
 }
 
 #headerTop [class*="mui-jx8ode"]:empty::before {
-  content: "REDE INSPIRA";
+  content: "CHANGEMAKERS";
   font-family: var(--cmx-font);
   font-size: 15px;
   font-weight: 800;
