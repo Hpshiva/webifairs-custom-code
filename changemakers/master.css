@@ -11922,15 +11922,15 @@ html body {
 }
 
 .inspira-ticket-v2-container .inspira-ticket-note {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  display: block !important;
+  text-align: center !important;
 }
 
 .inspira-ticket-v2-container .inspira-ticket-note::before {
   content: "";
-  flex: none;
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 6px;
   width: 13px;
   height: 13px;
   background: currentColor;
@@ -11942,4 +11942,20 @@ html body {
   .inspira-ticket-v2-container .inspira-ticket-hero-title {
     font-size: 18px !important;
   }
+}
+
+/* Register page: visible indigo gradient background (was a 10% tint that read as flat grey) */
+html body:has(#headerTop) {
+  background:
+    radial-gradient(900px 620px at 100% -10%, rgba(76, 88, 180, .22) 0%, rgba(76, 88, 180, 0) 60%),
+    radial-gradient(760px 620px at -10% 35%, rgba(138, 148, 224, .2) 0%, rgba(138, 148, 224, 0) 60%),
+    radial-gradient(900px 700px at 60% 115%, rgba(15, 17, 40, .08) 0%, rgba(15, 17, 40, 0) 60%),
+    linear-gradient(180deg, #F4F5FC 0%, #EDEFF9 100%) !important;
+  background-attachment: fixed !important;
+}
+
+/* ticket notches take the page colour */
+body:has(#headerTop) .inspira-ticket-v2-container .inspira-ticket-perforation .inspira-notch {
+  background: #ECEEF9 !important;
+  border-color: #DCDFF3 !important;
 }
