@@ -133,7 +133,7 @@ body:has(.logInBlockWrapper) #__next {
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 1.2px !important;
-  color: #93C5FD !important;
+  color: #FD9393 !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
@@ -307,13 +307,13 @@ body:has(.logInBlockWrapper) #__next {
 .inspira-form-badge {
   display: inline-flex !important;
   align-items: center !important;
-  background: #EFF6FF !important;
+  background: #FFEFEF !important;
   color: #B44C4C !important;
   font-size: 11px !important;
   font-weight: 700 !important;
   padding: 6px 14px !important;
   border-radius: 9999px !important;
-  border: 1px solid #DBEAFE !important;
+  border: 1px solid #FEDBDB !important;
   margin-bottom: 12px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.8px !important;
@@ -846,11 +846,11 @@ body:has(.logInBlockWrapper) #__next {
   --brand-orange-soft: #FAEEEF;
   --brand-orange-rgb: 201, 92, 91;
 
-  --brand-green: #0D8A8A;
+  --brand-green: #A03F3F;
 
-  --brand-green-hover: #096D6D;
-  --brand-green-light: #E5F3F3;
-  --brand-green-rgb: 13, 138, 138;
+  --brand-green-hover: #883434;
+  --brand-green-light: #F7E7E7;
+  --brand-green-rgb: 160, 63, 63;
 
   --cmx-primary: var(--brand-blue);
   --cmx-primary-hover: var(--brand-blue-hover);
@@ -881,7 +881,7 @@ body:has(.logInBlockWrapper) #__next {
   --cmx-gradient-cta: linear-gradient(135deg, #C95C5B 0%, #DB6F6F 100%);
   --cmx-gradient-hover: linear-gradient(135deg, #0A0B1C 0%, #A03F3F 55%, #B44C4C 100%);
   --cmx-gradient-mesh: radial-gradient(at 90% 0%, rgba(180, 76, 76, 0.05) 0px, transparent 55%),
-    radial-gradient(at 0% 100%, rgba(13, 138, 138, 0.04) 0px, transparent 55%),
+    radial-gradient(at 0% 100%, rgba(160, 63, 63, 0.04) 0px, transparent 55%),
     linear-gradient(180deg, #FFFFFF 0%, #FCF5F6 280px);
 
   --cmx-radius-xs: 0.6rem;
@@ -1400,7 +1400,7 @@ div[class*="mui-ciknye"] {
   letter-spacing: 0.01em !important;
   padding: 0.4rem 1.2rem !important;
   border-radius: var(--cmx-radius-pill) !important;
-  border: 1px solid rgba(13, 138, 138, 0.25) !important;
+  border: 1px solid rgba(160, 63, 63, 0.25) !important;
   margin-left: 0.8rem !important;
 }
 
@@ -3363,7 +3363,7 @@ div[id="refFormPanel"] {
   width: 100% !important;
   padding: 8px 14px !important;
   background: #F8FAFC !important;
-  border: 1.5px solid #DBEAFE !important;
+  border: 1.5px solid #FEDBDB !important;
   border-radius: 10px !important;
   margin-bottom: 12px !important;
   box-sizing: border-box !important;
@@ -3467,9 +3467,9 @@ div[id="refFormPanel"] {
   font-size: 13px !important;
   font-weight: 700 !important;
   border-radius: 9999px !important;
-  background: #EFF6FF !important;
+  background: #FFEFEF !important;
   color: #B44C4C !important;
-  border: 1.5px dashed #93C5FD !important;
+  border: 1.5px dashed #FD9393 !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
   display: flex !important;
@@ -3494,8 +3494,8 @@ div[id="refFormPanel"] {
 
 .tab-more-btn:hover,
 .c2-more-majors-btn:hover {
-  background: #DBEAFE !important;
-  border-color: #60A5FA !important;
+  background: #FEDBDB !important;
+  border-color: #FA6060 !important;
   transform: translateY(-1px) !important;
 }
 
@@ -3810,7 +3810,7 @@ body:has(.singleViewWidgetDetails) .MuiModal-root:has(.ticketListActionWrapper):
 
 .MuiDrawer-paper .singleViewWidgetDetails .MuiFormGroup-root .MuiFormControlLabel-root:has(input:checked) {
   border-color: #B44C4C !important;
-  background: #EFF6FF !important;
+  background: #FFEFEF !important;
   box-shadow: inset 0 0 0 1px #B44C4C, 0 2px 6px rgba(180, 76, 76, 0.08) !important;
 }
 
@@ -3912,7 +3912,7 @@ body:has(.singleViewWidgetDetails) .MuiModal-root:has(.ticketListActionWrapper):
 }
 
 .MuiDrawer-paper .singleViewWidgetDetails .popup .MuiListItem-root.Mui-selected {
-  background: #EFF6FF !important;
+  background: #FFEFEF !important;
   color: #B44C4C !important;
   font-weight: 700 !important;
 }
@@ -4620,7 +4620,7 @@ section:is(.cmx-uni-section, [id="Participating Universities"])>h4.MuiTypography
   width: 100% !important;
   padding: 8px 14px !important;
   background: #F8FAFC !important;
-  border: 1.5px solid #DBEAFE !important;
+  border: 1.5px solid #FEDBDB !important;
   border-radius: 10px !important;
   margin-bottom: 12px !important;
   box-sizing: border-box !important;
@@ -4682,8 +4682,8 @@ section:is(.cmx-uni-section, [id="Participating Universities"])>h4.MuiTypography
 }
 
 .tab-more-btn {
-  background: #EFF6FF !important;
-  border: 1.5px dashed #93C5FD !important;
+  background: #FFEFEF !important;
+  border: 1.5px dashed #FD9393 !important;
   color: #B44C4C !important;
   padding: 8px 18px !important;
   border-radius: 9999px !important;
@@ -12437,4 +12437,56 @@ body:has(.sidedrawerWrapper.open) .lx-dock {
 
 .inspira-ticket-v2-container[style*="--tk-notch-y"] .inspira-ticket-perforation .inspira-notch {
   display: none !important;
+}
+
+/* The platform theme colour (#001378) shows on every primary button we don't style one by one:
+   University Info Filter/search, the phone Info sheet, the cookie banner. Use the event colour. */
+.MuiButton-containedPrimary:not(.Mui-disabled) {
+  background: var(--bt-grad-primary);
+  color: #fff;
+}
+
+.MuiButton-containedPrimary:not(.Mui-disabled):hover {
+  background: var(--bt-grad-primary-hover);
+}
+
+.MuiButton-softPrimary:not(.Mui-disabled),
+.MuiIconButton-colorSoft {
+  color: var(--bt-primary) !important;
+  background-color: var(--bt-primary-soft) !important;
+}
+
+.avatarList .moreCount,
+.MuiIconButton-colorContained,
+.MuiChip-filledPrimary {
+  background: var(--bt-grad-primary) !important;
+  color: #fff;
+}
+
+/* programme tags on University Info cards */
+.MuiChip-filledSecondary {
+  background: var(--bt-primary-soft) !important;
+  color: var(--bt-primary-press) !important;
+}
+
+/* phone Info sheet: keep the dock out of the way, as the desktop popup does */
+body:has(.bottom-sheet__wrapper.open) .lx-dock {
+  display: none;
+}
+
+/* small links: a bigger tap area on touch screens, same look */
+.lx-guide-open,
+.form-footer-trust a {
+  padding: 8px 4px;
+  margin: -8px -4px;
+}
+
+
+/* University Info card whose banner was filled in from another fair: show the photo, not the no-banner fill */
+.exibitorCard .boothBanner.noMedia.bt-fallback-media {
+  background: none !important;
+}
+
+.exibitorCard .boothBanner.noMedia.bt-fallback-media .bannerImageBorder {
+  display: block !important;
 }

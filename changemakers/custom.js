@@ -1,3 +1,47 @@
+/* Logos and banners a university uploaded for another GEMS fair (same client account) but not yet for this one.
+   Used only where the platform would show its grey placeholder; a real upload always wins. */
+(function () {
+  "use strict";
+  if (window.__INSPIRA_IMG_FALLBACK__) return;
+  var BASE = "https://cdn.hubilo.com/";
+  var LOGO = {
+    amritauniversity: "exhibitor/3380930/300/1242_6907_592575001792590327.jpg",
+    flameuniversity: "exhibitor/3380930/300/3155_8411_719706001792590230.jpg",
+    ieuniversity: "exhibitor/3380930/300/1108_6188_221350001792590382.jpg",
+    lancasteruniversity: "exhibitor/3380930/300/1311_7048_635108001792590427.jpg",
+    shivnadaruniversitydelhincr: "exhibitor/3380930/300/2269_8579_956613001792590548.jpg",
+    hongkonguniversityofscienceandtechnology: "exhibitor/3380930/300/2505_8869_418031001792588885.jpg",
+    universityofdundee: "exhibitor/3380930/300/2935_8808_246338001792590531.png",
+    universityofguelphhumber: "exhibitor/3380930/300/965a9b60-cc26-11f1-8b4d-31c7cb6197c2_1792460152854.png",
+    universityofsouthampton: "exhibitor/3380930/300/1078_5326_690996001792589950.jpg",
+    universityoftoronto: "exhibitor/3380930/300/3482_5025_741448001792589966.jpg"
+  };
+  var BANNER = {
+    amritauniversity: "banner/exhibitor_list_banner_image/3380930/1036/1276_6628_962151001792586053.png",
+    flameuniversity: "banner/exhibitor_list_banner_image/3380930/1036/1673_8530_850123001792585773.png",
+    ieuniversity: "banner/exhibitor_list_banner_image/3380930/1036/3901_6442_551975001792585746.png",
+    lancasteruniversity: "banner/exhibitor_list_banner_image/3380930/1036/2667_8764_436928001792585702.png",
+    mcmasteruniversityfacultyofengineering: "banner/exhibitor_list_banner_image/3380930/1036/2698_9979_927582001792585665.png",
+    shivnadaruniversitydelhincr: "banner/exhibitor_list_banner_image/3380930/1036/4530_5735_878859001792585589.png",
+    shorelinecollege: "banner/exhibitor_list_banner_image/3380930/1036/2824_7851_304902001792585558.png",
+    templeuniversity: "banner/exhibitor_list_banner_image/3380930/1036/1076_9614_880223001792041700.jpeg",
+    hongkonguniversityofscienceandtechnology: "banner/exhibitor_list_banner_image/3380930/1036/4456_7117_260127001792585397.png",
+    universityofdundee: "banner/exhibitor_list_banner_image/3380930/1036/4874_7179_955534001792585288.png",
+    universityofguelphhumber: "banner/exhibitor_list_banner_image/3380930/1036/1508ea60-cc28-11f1-9427-730f6f995ee6_1792460794886.png",
+    universityofsouthampton: "banner/exhibitor_list_banner_image/3380930/1036/1987_5639_017353001792588144.png",
+    universityoftoronto: "banner/exhibitor_list_banner_image/3380930/1036/2844_7809_473755001792584953.png",
+    westernuniversity: "banner/exhibitor_list_banner_image/3380930/1036/2087_7963_985930001792584880.png"
+  };
+  function key(name) {
+    return String(name || "").split("\u2022")[0].toLowerCase().replace(/^\s*the\s+/, "").replace(/[^a-z0-9]/g, "");
+  }
+  window.__INSPIRA_IMG_FALLBACK__ = function (name, kind) {
+    var map = kind === "banner" ? BANNER : LOGO;
+    var p = map[key(name)] || map[key(String(name || "").split(",")[0])];
+    return p ? BASE + p : "";
+  };
+})();
+
 (function () {
   "use strict";
   if (window.__INSPIRA_LOGIN__) return;
@@ -1071,6 +1115,11 @@
         if (fallback.isSupport) isSupport = true;
       }
 
+      // still a placeholder: the university's own image from another GEMS fair, when there is one
+      const imgFallback = window.__INSPIRA_IMG_FALLBACK__;
+      if (imgFallback && (!logo || logo.includes("exhibitor_default"))) logo = imgFallback(rawFullName, "logo") || logo;
+      if (imgFallback && (!banner || banner.includes("exhibitor_cover"))) banner = imgFallback(rawFullName, "banner") || banner;
+
       // Format card details with smart campus/title separation and meaningful subtitle
       const details = formatUniversityCardDetails(rawFullName, country, isSupport);
       univName = details.displayName;
@@ -1180,6 +1229,7 @@
     if (/^u\.?k\.?$/i.test(compact) || lower === "united kingdom" || lower === "uk") return "U.K.";
     if (/^u\.?a\.?e\.?$/i.test(compact) || lower === "united arab emirates") return "U.A.E.";
     if (/^([a-z]\.)+$/.test(compact)) return compact.toUpperCase();
+    if (/^hong\s*kong\b/.test(lower)) return "Hong Kong"; // "Hong Kong (SAR China)" and "Hong Kong" are one filter
     if (lower === "canada") return "Canada";
     if (lower === "finland") return "Finland";
     if (lower === "belgium") return "Belgium";
@@ -2478,6 +2528,20 @@
     setTimeout(enhancePopupMajors, 600);
   }
 
+  // Some rooms were saved without the " • Country" part ("University of York",
+  // "... Social Sciences China Hong Kong (SAR China)"), so the country comes from the university list.
+  function splitRoomName(full) {
+    var parts = full.split(/\s+•\s+/);
+    if (parts.length > 1) return parts;
+    var hk = full.match(/^(.*?)\s+(?:China\s+)?(Hong Kong\s*\(SAR China\))$/i);
+    if (hk) return [hk[1], hk[2]];
+    var key = full.toLowerCase().replace(/[^a-z0-9]/g, '');
+    var u = (window.__INSPIRA_UNIVERSITIES__ || []).filter(function (x) {
+      return x && x.name && !x.isSupport && x.name.toLowerCase().replace(/[^a-z0-9]/g, '') === key;
+    })[0];
+    return u && u.country ? [full, u.country] : parts;
+  }
+
   function enhanceRoomCard(card) {
     // "Brock University • Canada" -> name, then a pin + "Canada" line (the platform h6 stays in the DOM, hidden).
     var h = card.querySelector('.orgName h6');
@@ -2486,7 +2550,7 @@
       var full = (h.textContent || '').trim();
       if (nameBox.__btFull !== full) {
         nameBox.__btFull = full;
-        var parts = full.split(/\s+•\s+/);
+        var parts = splitRoomName(full);
         var title = nameBox.querySelector('.bt-room-title');
         var loc = nameBox.querySelector('.bt-room-loc');
         if (parts.length > 1 && parts[0]) {
@@ -3882,11 +3946,18 @@
     if (/^u\.?s\.?a?\.?$/.test(compact)) return "U.S.";
     if (/^u\.?k\.?$/.test(compact)) return "U.K.";
     if (/^u\.?a\.?e\.?$/.test(compact)) return "U.A.E.";
+    if (/^hong\s*kong\b/i.test(s)) return "Hong Kong";
     return s;
   }
   function countryOf(text) {
     var parts = String(text || "").split(BULLET);
-    return parts.length > 1 ? normCountry(parts[parts.length - 1]) : "";
+    if (parts.length > 1) return normCountry(parts[parts.length - 1]);
+    // rooms saved without " • Country": "... China Hong Kong (SAR China)", or a name on the university list
+    if (/\(SAR China\)\s*$/i.test(text)) return normCountry("Hong Kong");
+    var k = nameKey(text), hit = (window.__INSPIRA_UNIVERSITIES__ || []).filter(function (u) {
+      return u && u.name && nameKey(u.name) === k;
+    })[0];
+    return hit && hit.country ? normCountry(hit.country) : "";
   }
 
   /* ---------- lobby DOM ---------- */
@@ -4090,9 +4161,15 @@
     });
 
     // Lobby room names sometimes differ slightly from the university list ("Northwestern Qatar" /
-    // "Northwestern University in Qatar"), so the total is the list's own count when we have it.
+    // "Northwestern University in Qatar"), so the total is the list's own count when we have it,
+    // but never fewer than the rooms actually in the lobby (admins add universities after launch).
     var listTotal = (window.__INSPIRA_UNIVERSITIES__ || []).filter(function (u) { return u && u.name && !u.isSupport; }).length;
-    if (listTotal) total = listTotal;
+    var roomTotal = 0, seen = {};
+    lobbyCards().forEach(function (card) {
+      var t = cardTitle(card), k = nameKey(t);
+      if (k && !isSupport(t) && !seen[k]) { seen[k] = true; roomTotal++; }
+    });
+    if (listTotal) total = Math.max(listTotal, roomTotal);
     if (done > total) done = total;
 
     var countries = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a] || a.localeCompare(b); });
@@ -4234,4 +4311,59 @@
   }
   setInterval(place, 500);
   window.addEventListener("resize", place);
+})();
+
+/* Some rooms are tagged "VIRUTAL BOOTH" on the platform. Correct the text on screen only
+   (the text node's value changes; the platform element and its behaviour stay as they are). */
+(function () {
+  "use strict";
+  if (window.__TAG_TYPO__) return;
+  window.__TAG_TYPO__ = true;
+  function fix() {
+    var roots = document.querySelectorAll(".roomsCardsList, .sidedrawerWrapper, .bottom-sheet__container, .roomPageWrapper");
+    Array.prototype.forEach.call(roots, function (root) {
+      var walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      for (var n = walk.nextNode(); n; n = walk.nextNode()) {
+        if (/virutal/i.test(n.nodeValue)) {
+          n.nodeValue = n.nodeValue.replace(/virutal/gi, function (m) { return m === m.toUpperCase() ? "VIRTUAL" : "Virtual"; });
+        }
+      }
+    });
+  }
+  setInterval(fix, 800);
+})();
+
+/* University Info, lobby and popups: swap the grey placeholder logo/banner for the fallback above (display only). */
+(function () {
+  "use strict";
+  if (window.__IMG_FALLBACK_LIVE__) return;
+  window.__IMG_FALLBACK_LIVE__ = true;
+  function nameOf(img) {
+    var m = (img.alt || "").match(/^(?:Logo for the booth|Banner image \d* ?for (?:the )?(?:booth|room))\s+(.+)$/i);
+    if (m) return m[1];
+    var box = img.closest(".exibitorCard, .roomCard, .companyProfileFeeds, .DelegateSidebar, .mobDelegateSidebar");
+    var h = box && box.querySelector(".orgName h6, h1, h2, h3, h4, h5, h6");
+    if (h) return h.textContent;
+    // a university page: its heading carries the name
+    if (!/^\/booth\//.test(location.pathname)) return "";
+    var hs = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    for (var i = 0; i < hs.length; i++) {
+      if (window.__INSPIRA_IMG_FALLBACK__(hs[i].textContent, "logo")) return hs[i].textContent;
+    }
+    return "";
+  }
+  function swap() {
+    var fb = window.__INSPIRA_IMG_FALLBACK__;
+    if (!fb) return;
+    Array.prototype.forEach.call(document.querySelectorAll('img[src*="exhibitor_default"], img[src*="exhibitor_cover"]'), function (img) {
+      var banner = /exhibitor_cover/.test(img.getAttribute("src"));
+      var url = fb(nameOf(img), banner ? "banner" : "logo");
+      if (!url) return;
+      img.setAttribute("src", url);
+      if (img.hasAttribute("srcset")) img.removeAttribute("srcset");
+      var box = banner && img.closest(".boothBanner.noMedia");
+      if (box) box.classList.add("bt-fallback-media");
+    });
+  }
+  setInterval(swap, 1000);
 })();

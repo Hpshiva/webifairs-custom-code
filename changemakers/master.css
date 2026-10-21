@@ -12426,3 +12426,55 @@ body:has(.sidedrawerWrapper.open) .lx-dock {
 .inspira-ticket-v2-container[style*="--tk-notch-y"] .inspira-ticket-perforation .inspira-notch {
   display: none !important;
 }
+
+/* The platform theme colour (#001378) shows on every primary button we don't style one by one:
+   University Info Filter/search, the phone Info sheet, the cookie banner. Use the event colour. */
+.MuiButton-containedPrimary:not(.Mui-disabled) {
+  background: var(--bt-grad-primary);
+  color: #fff;
+}
+
+.MuiButton-containedPrimary:not(.Mui-disabled):hover {
+  background: var(--bt-grad-primary-hover);
+}
+
+.MuiButton-softPrimary:not(.Mui-disabled),
+.MuiIconButton-colorSoft {
+  color: var(--bt-primary) !important;
+  background-color: var(--bt-primary-soft) !important;
+}
+
+.avatarList .moreCount,
+.MuiIconButton-colorContained,
+.MuiChip-filledPrimary {
+  background: var(--bt-grad-primary) !important;
+  color: #fff;
+}
+
+/* programme tags on University Info cards */
+.MuiChip-filledSecondary {
+  background: var(--bt-primary-soft) !important;
+  color: var(--bt-primary-press) !important;
+}
+
+/* phone Info sheet: keep the dock out of the way, as the desktop popup does */
+body:has(.bottom-sheet__wrapper.open) .lx-dock {
+  display: none;
+}
+
+/* small links: a bigger tap area on touch screens, same look */
+.lx-guide-open,
+.form-footer-trust a {
+  padding: 8px 4px;
+  margin: -8px -4px;
+}
+
+
+/* University Info card whose banner was filled in from another fair: show the photo, not the no-banner fill */
+.exibitorCard .boothBanner.noMedia.bt-fallback-media {
+  background: none !important;
+}
+
+.exibitorCard .boothBanner.noMedia.bt-fallback-media .bannerImageBorder {
+  display: block !important;
+}
