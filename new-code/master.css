@@ -11469,3 +11469,12 @@ html body textarea:not(.MuiInputBase-input):not([aria-hidden="true"]):is(:focus,
 #refFormPanel > .MuiBox-root:has(> .inspira-ticket-v2-container) {
   overflow: visible !important;
 }
+
+/* Ticket notches: show only the half inside the card (the shadow fix above no longer clips the outer half) */
+.inspira-ticket-perforation .inspira-notch-left {
+  clip-path: inset(-2px -2px -2px 50%);
+}
+
+.inspira-ticket-perforation .inspira-notch-right {
+  clip-path: inset(-2px 50% -2px -2px);
+}
