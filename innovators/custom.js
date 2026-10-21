@@ -4149,7 +4149,9 @@
       if (nearEnd && loadTries < 4 && Date.now() - lastNudge > 700) {
         lastNudge = Date.now();
         loadTries++;
-        window.dispatchEvent(new Event("scroll")); // the platform loads the next page on scroll
+        // the platform loads the next page on scroll
+        window.dispatchEvent(new Event("scroll"));
+        doc.dispatchEvent(new Event("scroll"));
         setTimeout(schedule, 800);
       }
     }
