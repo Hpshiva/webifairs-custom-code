@@ -12408,3 +12408,21 @@ body:has(.sidedrawerWrapper.open) .lx-dock {
 .inspira-ticket-perforation .inspira-notch-right {
   clip-path: inset(-2px 50% -2px -2px);
 }
+
+/* Ticket notches as real see-through cut-outs (custom.js sets --tk-notch-y at the dashed line).
+   The shadow moves to the wrapper as drop-shadow so it follows the cut-out shape. */
+#refFormPanel > .MuiBox-root:has(> .inspira-ticket-v2-container) {
+  filter: drop-shadow(0 22px 26px rgba(15, 17, 40, .16)) drop-shadow(0 6px 10px rgba(15, 17, 40, .08));
+}
+
+.inspira-ticket-v2-container[style*="--tk-notch-y"] {
+  box-shadow: none !important;
+  -webkit-mask: radial-gradient(circle at 0 var(--tk-notch-y), transparent 13px, #000 13.5px), radial-gradient(circle at 100% var(--tk-notch-y), transparent 13px, #000 13.5px);
+  -webkit-mask-composite: source-in;
+  mask: radial-gradient(circle at 0 var(--tk-notch-y), transparent 13px, #000 13.5px), radial-gradient(circle at 100% var(--tk-notch-y), transparent 13px, #000 13.5px);
+  mask-composite: intersect;
+}
+
+.inspira-ticket-v2-container[style*="--tk-notch-y"] .inspira-ticket-perforation .inspira-notch {
+  display: none !important;
+}

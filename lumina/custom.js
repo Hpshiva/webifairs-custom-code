@@ -4226,3 +4226,19 @@
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start);
   else start();
 })();
+
+/* Register ticket: keep the see-through notches (master.css) level with the dashed line. */
+(function () {
+  "use strict";
+  if (window.__TICKET_NOTCH__) return;
+  window.__TICKET_NOTCH__ = true;
+  function place() {
+    var t = document.querySelector(".inspira-ticket-v2-container");
+    var p = t && t.querySelector(".inspira-ticket-perforation");
+    if (!p || !p.offsetHeight) return;
+    var y = Math.round(p.offsetTop + p.offsetHeight / 2) + "px";
+    if (t.style.getPropertyValue("--tk-notch-y") !== y) t.style.setProperty("--tk-notch-y", y);
+  }
+  setInterval(place, 500);
+  window.addEventListener("resize", place);
+})();
