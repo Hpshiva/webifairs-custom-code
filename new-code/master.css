@@ -11464,3 +11464,8 @@ html body textarea:not(.MuiInputBase-input):not([aria-hidden="true"]):is(:focus,
   border-color: var(--bt-violet) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bt-violet) 18%, transparent) !important;
 }
+
+/* Register ticket: the platform wrapper clipped the ticket shadow into a hard edge; let it show */
+#refFormPanel > .MuiBox-root:has(> .inspira-ticket-v2-container) {
+  overflow: visible !important;
+}
