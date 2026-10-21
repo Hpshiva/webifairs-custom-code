@@ -3990,14 +3990,20 @@
     });
     if (activeCountry) {
       if (cards.length !== lastCount) { lastCount = cards.length; loadTries = 0; }
-      var nearEnd = doc.documentElement.scrollHeight - window.innerHeight - window.scrollY < 900;
-      if (nearEnd && loadTries < 4 && Date.now() - lastNudge > 700) {
+      if (loadTries < 4 && Date.now() - lastNudge > 700) {
         lastNudge = Date.now();
         loadTries++;
-        // the platform loads the next page on scroll
+        // The platform loads the next page on scroll once its list looks short: collapse the list
+        // for one synchronous layout, send the scroll signal, restore it (nothing is painted between).
+        var row = cards.length ? cardColumn(cards[0]).parentElement : null;
+        var kids = row ? Array.prototype.slice.call(row.children) : [];
+        var prev = kids.map(function (c) { return c.style.display; });
+        kids.forEach(function (c) { c.style.display = "none"; });
+        void doc.documentElement.scrollHeight;
         window.dispatchEvent(new Event("scroll"));
         doc.dispatchEvent(new Event("scroll"));
-        setTimeout(schedule, 800);
+        kids.forEach(function (c, j) { c.style.display = prev[j]; });
+        setTimeout(schedule, 900);
       }
     }
     var empty = bar.querySelector(".lx-empty");
