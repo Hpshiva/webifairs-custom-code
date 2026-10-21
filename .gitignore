@@ -1,7 +1,7 @@
 .DS_Store
 */.DS_Store
 
-# Only the live event folders are published; everything else stays local.
+
 /*
 !/.gitignore
 !/new-code/
