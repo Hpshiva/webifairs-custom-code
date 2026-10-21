@@ -3894,12 +3894,6 @@
     var parts = String(text || "").split(BULLET);
     return parts.length > 1 ? normCountry(parts[parts.length - 1]) : "";
   }
-  // What to type into the platform search for a country chip.
-  function searchTerm(country) {
-    if (country === "U.K.") return "K."; // matches both "U.K." and "U. K."
-    if (country === "Event Support") return "Help Desk";
-    return country;
-  }
 
   /* ---------- lobby DOM ---------- */
   function onRooms() { return /^\/rooms\/?$/.test(location.pathname); }
@@ -3912,19 +3906,6 @@
   function cardTitle(card) {
     var h = card && card.querySelector(".orgName h6");
     return h ? h.textContent : "";
-  }
-  function searchInput() {
-    var all = doc.querySelectorAll('.roomsHeadBarDesktop input[type="text"], .roomsHeadBarMobile input[type="text"], input[placeholder*="Virtual Lobby"]');
-    for (var i = 0; i < all.length; i++) { if (all[i].getClientRects().length) return all[i]; }
-    return all[0] || null;
-  }
-  function runSearch(q) {
-    var inp = searchInput();
-    if (!inp) return false;
-    var setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
-    setter.call(inp, q);
-    inp.dispatchEvent(new Event("input", { bubbles: true }));
-    return true;
   }
 
   // Every university we know of: the fair's list plus any lobby card already loaded.
@@ -3995,9 +3976,45 @@
   }
 
   /* ---------- lobby toolbar: guide + progress + country chips ---------- */
-  // The highlighted chip always follows what is in the platform's search box
-  // ("" = All, null = the student typed something else).
+  // Country chips filter the loaded cards here (the platform search can't match "U. S." and
+  // "U.S." together) and ask the platform for the rest of the list while a filter is on.
   var currentCountry = "";
+  var activeCountry = "";
+  var loadTries = 0, lastCount = -1, lastNudge = 0;
+
+  function cardCountry(card) {
+    var t = cardTitle(card);
+    return isSupport(t) ? "Event Support" : countryOf(t);
+  }
+  function cardColumn(card) {
+    var col = card;
+    while (col.parentElement && !col.parentElement.classList.contains("row") && !col.parentElement.classList.contains("roomsCardsList")) col = col.parentElement;
+    return col;
+  }
+  function applyFilter(bar) {
+    var cards = lobbyCards();
+    var shown = 0;
+    cards.forEach(function (card) {
+      var hide = !!activeCountry && cardCountry(card) !== activeCountry;
+      var col = cardColumn(card);
+      if (col.classList.contains("lx-hide") !== hide) col.classList.toggle("lx-hide", hide);
+      if (!hide) shown++;
+    });
+    if (activeCountry) {
+      if (cards.length !== lastCount) { lastCount = cards.length; loadTries = 0; }
+      var nearEnd = doc.documentElement.scrollHeight - window.innerHeight - window.scrollY < 900;
+      if (nearEnd && loadTries < 4 && Date.now() - lastNudge > 700) {
+        lastNudge = Date.now();
+        loadTries++;
+        window.dispatchEvent(new Event("scroll")); // the platform loads the next page on scroll
+        setTimeout(schedule, 800);
+      }
+    }
+    var empty = bar.querySelector(".lx-empty");
+    var showEmpty = !!activeCountry && shown === 0 && loadTries >= 4;
+    if (empty.hidden === showEmpty) empty.hidden = !showEmpty;
+    if (showEmpty) setText(empty, "No " + activeCountry + " universities are in the lobby yet.");
+  }
 
   function buildToolbar() {
     var bar = doc.createElement("div");
@@ -4023,6 +4040,7 @@
           '<button type="button" class="lx-guide-open">How it works</button>' +
         "</div>" +
         '<div class="lx-chips" role="group" aria-label="Filter universities by country"></div>' +
+        '<p class="lx-empty" hidden></p>' +
       "</section>";
 
     function setGuide(done) {
@@ -4036,8 +4054,10 @@
       var chip = e.target.closest && e.target.closest(".lx-chip");
       if (!chip) return;
       var country = chip.getAttribute("data-country") || "";
-      if (country === currentCountry) country = "";
-      if (runSearch(country ? searchTerm(country) : "")) schedule();
+      activeCountry = country === activeCountry ? "" : country;
+      loadTries = 0;
+      lastCount = -1;
+      schedule();
     });
     bar.classList.toggle("lx-guide-hidden", !!load(KEY_GUIDE, false));
     return bar;
@@ -4048,6 +4068,7 @@
     var list = lobbyList();
     if (!onRooms() || !list) {
       if (old) old.remove();
+      activeCountry = "";
       return;
     }
     var bar = old || buildToolbar();
@@ -4069,10 +4090,9 @@
     var countries = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a] || a.localeCompare(b); });
     if (hasSupport) countries.push("Event Support");
 
-    var inp = searchInput();
-    var val = inp ? inp.value.trim().toLowerCase() : "";
-    currentCountry = val ? null : "";
-    countries.forEach(function (c) { if (val && searchTerm(c).toLowerCase() === val) currentCountry = c; });
+    if (activeCountry && countries.indexOf(activeCountry) === -1) activeCountry = "";
+    currentCountry = activeCountry;
+    applyFilter(bar);
 
     // the signature lives on the toolbar, so a toolbar rebuilt after a platform re-render redraws its chips
     var sig = countries.join("|") + "#" + currentCountry;

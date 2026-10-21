@@ -12394,3 +12394,15 @@ body:has(.sidedrawerWrapper.open) .lx-dock {
 .inspira-card-split-media > img[src*="exhibitor_cover"] {
   opacity: 0 !important;
 }
+
+/* country filter (client side) */
+.roomsCardsList .lx-hide {
+  display: none !important;
+}
+
+.lx-empty {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bt-muted);
+}
