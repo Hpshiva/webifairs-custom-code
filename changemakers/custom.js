@@ -335,8 +335,9 @@
   }
 
   function countryName(country) {
-    const names = { "U.S.": "United States", "U.K.": "United Kingdom", "Global": "International" };
-    return names[country] || country || "";
+    const names = { "U.S.": "United States", "U.K.": "United Kingdom", "U.A.E.": "United Arab Emirates", "Global": "International" };
+    const key = normalizeCountry(country);
+    return names[key] || key || "";
   }
 
   const EUROPE = ["germany", "finland", "netherlands", "belgium", "france", "spain", "italy", "ireland",
@@ -1115,7 +1116,7 @@
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="11" r="2.5"></circle>
               </svg>
-              ${escapeHTML(country)}
+              ${escapeHTML(normalizeCountry(country))}
             </span>
           </div>
           <div class="inspira-card-split-content">
@@ -1173,8 +1174,12 @@
     if (!raw) return "";
     const s = String(raw).trim();
     const lower = s.toLowerCase();
-    if (/^u\.?s\.?a?$/i.test(lower) || lower === "united states" || lower === "usa") return "U.S.";
-    if (/^u\.?k\.?$/i.test(lower) || lower === "united kingdom" || lower === "uk") return "U.K.";
+    // platform data sometimes has spaces inside abbreviations ("U. K.")
+    const compact = lower.replace(/\s+/g, "");
+    if (/^u\.?s\.?a?\.?$/i.test(compact) || lower === "united states" || lower === "usa") return "U.S.";
+    if (/^u\.?k\.?$/i.test(compact) || lower === "united kingdom" || lower === "uk") return "U.K.";
+    if (/^u\.?a\.?e\.?$/i.test(compact) || lower === "united arab emirates") return "U.A.E.";
+    if (/^([a-z]\.)+$/.test(compact)) return compact.toUpperCase();
     if (lower === "canada") return "Canada";
     if (lower === "finland") return "Finland";
     if (lower === "belgium") return "Belgium";
@@ -2489,7 +2494,7 @@
           title.textContent = parts[0];
           title.setAttribute('title', parts[0]);
           loc.innerHTML = ROOM_ICONS.pin + '<span></span>';
-          loc.lastChild.textContent = parts.slice(1).join(', ');
+          loc.lastChild.textContent = parts.slice(1).join(', ').replace(/\b([A-Z])\.\s+(?=[A-Z]\.)/g, '$1.');
           nameBox.classList.add('bt-split');
         } else {
           if (title) title.remove();
