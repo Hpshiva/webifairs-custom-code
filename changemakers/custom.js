@@ -4102,7 +4102,7 @@
         '<ol class="lx-steps">' +
           '<li><span class="lx-step-ico">' + ICON.school + '</span><div><strong>1. Pick a university</strong><span>Browse the cards or filter by country below.</span></div></li>' +
           '<li><span class="lx-step-ico">' + ICON.info + '</span><div><strong>2. Tap Info</strong><span>See programmes, contacts and the admissions team.</span></div></li>' +
-          '<li><span class="lx-step-ico">' + ICON.video + '</span><div><strong>3. Press Start</strong><span>Join the university\'s live video room and ask your questions.</span></div></li>' +
+          '<li><span class="lx-step-ico">' + ICON.video + '</span><div><strong>3. Press <span class="lx-press">Enter</span></strong><span>Join the university\'s live video room and ask your questions.</span></div></li>' +
         "</ol>" +
         '<button type="button" class="lx-guide-ok">Got it</button>' +
       "</section>" +
@@ -4271,8 +4271,24 @@
 
   /* ---------- run ---------- */
   var queued = false;
+  // Students see "Enter" on the room buttons; hosts and university staff see "Start".
+  // The guide names whichever button this viewer actually has.
+  function pressLabel() {
+    var el = doc.querySelector(".lx-press");
+    if (!el) return;
+    var start = 0, enter = 0;
+    lobbyCards().forEach(function (card) {
+      Array.prototype.forEach.call(card.querySelectorAll(".cardActions button, .cardActions a"), function (b) {
+        var t = (b.textContent || "").trim();
+        if (/^start$/i.test(t)) start++;
+        else if (/^enter$/i.test(t)) enter++;
+      });
+    });
+    setText(el, start > enter ? "Start" : "Enter");
+  }
+
   function tick() {
-    [lobby, badges, dock].forEach(function (fn) {
+    [lobby, badges, dock, pressLabel].forEach(function (fn) {
       try { fn(); } catch (err) { if (window.console) console.warn("[cm-ux]", err); }
     });
   }
