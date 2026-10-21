@@ -1193,7 +1193,8 @@
     if (lower === "australia") return "Australia";
     if (lower === "japan") return "Japan";
     if (lower.includes("support") || lower.includes("help desk")) return "Event Support";
-    return s.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    // title-case, but keep short capitalised words as they are ("Hong Kong (SAR China)")
+    return s.replace(/\w\S*/g, (txt) => (txt.length <= 4 && txt === txt.toUpperCase()) ? txt : txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
   }
 
   function getCardCountry(col) {
