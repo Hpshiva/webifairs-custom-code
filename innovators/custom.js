@@ -4238,6 +4238,12 @@
       if (u.country) counts[u.country] = (counts[u.country] || 0) + 1;
     });
 
+    // Lobby room names sometimes differ slightly from the university list ("Northwestern Qatar" /
+    // "Northwestern University in Qatar"), so the total is the list's own count when we have it.
+    var listTotal = (window.__INSPIRA_UNIVERSITIES__ || []).filter(function (u) { return u && u.name && !u.isSupport; }).length;
+    if (listTotal) total = listTotal;
+    if (done > total) done = total;
+
     var countries = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a] || a.localeCompare(b); });
     if (hasSupport) countries.push("Event Support");
 
