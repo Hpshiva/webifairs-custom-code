@@ -2444,12 +2444,18 @@
         btn.__btFallback = true;
       }
 
-      // Ensure button is active and styled
-      if (btn.classList.contains('Mui-disabled')) btn.classList.remove('Mui-disabled');
-      if (btn.hasAttribute('disabled')) btn.removeAttribute('disabled');
-      if (btn.getAttribute('aria-disabled') === 'true') btn.removeAttribute('aria-disabled');
-      btn.style.pointerEvents = 'auto';
-      btn.style.cursor = 'pointer';
+      // Rooms stay closed until the room owner presses Start; until then the platform keeps everyone else's
+      // "Enter" disabled. Keep that state and show it: a button forced on would look clickable and do nothing.
+      var reactKey = Object.keys(btn).filter(function (k) { return k.indexOf('__reactProps') === 0; })[0];
+      var locked = !btn.__btFallback && (btn.disabled || btn.classList.contains('Mui-disabled') ||
+        !!(reactKey && btn[reactKey] && btn[reactKey].disabled));
+      var lockedTip = 'Opens when the university starts its room';
+      card.classList.toggle('bt-room-locked', locked);
+      if (locked) btn.setAttribute('title', lockedTip);
+      else if (btn.getAttribute('title') === lockedTip) btn.removeAttribute('title');
+      btn.style.pointerEvents = 'auto'; // a disabled button still ignores clicks; this lets the tooltip show
+      btn.style.cursor = locked ? 'not-allowed' : 'pointer';
+      btn.setAttribute('data-bt-label', isStart ? 'Start' : 'Enter');
 
       // 4. Button behavior:
       // Native Hubilo buttons ("Start" and "Enter", both labelled "Start" via CSS) keep their
@@ -4102,7 +4108,7 @@
         '<ol class="lx-steps">' +
           '<li><span class="lx-step-ico">' + ICON.school + '</span><div><strong>1. Pick a university</strong><span>Browse the cards or filter by country below.</span></div></li>' +
           '<li><span class="lx-step-ico">' + ICON.info + '</span><div><strong>2. Tap Info</strong><span>See programmes, contacts and the admissions team.</span></div></li>' +
-          '<li><span class="lx-step-ico">' + ICON.video + '</span><div><strong>3. Press <span class="lx-press">Enter</span></strong><span>Join the university\'s live video room and ask your questions.</span></div></li>' +
+          '<li><span class="lx-step-ico">' + ICON.video + '</span><div><strong>3. Press <span class="lx-press">Enter</span></strong><span>Join the university\'s live video room once they open it, and ask your questions.</span></div></li>' +
         "</ol>" +
         '<button type="button" class="lx-guide-ok">Got it</button>' +
       "</section>" +

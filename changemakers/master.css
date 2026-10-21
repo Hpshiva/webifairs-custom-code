@@ -11197,13 +11197,14 @@ html body {
   }
 }
 
-/* Rooms: show every card button as "Start" (platform renders "Start" for hosts, "Enter" otherwise) */
+/* Rooms: the card button label is drawn here (custom.js copies the platform's own word into data-bt-label:
+   "Enter" for students, "Start" for hosts and university staff) */
 .roomsCardsList .roomCard .cardActions .MuiButton-root {
   font-size: 0 !important;
 }
 
 .roomsCardsList .roomCard .cardActions .MuiButton-root::before {
-  content: "Start";
+  content: "Enter";
   font-family: var(--bt-font) !important;
   font-size: 14px;
   font-weight: 600;
@@ -12477,4 +12478,16 @@ body:has(.bottom-sheet__wrapper.open) .lx-dock {
 
 .exibitorCard .boothBanner.noMedia.bt-fallback-media .bannerImageBorder {
   display: block !important;
+}
+
+.roomsCardsList .roomCard .cardActions .MuiButton-root[data-bt-label]::before {
+  content: attr(data-bt-label);
+}
+
+/* room not started by its owner yet: the platform keeps the button disabled, so it looks disabled too */
+.roomsCardsList .roomCard.bt-room-locked .cardActions .MuiButton-root {
+  background: var(--bt-line-strong) !important;
+  color: var(--bt-muted) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
 }
