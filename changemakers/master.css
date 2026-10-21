@@ -12091,7 +12091,7 @@ html body textarea:not(.MuiInputBase-input):not([aria-hidden="true"]):is(:focus,
   color: #fff;
 }
 
-.lx-steps li span:not(.lx-step-ico) {
+.lx-steps li span:not(.lx-step-ico, .lx-press) {
   display: block;
   font-size: 12.5px;
   line-height: 1.45;
