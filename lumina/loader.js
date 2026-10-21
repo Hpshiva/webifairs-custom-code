@@ -8,7 +8,7 @@
   window.__INSPIRA_LOADER__ = true;
 
   var REPO = "Hpshiva/webifairs-custom-code";
-  var FALLBACK_SHA = "8c2ba900f9bde041f138897b8db4a4c284aa4911"; // known-good build if GitHub is unreachable
+  var FALLBACK_SHA = "f5a866d19d4217b57756a879fb02b64e142285ec"; // known-good build if GitHub is unreachable
   var CACHE_KEY = "lumina_code_sha";
   var FRESH_MS = 5 * 60 * 1000;   // reuse a looked-up commit for 5 min (keeps GitHub API calls low)
   var USABLE_MS = 60 * 60 * 1000; // a cached commit up to 1 h old is used straight away
