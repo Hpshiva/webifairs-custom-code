@@ -11580,6 +11580,31 @@ html body {
   flex: none;
 }
 
+.roomsCardsList .bt-room-time[data-kind="live"] {
+  color: #12805C;
+  font-weight: 700;
+}
+
+.roomsCardsList .bt-live-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin: 0 3px;
+  border-radius: 50%;
+  background: #16A34A;
+  box-shadow: 0 0 0 0 rgba(22, 163, 74, .5);
+  animation: bt-live-pulse 1.8s ease-out infinite;
+}
+
+@keyframes bt-live-pulse {
+  70% { box-shadow: 0 0 0 7px rgba(22, 163, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roomsCardsList .bt-live-dot { animation: none; }
+}
+
 /* Footer: Info (secondary) + Start (primary) side by side */
 .roomsCardsList .cardBottom:has(.bt-room-info) {
   justify-content: stretch;

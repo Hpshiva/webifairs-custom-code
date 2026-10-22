@@ -2553,6 +2553,19 @@
     return u && u.country ? [full, u.country] : parts;
   }
 
+  function isRoomLive(card) {
+    if (card.classList.contains('bt-room-locked')) return false;
+    var btn = card.querySelector('.cardActions .MuiButton-root');
+    if (btn && !btn.__btFallback && /^enter$/i.test((btn.textContent || '').trim())) return true;
+    // the platform's own flag, when it sets one
+    var fiberKey = Object.keys(card).filter(function (k) { return k.indexOf('__reactFiber') === 0; })[0];
+    for (var f = fiberKey && card[fiberKey], i = 0; f && i < 8; f = f.return, i++) {
+      var d = f.memoizedProps && f.memoizedProps.data;
+      if (d && 'isLive' in d) return d.isLive === 'YES' || d.isLive === true;
+    }
+    return false;
+  }
+
   function enhanceRoomCard(card) {
     // "Brock University • Canada" -> name, then a pin + "Canada" line (the platform h6 stays in the DOM, hidden).
     var h = card.querySelector('.orgName h6');
@@ -2582,18 +2595,27 @@
 
     // The room's start time from the platform ("Starts at Oct 29 5:45 PM", already in the viewer's own time
     // zone). The card layout hides the platform line, so the same text is shown under the country.
+    // Once the owner has started the room, the platform turns its button into an active "Enter" for everyone
+    // (or flags the room live): the line then reads "Live now".
     if (nameBox) {
       var when = card.querySelector('.roomStartAt [data-testid="meeting-time"], .roomStartAt p');
       var whenText = when ? (when.textContent || '').replace(/\s+/g, ' ').trim() : '';
+      var live = isRoomLive(card);
+      var label = live ? 'Live now' : whenText;
       var time = nameBox.querySelector('.bt-room-time');
-      if (whenText) {
+      card.classList.toggle('bt-room-live', live);
+      if (label) {
         if (!time) {
           time = doc.createElement('div');
           time.className = 'bt-room-time';
-          time.innerHTML = ROOM_ICONS.clock + '<span></span>';
           nameBox.appendChild(time);
         }
-        if (time.lastChild.textContent !== whenText) time.lastChild.textContent = whenText;
+        var kind = live ? 'live' : 'time';
+        if (time.getAttribute('data-kind') !== kind) {
+          time.setAttribute('data-kind', kind);
+          time.innerHTML = (live ? '<i class="bt-live-dot" aria-hidden="true"></i>' : ROOM_ICONS.clock) + '<span></span>';
+        }
+        if (time.lastChild.textContent !== label) time.lastChild.textContent = label;
       } else if (time) {
         time.remove();
       }
