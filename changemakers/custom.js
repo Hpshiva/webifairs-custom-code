@@ -2408,9 +2408,7 @@
       var oldOverlay = card.querySelector('a.bt-enter-overlay');
       if (oldOverlay) oldOverlay.remove();
 
-      // Remove "Open now" / roomStartAt element
-      var startAts = card.querySelectorAll('.roomStartAt, [class*="roomStartAt"]');
-      startAts.forEach(function (el) { el.remove(); });
+      // The platform's roomStartAt line stays in place (hidden by master.css); its time is shown as .bt-room-time.
 
       // 2. Ensure cardBottom and cardActions container exist
       var cardBottom = card.querySelector('.cardBottom');
@@ -2521,7 +2519,8 @@
   var ROOM_ICONS = {
     info: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
     eye: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
-    pin: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'
+    pin: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
   };
 
   function openRoomCardInfo(card) {
@@ -2572,6 +2571,25 @@
           if (loc) loc.remove();
           nameBox.classList.remove('bt-split');
         }
+      }
+    }
+
+    // The room's start time from the platform ("Starts at Oct 29 5:45 PM", already in the viewer's own time
+    // zone). The card layout hides the platform line, so the same text is shown under the country.
+    if (nameBox) {
+      var when = card.querySelector('.roomStartAt [data-testid="meeting-time"], .roomStartAt p');
+      var whenText = when ? (when.textContent || '').replace(/\s+/g, ' ').trim() : '';
+      var time = nameBox.querySelector('.bt-room-time');
+      if (whenText) {
+        if (!time) {
+          time = doc.createElement('div');
+          time.className = 'bt-room-time';
+          time.innerHTML = ROOM_ICONS.clock + '<span></span>';
+          nameBox.appendChild(time);
+        }
+        if (time.lastChild.textContent !== whenText) time.lastChild.textContent = whenText;
+      } else if (time) {
+        time.remove();
       }
     }
 
