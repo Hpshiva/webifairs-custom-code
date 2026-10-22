@@ -603,6 +603,14 @@
         }
       }
 
+      // On the day itself the platform drops the larger units ("12 Hrs 3 Mins 23 Secs", later "3 Mins 23 Secs"):
+      // once the seconds are there, a unit it no longer shows is 0.
+      if (s != null) {
+        if (d == null) d = 0;
+        if (h == null) h = 0;
+        if (m == null) m = 0;
+      }
+
       // Keep "--" until all four numbers can be read (never show invented numbers)
       if (d == null || h == null || m == null || s == null) return null;
       return {
@@ -610,6 +618,20 @@
         hours: String(h).padStart(2, "0"),
         mins: String(m).padStart(2, "0"),
         secs: String(s).padStart(2, "0"),
+      };
+    }
+
+    // Same clock as the login page: count down to the event's own start time, so the numbers never depend on
+    // how the platform words its timer (on the day itself it drops the days). Its text is only the backup.
+    function countdownValues() {
+      const left = new Date(EVENT.start).getTime() - Date.now();
+      if (!(left > 0)) return extractCountdownNumbers();
+      const pad = (n) => String(n).padStart(2, "0");
+      return {
+        days: pad(Math.floor(left / 86400000)),
+        hours: pad(Math.floor(left / 3600000) % 24),
+        mins: pad(Math.floor(left / 60000) % 60),
+        secs: pad(Math.floor(left / 1000) % 60),
       };
     }
 
@@ -672,7 +694,7 @@
     }
 
     // Initial update
-    const initialValues = extractCountdownNumbers();
+    const initialValues = countdownValues();
     updateWidgetValues(initialValues);
 
     // 5. Real-Time Mutation Observer on timerEl
@@ -688,7 +710,7 @@
               child.style.setProperty("display", "none", "important");
             }
           });
-          const fresh = extractCountdownNumbers();
+          const fresh = countdownValues();
           updateWidgetValues(fresh);
         }
       });
@@ -703,7 +725,7 @@
           _inspiraCountdownInterval = null;
           return;
         }
-        const currentVals = extractCountdownNumbers();
+        const currentVals = countdownValues();
         updateWidgetValues(currentVals);
       }, 1000);
     }
