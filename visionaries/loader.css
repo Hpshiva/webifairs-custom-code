@@ -1,0 +1,14 @@
+/* Rede Inspira custom-code loader (CSS field).
+   The real styles (new-code/master.css) are added by new-code/loader.js from the latest commit.
+   Keep the page hidden until they arrive so the unstyled platform never flashes; the animation
+   reveals it after 2.5s anyway, in case the script is blocked or slow. */
+html:not(.inspira-css-ready) body {
+  opacity: 0;
+  animation: inspira-reveal 0s linear 2.5s forwards;
+}
+
+@keyframes inspira-reveal {
+  to {
+    opacity: 1;
+  }
+}
