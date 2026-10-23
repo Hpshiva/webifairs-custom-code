@@ -2617,11 +2617,28 @@
 
   // Some rooms were saved without the " • Country" part ("University of York",
   // "... Social Sciences China Hong Kong (SAR China)"), so the country comes from the university list.
+  // "The University of Hong Kong -  Hong Kong": the country typed after a dash or comma instead of " • ".
+  // Only countries this fair uses count, and only after a dash or comma ("... University in Qatar" stays whole).
+  function dashCountry(full) {
+    var names = ['Hong Kong'];
+    (window.__INSPIRA_UNIVERSITIES__ || []).forEach(function (x) {
+      if (x && x.country && !x.isSupport) names.push(String(x.country).replace(/\s+/g, ' ').trim());
+    });
+    names.sort(function (a, b) { return b.length - a.length; });
+    for (var i = 0; i < names.length; i++) {
+      var m = full.match(new RegExp('^(.*\\S)\\s*[-\u2013\u2014,]\\s*(' + names[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s*') + ')\\s*$', 'i'));
+      if (m) return [m[1].trim(), m[2]];
+    }
+    return null;
+  }
+
   function splitRoomName(full) {
     var parts = full.split(/\s+•\s+/);
     if (parts.length > 1) return parts;
     var hk = full.match(/^(.*?)\s+(?:China\s+)?(Hong Kong\s*\(SAR China\))$/i);
     if (hk) return [hk[1], hk[2]];
+    var dashed = dashCountry(full);
+    if (dashed) return dashed;
     var key = full.toLowerCase().replace(/[^a-z0-9]/g, '');
     var u = (window.__INSPIRA_UNIVERSITIES__ || []).filter(function (x) {
       return x && x.name && !x.isSupport && x.name.toLowerCase().replace(/[^a-z0-9]/g, '') === key;
@@ -4082,6 +4099,13 @@
     if (parts.length > 1) return normCountry(parts[parts.length - 1]);
     // rooms saved without " • Country": "... China Hong Kong (SAR China)", or a name on the university list
     if (/\(SAR China\)\s*$/i.test(text)) return normCountry("Hong Kong");
+    // "... -  Hong Kong": the country after a dash or comma
+    var known = ["Hong Kong"];
+    (window.__INSPIRA_UNIVERSITIES__ || []).forEach(function (u) { if (u && u.country && !u.isSupport) known.push(String(u.country)); });
+    for (var i = 0; i < known.length; i++) {
+      var c = normCountry(known[i]), tail = String(text || "").match(/[-\u2013\u2014,]\s*([^-\u2013\u2014,]+?)\s*$/);
+      if (tail && normCountry(tail[1]) === c) return c;
+    }
     var k = nameKey(text), hit = (window.__INSPIRA_UNIVERSITIES__ || []).filter(function (u) {
       return u && u.name && nameKey(u.name) === k;
     })[0];
@@ -4203,11 +4227,13 @@
         var row = cards.length ? cardColumn(cards[0]).parentElement : null;
         var kids = row ? Array.prototype.slice.call(row.children) : [];
         var prev = kids.map(function (c) { return c.style.display; });
+        var y = window.pageYOffset; // the short list clamps the scroll to the top; put it back before paint
         kids.forEach(function (c) { c.style.display = "none"; });
         void doc.documentElement.scrollHeight;
         window.dispatchEvent(new Event("scroll"));
         doc.dispatchEvent(new Event("scroll"));
         kids.forEach(function (c, j) { c.style.display = prev[j]; });
+        if (window.pageYOffset !== y) window.scrollTo({ top: y, behavior: "instant" }); // the page scrolls smoothly otherwise
         setTimeout(schedule, 900);
       }
     }
@@ -4414,6 +4440,15 @@
     });
     setText(el, start > enter ? "Start" : "Enter");
   }
+
+  // A lobby card rises in once. Hiding and showing it again (country filter, background loading) restarts
+  // CSS animations, which made the cards blink, so a card that has been shown keeps still from then on.
+  function markShown(e) {
+    if (e.animationName !== "bt-rise" || !e.target.closest || !e.target.closest(".roomsCardsList")) return;
+    e.target.setAttribute("data-bt-shown", "");
+  }
+  doc.addEventListener("animationend", markShown, true);
+  doc.addEventListener("animationcancel", markShown, true);
 
   function tick() {
     [lobby, badges, dock, pressLabel].forEach(function (fn) {

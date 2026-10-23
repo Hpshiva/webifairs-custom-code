@@ -818,7 +818,9 @@ body:has(.logInBlockWrapper) #__next {
   .inspira-hero-injected *,
   .loginWrapperTop *,
   .loginWrapperTop *::after {
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
     transition: none !important;
   }
 }
@@ -4890,7 +4892,9 @@ section:is(.cmx-uni-section, [id="Participating Universities"])>h4.MuiTypography
   .inspira-card-view *,
   .inspira-ticket-v2-container *,
   .inspira-enhanced-countdown * {
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
     transition: none !important;
   }
 }
@@ -6309,7 +6313,9 @@ html body {
   .bottom-sheet__container,
   .ReactModalPortal *,
   .mobileNav * {
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
 }
@@ -7166,7 +7172,9 @@ html body {
   .bottom-sheet__container,
   .ReactModalPortal *,
   .mobileNav * {
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
 }
@@ -9160,7 +9168,9 @@ html body {
   .ReactModalPortal *,
   .bt-copy,
   .bt-copy::after {
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
 
@@ -10722,7 +10732,9 @@ html body {
   .ReactModalPortal *,
   .mobileNav *,
   .bt-top {
-    animation: none !important;
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
 }
@@ -11495,4 +11507,10 @@ html body textarea:not(.MuiInputBase-input):not([aria-hidden="true"]):is(:focus,
 
 .inspira-ticket-v2-container[style*="--tk-notch-y"] .inspira-ticket-perforation .inspira-notch {
   display: none !important;
+}
+
+/* Reduce motion: the platform's search fields start invisible and fade in with an animation; finishing it
+   instantly (above) keeps them visible, and an open search field is never left transparent. */
+.pageSearchWrapper .searchInputWrapper.active .searchInput {
+  opacity: 1 !important;
 }
