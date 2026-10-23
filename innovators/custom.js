@@ -2776,6 +2776,42 @@
       }
     }
 
+    // Rooms without a logo or banner (e.g. CUNEF): the platform leaves out the banner and/or the small logo square,
+    // so the card collapses and the name moves. A branded banner and a square with the university's initials keep
+    // the same layout as the other cards.
+    var cardBody = card.querySelector('.roomCardBody');
+    if (cardBody) {
+      var realMedia = card.querySelector('.roomCardMedia:not(.bt-media-ph)');
+      var mediaPh = card.querySelector('.bt-media-ph');
+      if (realMedia) {
+        if (mediaPh) mediaPh.remove();
+      } else if (!mediaPh) {
+        mediaPh = doc.createElement('div');
+        mediaPh.className = 'roomCardMedia bt-media-ph';
+        cardBody.parentNode.insertBefore(mediaPh, cardBody);
+      }
+      var realLogo = cardBody.querySelector('.orgProfile:not(.bt-org-ph)');
+      var ph = cardBody.querySelector('.bt-org-ph');
+      if (realLogo) {
+        if (ph) ph.remove();
+      } else {
+        var nameText = ((card.querySelector('.bt-room-title') || h || {}).textContent || '').trim();
+        var words = nameText.split(/\s+/).filter(function (w) {
+          return w && !/^(of|the|de|del|la|and|&|for|university|universidad|universit[éey]|college)$/i.test(w);
+        });
+        var initials = words.length > 1 ? words[0].charAt(0) + words[1].charAt(0) : (words[0] || nameText).slice(0, 2);
+        initials = initials.toUpperCase();
+        if (!ph) {
+          ph = doc.createElement('div');
+          ph.className = 'orgProfile bt-org-ph';
+          ph.setAttribute('aria-hidden', 'true');
+          ph.innerHTML = '<span></span>';
+          cardBody.insertBefore(ph, cardBody.firstChild);
+        }
+        if (ph.firstChild.textContent !== initials) ph.firstChild.textContent = initials;
+      }
+    }
+
     // The room's start time from the platform ("Starts at Oct 29 5:45 PM", already in the viewer's own time
     // zone). The card layout hides the platform line, so the same text is shown under the country.
     // Once the owner has started the room, the platform turns its button into an active "Enter" for everyone
