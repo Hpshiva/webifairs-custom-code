@@ -12661,7 +12661,7 @@ body:has(.bottom-sheet__wrapper.open) .lx-dock {
 }
 
 /* Exhibitor Centre > Edit Profile, spotlight image: "Upload New" is a plain text link in the platform navy
-   (#001378), invisible on the dark image. Shown as a button in the event colour; the Images / Video / None
+   (#001378), invisible on the dark image. Shown as a button like Save Changes; the Images / Video / None
    switch uses the event colour too. Clicks are the platform's own. */
 .uploadTypeWrapper .videoText {
   gap: 10px;
@@ -12669,17 +12669,16 @@ body:has(.bottom-sheet__wrapper.open) .lx-dock {
 }
 
 .uploadTypeWrapper .editLinkBtn {
-  min-height: 32px !important;
-  padding: 6px 16px !important;
-  border-radius: 999px !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
   background: var(--bt-grad-primary) !important;
   color: #fff !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
   line-height: 1.2 !important;
   text-transform: none !important;
   text-decoration: none !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .55), 0 6px 16px -6px rgba(0, 0, 0, .6) !important;
+  box-shadow: none !important;
 }
 
 .uploadTypeWrapper .editLinkBtn:hover {
