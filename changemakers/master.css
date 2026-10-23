@@ -12489,6 +12489,11 @@ body:has(.sidedrawerWrapper.open) .lx-dock {
   background: var(--bt-grad-primary-hover);
 }
 
+/* Room bar "Go Offscreen": the platform keeps its dark text (#202020) on this button, which sits on our gradient. */
+.offScreenWrap .MuiButton-containedPrimary:not(.Mui-disabled) {
+  color: #fff !important;
+}
+
 .MuiButton-softPrimary:not(.Mui-disabled),
 .MuiIconButton-colorSoft {
   color: var(--bt-primary) !important;
