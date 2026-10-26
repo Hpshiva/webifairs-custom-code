@@ -5,8 +5,8 @@
 
   const EVENT = Object.assign({
     name: "Rede Inspira Virtual College Fairs",
-    start: "2026-10-22T17:00:00-03:00",
-    end: "2026-10-22T20:00:00-03:00",
+    start: "2026-11-18T17:00:00-03:00",
+    end: "2026-11-18T19:00:00-03:00",
     timeZone: "America/Sao_Paulo",
     timeZoneLabel: "BRT",
     registerUrl: "/register"
@@ -46,7 +46,7 @@
       const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: EVENT.timeZone }).format(d);
       return clean(day + ", " + time + " " + EVENT.timeZoneLabel).replace(/,\s*,/g, ",");
     } catch (e) {
-      return "Thu 22 Oct, 5:00 PM BRT";
+      return "Wed 18 Nov, 5:00 PM BRT";
     }
   }
 
@@ -265,12 +265,12 @@
   if (window.__INSPIRA_REGISTER__) return;
   window.__INSPIRA_REGISTER__ = true;
 
-  // Official event time, from the event banner: Thursday 22 Oct 2026, 5:00 PM to 8:00 PM BRT.
+  // Official event time (rescheduled by the client on 26 Oct): Wednesday 18 Nov 2026, 5:00 PM to 7:00 PM BRT.
   // Can be overridden before this script loads with window.INSPIRA_EVENT_CONFIG = { ... }.
   const EVENT = Object.assign({
     name: "Rede Inspira Virtual University Fair",
-    start: "2026-10-22T17:00:00-03:00",
-    end: "2026-10-22T20:00:00-03:00",
+    start: "2026-11-18T17:00:00-03:00",
+    end: "2026-11-18T19:00:00-03:00",
     timeZone: "America/Sao_Paulo",
     timeZoneLabel: "BRT",
     passImage: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3583_7137_630733001791452515.jpeg"
@@ -362,7 +362,7 @@
       const t = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz });
       return { date: plain(date), time: plain(t.format(start) + " to " + t.format(end) + " " + EVENT.timeZoneLabel) };
     } catch (e) {
-      return { date: "Thu 22 Oct 2026", time: "5:00 PM to 8:00 PM BRT" };
+      return { date: "Wed 18 Nov 2026", time: "5:00 PM to 7:00 PM BRT" };
     }
   }
 
