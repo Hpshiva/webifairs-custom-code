@@ -9,6 +9,8 @@
   var KEY = "inspira_live_event_v1";
   var TTL = 10 * 60 * 1000;
   var CDN = "https://cdn.hubilo.com/";
+  // Brand artwork, not event data: the platform's "event logo" is a square poster, so the GEMS logo is used.
+  var BRAND_LOGO = "https://cdn.prod.website-files.com/64760766fa26f8bd63c8fee5/6ad5d9a86ddbb8d775280cb2_Gems.svg";
   var BULLET = "•";
   var data = null;
   var loading = false;
@@ -165,7 +167,7 @@
       end: new Date(data.end).toISOString(),
       timeZone: data.timeZone,
       timeZoneLabel: data.timeZoneLabel,
-      logo: data.logo,
+      logo: BRAND_LOGO,
       passImage: data.passImage,
       helpDesk: data.helpDesk,
       host: data.host || ""
