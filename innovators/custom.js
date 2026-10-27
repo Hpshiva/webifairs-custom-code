@@ -1,44 +1,175 @@
-/* Logos and banners a university uploaded for another GEMS fair (same client account) but not yet for this one.
-   Used only where the platform would show its grey placeholder; a real upload always wins. */
+/* Live event data. The event's name, date, time zone, logo, ticket image and university list all come from the
+   platform, so nothing about the event is stored in this file. The public /register page carries them in its page
+   data (no sign-in needed): on /register and /login they are read from the page itself; on the other pages the last
+   copy kept in this browser is used and refreshed in the background. The modules below read them through
+   window.__INSPIRA_EVENT__() and window.__INSPIRA_UNIVERSITIES__, and redraw on the "inspira:live" event. */
 (function () {
   "use strict";
-  if (window.__INSPIRA_IMG_FALLBACK__) return;
-  var BASE = "https://cdn.hubilo.com/";
-  var LOGO = {
-    amritauniversity: "exhibitor/3380930/300/1242_6907_592575001792590327.jpg",
-    flameuniversity: "exhibitor/3380930/300/3155_8411_719706001792590230.jpg",
-    ieuniversity: "exhibitor/3380930/300/1108_6188_221350001792590382.jpg",
-    lancasteruniversity: "exhibitor/3380930/300/1311_7048_635108001792590427.jpg",
-    shivnadaruniversitydelhincr: "exhibitor/3380930/300/2269_8579_956613001792590548.jpg",
-    hongkonguniversityofscienceandtechnology: "exhibitor/3380930/300/2505_8869_418031001792588885.jpg",
-    universityofdundee: "exhibitor/3380930/300/2935_8808_246338001792590531.png",
-    universityofguelphhumber: "exhibitor/3380930/300/965a9b60-cc26-11f1-8b4d-31c7cb6197c2_1792460152854.png",
-    universityofsouthampton: "exhibitor/3380930/300/1078_5326_690996001792589950.jpg",
-    universityoftoronto: "exhibitor/3380930/300/3482_5025_741448001792589966.jpg"
-  };
-  var BANNER = {
-    amritauniversity: "banner/exhibitor_list_banner_image/3380930/1036/1276_6628_962151001792586053.png",
-    flameuniversity: "banner/exhibitor_list_banner_image/3380930/1036/1673_8530_850123001792585773.png",
-    ieuniversity: "banner/exhibitor_list_banner_image/3380930/1036/3901_6442_551975001792585746.png",
-    lancasteruniversity: "banner/exhibitor_list_banner_image/3380930/1036/2667_8764_436928001792585702.png",
-    mcmasteruniversityfacultyofengineering: "banner/exhibitor_list_banner_image/3380930/1036/2698_9979_927582001792585665.png",
-    shivnadaruniversitydelhincr: "banner/exhibitor_list_banner_image/3380930/1036/4530_5735_878859001792585589.png",
-    shorelinecollege: "banner/exhibitor_list_banner_image/3380930/1036/2824_7851_304902001792585558.png",
-    templeuniversity: "banner/exhibitor_list_banner_image/3380930/1036/1076_9614_880223001792041700.jpeg",
-    hongkonguniversityofscienceandtechnology: "banner/exhibitor_list_banner_image/3380930/1036/4456_7117_260127001792585397.png",
-    universityofdundee: "banner/exhibitor_list_banner_image/3380930/1036/4874_7179_955534001792585288.png",
-    universityofguelphhumber: "banner/exhibitor_list_banner_image/3380930/1036/1508ea60-cc28-11f1-9427-730f6f995ee6_1792460794886.png",
-    universityofsouthampton: "banner/exhibitor_list_banner_image/3380930/1036/1987_5639_017353001792588144.png",
-    universityoftoronto: "banner/exhibitor_list_banner_image/3380930/1036/2844_7809_473755001792584953.png",
-    westernuniversity: "banner/exhibitor_list_banner_image/3380930/1036/2087_7963_985930001792584880.png"
-  };
-  function key(name) {
-    return String(name || "").split("\u2022")[0].toLowerCase().replace(/^\s*the\s+/, "").replace(/[^a-z0-9]/g, "");
+  if (window.__INSPIRA_EVENT__) return;
+  var KEY = "inspira_live_event_v1";
+  var TTL = 10 * 60 * 1000;
+  var CDN = "https://cdn.hubilo.com/";
+  var BULLET = "•";
+  var data = null;
+  var loading = false;
+  var universities = [];
+  window.__INSPIRA_UNIVERSITIES__ = universities;
+
+  function flightFromPage() {
+    var s = "";
+    (window.__next_f || []).forEach(function (a) { if (a && typeof a[1] === "string") s += a[1]; });
+    return s;
   }
-  window.__INSPIRA_IMG_FALLBACK__ = function (name, kind) {
-    var map = kind === "banner" ? BANNER : LOGO;
-    var p = map[key(name)] || map[key(String(name || "").split(",")[0])];
-    return p ? BASE + p : "";
+  function flightFromHTML(html) {
+    var s = "", re = /self\.__next_f\.push\((\[[\s\S]*?\])\)<\/script>/g, m;
+    while ((m = re.exec(html))) {
+      try { var a = JSON.parse(m[1]); if (typeof a[1] === "string") s += a[1]; } catch (e) { }
+    }
+    return s;
+  }
+  // The JSON value after "key": in the page data (an object or array, read up to its closing bracket).
+  function jsonAt(flight, key) {
+    var at = flight.indexOf('"' + key + '":');
+    if (at === -1) return undefined;
+    var open = at + key.length + 3, c = flight.charAt(open);
+    if (c !== "[" && c !== "{") return undefined;
+    var i = open, depth = 0, inStr = false, esc = false;
+    for (; i < flight.length; i++) {
+      c = flight.charAt(i);
+      if (inStr) {
+        if (esc) esc = false;
+        else if (c === "\\") esc = true;
+        else if (c === '"') inStr = false;
+        continue;
+      }
+      if (c === '"') inStr = true;
+      else if (c === "[" || c === "{") depth++;
+      else if (c === "]" || c === "}") { depth--; if (!depth) { i++; break; } }
+    }
+    try { return JSON.parse(flight.slice(open, i)); } catch (e) { return undefined; }
+  }
+  function match(flight, re) { var m = flight.match(re); return m ? m[1] : ""; }
+  // banner fields are JSON text: '[{"img_file_name":"x.png"}]'
+  function firstFile(v) {
+    try {
+      var a = typeof v === "string" ? JSON.parse(v) : v;
+      return (a && a[0] && (a[0].img_file_name || a[0].imgFileName)) || "";
+    } catch (e) { return ""; }
+  }
+  function clean(s) { return String(s || "").replace(/\s+/g, " ").trim(); }
+
+  function parse(flight) {
+    if (!flight) return null;
+    var start = Number(match(flight, /"eventStartime":"?(\d+)/));
+    var end = Number(match(flight, /"eventEndtime":"?(\d+)/));
+    var booths = jsonAt(flight, "booths");
+    if (!start || !end || !Array.isArray(booths)) return null;
+    var org = match(flight, /"organiserId":(\d+)/);
+    var tz = jsonAt(flight, "timezone") || {};
+    var logo = firstFile(jsonAt(flight, "eventLogo"));
+    var pass = match(flight, /"image":"([^"]+)","link":"[^"]*","id":\d+\}\],"eventStartime"/);
+    var unis = [];
+    booths.forEach(function (b) {
+      (b.data || []).forEach(function (x) {
+        if (!x || !x.name) return;
+        var parts = String(x.name).split(BULLET);
+        var support = /help\s*desk|support/i.test(x.name);
+        var country = parts.length > 1 ? clean(parts.slice(1).join(" ")).replace(/\b([A-Z])\.\s+(?=[A-Z]\.)/g, "$1.") : "";
+        var bannerFile = firstFile(x.banner);
+        unis.push({
+          name: clean(parts[0]),
+          country: support ? "Event Support" : country,
+          isSupport: support,
+          logo: x.logo ? CDN + "exhibitor/" + org + "/300/" + x.logo : CDN + "comm_v2/images/profile/exhibitor_default.png",
+          banner: bannerFile ? CDN + "banner/exhibitor_list_banner_image/" + org + "/1036/" + bannerFile : CDN + "comm_v2/images/cover/exhibitor_cover.png"
+        });
+      });
+    });
+    // names typed without " \u2022 Country" ("X - Hong Kong", "X, UAE", "X | New Zealand"): a country another
+    // university in this list uses, after a dash, comma or bar
+    var known = {};
+    var countryKey = function (c) { return String(c).replace(/\(.*?\)/g, "").replace(/[\s.]/g, "").toLowerCase(); };
+    unis.forEach(function (u) { if (u.country && !u.isSupport) known[countryKey(u.country)] = u.country; });
+    // otherwise any country name the browser knows (no list kept here), and the short forms the fair uses
+    var regions = { uae: "U.A.E.", uk: "U.K.", us: "U.S.", usa: "U.S.", hongkong: "Hong Kong" };
+    try {
+      var dn = new Intl.DisplayNames(["en"], { type: "region" });
+      for (var a = 65; a <= 90; a++) {
+        for (var b = 65; b <= 90; b++) {
+          var code = String.fromCharCode(a, b), n = dn.of(code);
+          if (n && n !== code && !regions[countryKey(n)]) regions[countryKey(n)] = n;
+        }
+      }
+    } catch (e) { }
+    unis.forEach(function (u) {
+      if (u.country) return;
+      var tail = u.name.match(/[-\u2013\u2014,|]\s*([^-\u2013\u2014,|]+)$/);
+      var k = tail && countryKey(tail[1]);
+      if (k && (known[k] || regions[k])) u.country = known[k] || regions[k];
+    });
+    var desk = unis.filter(function (u) { return u.isSupport && /technology/i.test(u.name); })[0] ||
+      unis.filter(function (u) { return u.isSupport; })[0];
+    var name = clean(match(flight, /"title":"([^"]*)","favicon"/));
+    return {
+      at: Date.now(),
+      name: name,
+      host: match(name, /\s[-\u2013]\s*(.+?)\s+Virtual\b/i).replace(/[<>&"]/g, ""),
+      start: start,
+      end: end,
+      timeZone: tz.name || "UTC",
+      timeZoneLabel: match(String(tz.description || ""), /\(([A-Z]{2,5})\)\s*$/) || "",
+      logo: logo ? CDN + "logo/" + org + "/300/" + logo : "",
+      passImage: pass ? CDN + "banner/community_banner/" + org + "/1036/" + pass : "",
+      helpDesk: desk ? desk.name : "",
+      universities: unis
+    };
+  }
+
+  function apply(d, announce) {
+    data = d;
+    universities.length = 0;
+    Array.prototype.push.apply(universities, d.universities || []);
+    try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) { }
+    if (announce) {
+      try { window.dispatchEvent(new CustomEvent("inspira:live")); } catch (e) { }
+    }
+  }
+
+  var fromPage = parse(flightFromPage());
+  if (fromPage) {
+    apply(fromPage, false);
+  } else {
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { }
+    if (cached && cached.start) apply(cached, false);
+    if ((!cached || Date.now() - cached.at > TTL) && window.fetch) {
+      loading = true;
+      fetch("/register", { credentials: "omit" }).then(function (r) { return r.ok ? r.text() : ""; }).then(function (html) {
+        var d = parse(flightFromHTML(html));
+        loading = false;
+        if (d) apply(d, true);
+        else window.dispatchEvent(new CustomEvent("inspira:live"));
+      }).catch(function () {
+        loading = false;
+        try { window.dispatchEvent(new CustomEvent("inspira:live")); } catch (e) { }
+      });
+    }
+  }
+
+  window.__INSPIRA_LIVE_STATE__ = function () { return data ? "ready" : loading ? "loading" : "none"; };
+  window.__INSPIRA_EVENT__ = function () {
+    if (!data) return {};
+    return {
+      name: data.name,
+      start: new Date(data.start).toISOString(),
+      end: new Date(data.end).toISOString(),
+      timeZone: data.timeZone,
+      timeZoneLabel: data.timeZoneLabel,
+      logo: data.logo,
+      passImage: data.passImage,
+      helpDesk: data.helpDesk,
+      host: data.host || ""
+    };
   };
 })();
 
@@ -47,18 +178,20 @@
   if (window.__INSPIRA_LOGIN__) return;
   window.__INSPIRA_LOGIN__ = true;
 
-  const EVENT = Object.assign({
-    name: "Innovators - GEMS Education Virtual University Fair",
-    start: "2026-11-03T16:30:00+04:00",
-    end: "2026-11-03T19:00:00+04:00",
-    timeZone: "Asia/Dubai",
-    timeZoneLabel: "GST",
-    registerUrl: "/register",
-    logo: "https://cdn.prod.website-files.com/64760766fa26f8bd63c8fee5/6ad5d9a86ddbb8d775280cb2_Gems.svg"
-  }, window.INSPIRA_EVENT_CONFIG || {});
+  // Name, dates, time zone and logo come from the platform (live data block at the top of this file).
+  const EVENT = Object.assign({ registerUrl: "/register" }, window.__INSPIRA_EVENT__(), window.INSPIRA_EVENT_CONFIG || {});
 
-  const START = new Date(EVENT.start).getTime();
-  const END = new Date(EVENT.end).getTime();
+  let START = new Date(EVENT.start).getTime();
+  let END = new Date(EVENT.end).getTime();
+  window.addEventListener("inspira:live", function () {
+    Object.assign(EVENT, window.__INSPIRA_EVENT__(), window.INSPIRA_EVENT_CONFIG || {});
+    START = new Date(EVENT.start).getTime();
+    END = new Date(EVENT.end).getTime();
+    // the hero is built once: rebuild it with the data that just arrived
+    const hero = document.querySelector(".inspira-hero-injected");
+    if (hero) hero.remove();
+    schedule();
+  });
 
   const ICONS = {
     star: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
@@ -91,13 +224,13 @@
       const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: EVENT.timeZone }).format(d);
       return clean(day + ", " + time + " " + EVENT.timeZoneLabel).replace(/,\s*,/g, ",");
     } catch (e) {
-      return "Tue 3 Nov, 4:30 PM GST";
+      return "";
     }
   }
 
   function phase() {
     const now = Date.now();
-    if (now < START) return "before";
+    if (!(START > 0) || now < START) return "before";
     if (now < END) return "live";
     return "after";
   }
@@ -127,11 +260,11 @@
   function heroMarkup(count) {
     return '' +
       '<div class="hero-top-brand">' +
-      '<div class="hero-brand-logo"><img src="' + EVENT.logo + '" alt="GEMS Education"></div>' +
+      (EVENT.logo ? '<div class="hero-brand-logo"><img src="' + EVENT.logo + '" alt="' + (EVENT.host || "") + '"></div>' : "") +
       '<div class="hero-live-badge">' + badge() + "</div>" +
       "</div>" +
       '<div class="hero-content-center">' +
-      '<div class="hero-kicker">' + ICONS.star + "<span>" + EVENT.name.toUpperCase() + "</span></div>" +
+      '<div class="hero-kicker">' + ICONS.star + "<span>" + (EVENT.name || "").toUpperCase() + "</span></div>" +
       '<h1 class="hero-heading">' + heading(count) + "</h1>" +
       '<p class="hero-subheading">Explore degrees and scholarships, and talk live with official university representatives.</p>' +
       '<div class="hero-countdown-strip" role="timer" aria-label="Time until the fair starts">' +
@@ -141,7 +274,7 @@
       '<div class="hero-pills-row">' + pills(count) + "</div>" +
       "</div>" +
       '<div class="hero-bottom-proof">' +
-      '<div class="proof-caption">Hosted by <strong>GEMS Education</strong>. Powered by WebiFair.</div>' +
+      '<div class="proof-caption">' + (EVENT.host ? "Hosted by <strong>" + EVENT.host + "</strong>. " : "") + "Powered by WebiFair.</div>" +
       "</div>";
 
     function unit(label, id) {
@@ -183,6 +316,7 @@
       countdownTimer = null;
       return;
     }
+    strip.hidden = false;
     const pad = function (n) { return String(n).padStart(2, "0"); };
     setText($("#inspiraLoginDays"), pad(Math.floor(diff / 86400000)));
     setText($("#inspiraLoginHours"), pad(Math.floor(diff / 3600000) % 24));
@@ -310,17 +444,12 @@
   if (window.__INSPIRA_REGISTER__) return;
   window.__INSPIRA_REGISTER__ = true;
 
-  // Official event time, from the event banner: Tuesday 3 Nov 2026, 4:30 PM to 7:00 PM GST.
-  // Can be overridden before this script loads with window.INSPIRA_EVENT_CONFIG = { ... }.
-  const EVENT = Object.assign({
-    name: "Innovators - GEMS Education Virtual University Fair",
-    start: "2026-11-03T16:30:00+04:00",
-    end: "2026-11-03T19:00:00+04:00",
-    timeZone: "Asia/Dubai",
-    timeZoneLabel: "GST",
-    passImage: "https://cdn.hubilo.com/banner/community_banner/3380930/1036/1275_7248_022554001791368719.png",
-    logo: "https://cdn.prod.website-files.com/64760766fa26f8bd63c8fee5/6ad5d9a86ddbb8d775280cb2_Gems.svg"
-  }, window.INSPIRA_EVENT_CONFIG || {});
+  // Name, dates, time zone and ticket image come from the platform (live data block at the top of this file).
+  const EVENT = Object.assign({}, window.__INSPIRA_EVENT__(), window.INSPIRA_EVENT_CONFIG || {});
+  window.addEventListener("inspira:live", function () {
+    Object.assign(EVENT, window.__INSPIRA_EVENT__(), window.INSPIRA_EVENT_CONFIG || {});
+    initializeAll();
+  });
 
   // Platform data uses a bullet between name and country ("Cardiff University <bullet> U.K.").
   // It is only matched here, never shown.
@@ -409,7 +538,7 @@
       const t = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz });
       return { date: plain(date), time: plain(t.format(start) + " to " + t.format(end) + " " + EVENT.timeZoneLabel) };
     } catch (e) {
-      return { date: "Tue 3 Nov 2026", time: "4:30 PM to 7:00 PM GST" };
+      return { date: "", time: "" };
     }
   }
 
@@ -443,6 +572,17 @@
    * 2. HEADER BRANDING ENHANCEMENT
    * Injects the official Innovators event brand into the empty header slot.
    */
+  // Event logo and name from the live data (they can arrive after the bar is built).
+  function syncNavBrand(logoBox) {
+    const brand = logoBox.querySelector(".inspira-nav-brand");
+    const img = logoBox.querySelector(".inspira-nav-logo");
+    if (brand && EVENT.name && brand.getAttribute("title") !== EVENT.name) brand.setAttribute("title", EVENT.name);
+    if (!img) return;
+    if (EVENT.logo && img.getAttribute("src") !== EVENT.logo) img.setAttribute("src", EVENT.logo);
+    if (img.alt !== (EVENT.host || "")) img.alt = EVENT.host || "";
+    img.hidden = !EVENT.logo;
+  }
+
   function enhanceHeaderBrand() {
     const logoBox = document.querySelector(SELECTORS.headerLogoBox);
     if (!logoBox) return;
@@ -452,13 +592,14 @@
     const existingSub = logoBox.querySelector(".inspira-nav-title-sub");
     if (existingSub) {
       setHTML(existingSub, brandSubtitle(count));
+      syncNavBrand(logoBox);
       return;
     }
 
     logoBox.dataset.inspiraEnhanced = "true";
     logoBox.innerHTML = `
-      <a href="#" class="inspira-nav-brand" title="Innovators - GEMS Education Virtual University Fair" style="text-decoration: none;">
-        <img class="inspira-nav-logo" src="${EVENT.logo}" alt="GEMS Education">
+      <a href="#" class="inspira-nav-brand" style="text-decoration: none;">
+        <img class="inspira-nav-logo" alt="">
         <div class="inspira-nav-title">
           <span class="inspira-nav-title-main">Virtual University Fair</span>
           <span class="inspira-nav-title-sub">${brandSubtitle(count)}</span>
@@ -466,6 +607,7 @@
       </a>
     `;
 
+    syncNavBrand(logoBox);
     const brandLink = logoBox.querySelector(".inspira-nav-brand");
     if (brandLink) {
       brandLink.addEventListener("click", function (e) {
@@ -731,426 +873,8 @@
     }
   }
 
-  /**
-   * AUTHENTIC WEBSITE UNIVERSITIES DATASET
-   * Extracted directly from live platform (redeinspira.webifairs.com).
-   * 100% real university names, countries, official CDN logos, and official CDN banners.
-   * Zero custom or mock data.
-   */
-  const REAL_WEBSITE_UNIVERSITIES = [
-    {
-      name: "Technology Help Desk",
-      country: "Event Support",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3481_5051_405480001791024310.png",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3811_8074_316927001791546485.png",
-      isSupport: true
-    },
-    {
-      name: "School Counselor Help Desk",
-      country: "Event Support",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2733_9918_959770001792055505.png",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3006_8463_062981001792055502.png",
-      isSupport: true
-    },
-    {
-      name: "Abu Dhabi Hospitality Academy - Les Roches",
-      country: "U. A. E.",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "The American College of Greece",
-      country: "Greece",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1353_5319_907047001792045494.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2448_7413_733920001791981356.png"
-    },
-    {
-      name: "The American University of Paris",
-      country: "France",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4327_9228_646858001792404888.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3499_9015_229176001792404898.jpeg"
-    },
-    {
-      name: "Ashoka University",
-      country: "India",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4350_8927_655634001791630046.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4813_5630_282906001791629762.png"
-    },
-    {
-      name: "The Australian National University",
-      country: "Australia",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3591_9635_629307001791625651.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4073_9541_533712001791549611.png"
-    },
-    {
-      name: "Brock University",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2494_9522_752273001791616223.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3684_9276_831710001791547178.png"
-    },
-    {
-      name: "Concordia University",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1606_7902_352837001791630395.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1914_7288_253537001791627858.png"
-    },
-    {
-      name: "Domus Academy",
-      country: "Italy",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1701_5859_544096001791623035.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1796_5222_265742001791547235.png"
-    },
-    {
-      name: "EHL Hospitality Business School",
-      country: "Switzerland",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1304_6172_286637001791624793.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4893_7441_296422001792412329.jpeg"
-    },
-    {
-      name: "ESCP Business School",
-      country: "U.K.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2854_5478_834498001791957666.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4182_8713_717611001792136422.png"
-    },
-    {
-      name: "EUROPEAN COLLEGE-EC BUSINESS SCHOOL, S.A.",
-      country: "Spain",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2214_9462_503206001791624821.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3738_6581_200675001791548164.png"
-    },
-    {
-      name: "Ferris State University",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2035_6422_465928001792144080.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3482_9987_909459001792136380.png"
-    },
-    {
-      name: "Florida International University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4841_5066_349989001791627373.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3138_6968_342815001791628631.png"
-    },
-    {
-      name: "Foothill + De Anza Colleges",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3866_5998_151954001791624899.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4025_6398_397379001791548216.png"
-    },
-    {
-      name: "Hult International Business School",
-      country: "U.A.E.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4350_6630_642203001792045630.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3767_8323_313905001791981108.png"
-    },
-    {
-      name: "Huron University",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3509_7528_942785001791624922.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3306_5123_528974001791548298.png"
-    },
-    {
-      name: "IESEG",
-      country: "France",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3610_5107_692795001791624937.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1809_8006_352734001791629228.png"
-    },
-    {
-      name: "Indiana University Bloomington",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2709_7034_086650001791630267.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2663_8542_290871001791628064.png"
-    },
-    {
-      name: "Johnson & Wales University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3978_8474_398742001791624979.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4419_9916_936401001791548350.png"
-    },
-    {
-      name: "Joliet Junior College",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1093_6668_927985001791625005.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3493_5410_031938001791624442.png"
-    },
-    {
-      name: "Kansas State University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1278_8499_341015001791625035.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4228_7670_257002001791548467.png"
-    },
-    {
-      name: "Kent State University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3099_5051_534314001791625072.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4527_5948_331175001791548547.png"
-    },
-    {
-      name: "Northwestern Qatar",
-      country: "Qatar",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2493_7204_059456001792045545.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3933_8399_922848001791981417.png"
-    },
-    {
-      name: "The Ohio State University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3905_6781_328300001791632114.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1484_7293_810910001791549749.png"
-    },
-    {
-      name: "Parsons Paris, The New School",
-      country: "France",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4069_5936_048116001791625438.png",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2688_9640_693611001791625058.png"
-    },
-    {
-      name: "SCAD",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2932_8618_955050001791625456.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4562_7054_598983001791548610.png"
-    },
-    {
-      name: "St George’s University, School of Medicine",
-      country: "Grenada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4804_9093_201430001791625474.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3801_5391_631326001791549366.png"
-    },
-    {
-      name: "St. John's University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1850_8930_545552001791627687.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2461_9682_898473001791628473.png"
-    },
-    {
-      name: "St. Joseph’s University, Bengaluru.",
-      country: "India",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "Stony Brook University - The State University of New York",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2592_5752_483562001791625512.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2384_7020_705792001791549426.png"
-    },
-    {
-      name: "Swiss Education Group",
-      country: "Switzerland",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4023_8585_777286001791625575.png",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3706_8457_205067001791549454.png"
-    },
-    {
-      name: "Temple University",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1605_5970_992887001792041620.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1076_9614_880223001792041700.jpeg"
-    },
-    {
-      name: "Tennessee Tech",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1768_7826_076261001791625598.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3200_9673_858585001791549477.png"
-    },
-    {
-      name: "Tulane University",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2010_5624_052399001791630413.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2629_5599_756528001791613537.png"
-    },
-    {
-      name: "University for the Creative Arts",
-      country: "U. K.",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "University of Aberdeen",
-      country: "U. K.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1165_5014_236405001791625698.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2192_9306_652164001791549789.png"
-    },
-    {
-      name: "University of Auckland",
-      country: "New Zealand",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2214_8229_217364001791630017.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4206_5851_979604001791628421.png"
-    },
-    {
-      name: "University of Bristol",
-      country: "U. K.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1630_5185_011194001791625775.jpg",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "University of California, Riverside",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4529_6055_290241001791625853.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2970_7269_231957001791549825.png"
-    },
-    {
-      name: "University of Cincinnati",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4787_8433_051369001791983648.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2932_6974_924264001791981224.png"
-    },
-    {
-      name: "University of Guelph-Humber",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "The University of Hong Kong -Faculty of Social Sciences",
-      country: "Hong Kong",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2114_9400_561970001792041426.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4474_8611_950360001791981310.png"
-    },
-    {
-      name: "University of Illinois at Chicago (UIC Global)",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2858_7176_998648001791633437.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3851_6945_907441001791628542.png"
-    },
-    {
-      name: "University of Kansas",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4957_9606_632422001791629834.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3007_5119_704271001791629056.png"
-    },
-    {
-      name: "University of Manitoba",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3936_9549_840143001791626480.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4989_9514_119610001791549891.png"
-    },
-    {
-      name: "University of Minnesota Twin Cities",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3177_7595_582192001792059061.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4698_9195_284461001792057397.png"
-    },
-    {
-      name: "University of New South Wales (UNSW)",
-      country: "Australia",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3428_7673_681002001791626517.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1644_9224_181648001791628799.png"
-    },
-    {
-      name: "University of Oregon",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1413_9791_659628001792144273.png",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2926_8885_827199001792062849.png"
-    },
-    {
-      name: "University of Ottawa",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2238_9119_003298001791626550.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3955_7545_746971001791549304.png"
-    },
-    {
-      name: "University of Waterloo",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3813_7312_761554001791626600.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3978_9430_489151001791549112.png"
-    },
-    {
-      name: "University of York",
-      country: "U.K.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1340_7204_051158001791983368.jpg",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "Virginia Commonwealth University",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1674_9139_189304001792410133.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1364_9746_577445001792410143.jpeg"
-    },
-    {
-      name: "Washington College",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4790_9945_977265001791626686.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2076_8309_923986001791548974.png"
-    },
-    {
-      name: "Webster University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2181_5171_116212001791626732.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/4925_9580_549804001791626768.png"
-    },
-    {
-      name: "Xavier University",
-      country: "U. S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/2683_9295_779015001791627616.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3225_9031_596986001791548753.png"
-    },
-    {
-      name: "Imperial",
-      country: "U.K.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4502_7158_939368001792144507.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3839_5523_411071001792136277.png"
-    },
-    {
-      name: "Columbia University Pre-College Programs",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/4647_7198_096060001792144711.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/2095_7242_636478001792136194.png"
-    },
-    {
-      name: "California Baptist University",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1370_9359_627602001792144981.jpg",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "City University of Hong Kong",
-      country: "Hong Kong",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/3432_7979_573226001792145197.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/3290_9124_851777001792136110.png"
-    },
-    {
-      name: "Amrita University",
-      country: "India",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "Shiv Nadar University Delhi NCR",
-      country: "India",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "McMaster University - Faculty of Engineering",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1200_9571_199905001792239302.jpg",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "UBC (the University of British Columbia)",
-      country: "Canada",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1746_5652_473556001792409302.jpg",
-      banner: "https://cdn.hubilo.com/banner/exhibitor_list_banner_image/3380930/1036/1392_7827_002867001792409308.jpeg"
-    },
-    {
-      name: "IE University",
-      country: "Spain",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "Shoreline College",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/exhibitor/3380930/300/1587_9525_858089001792411255.jpg",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    },
-    {
-      name: "MIT World Peace University, Pune",
-      country: "U.S.",
-      logo: "https://cdn.hubilo.com/comm_v2/images/profile/exhibitor_default.png",
-      banner: "https://cdn.hubilo.com/comm_v2/images/cover/exhibitor_cover.png"
-    }
-  ];
-  // Shared with the lobby extras at the end of this file (country chips, progress).
-  window.__INSPIRA_UNIVERSITIES__ = REAL_WEBSITE_UNIVERSITIES;
+  // The platform's live university list (live data block at the top of this file).
+  const REAL_WEBSITE_UNIVERSITIES = window.__INSPIRA_UNIVERSITIES__ || [];
 
   window._inspiraCardViewMode = "style2";
 
@@ -1278,7 +1002,7 @@
         logo = item.logo;
         banner = item.banner;
         if (item.isSupport) isSupport = true;
-      } else if (!univName) {
+      } else if (!univName && REAL_WEBSITE_UNIVERSITIES.length) {
         const fallback = REAL_WEBSITE_UNIVERSITIES[index % REAL_WEBSITE_UNIVERSITIES.length];
         rawFullName = fallback.name;
         country = fallback.country;
@@ -1286,11 +1010,6 @@
         banner = fallback.banner;
         if (fallback.isSupport) isSupport = true;
       }
-
-      // still a placeholder: the university's own image from another GEMS fair, when there is one
-      const imgFallback = window.__INSPIRA_IMG_FALLBACK__;
-      if (imgFallback && (!logo || logo.includes("exhibitor_default"))) logo = imgFallback(rawFullName, "logo") || logo;
-      if (imgFallback && (!banner || banner.includes("exhibitor_cover"))) banner = imgFallback(rawFullName, "banner") || banner;
 
       // Format card details with smart campus/title separation and meaningful subtitle
       const details = formatUniversityCardDetails(rawFullName, country, isSupport);
@@ -2156,6 +1875,12 @@
     const existingTicket = panel.querySelector(".inspira-ticket-v2-container");
     if (existingTicket) {
       setHTML(existingTicket.querySelector(".inspira-ticket-hero-subtitle"), heroSub);
+      setText(existingTicket.querySelector(".inspira-ticket-hero-title"), EVENT.name || "");
+      const heroImg = existingTicket.querySelector(".inspira-ticket-hero-img");
+      if (heroImg && EVENT.passImage && heroImg.getAttribute("src") !== EVENT.passImage) heroImg.setAttribute("src", EVENT.passImage);
+      const vals = existingTicket.querySelectorAll(".inspira-ticket-val");
+      if (vals[0]) setText(vals[0], when.date);
+      if (vals[1]) setText(vals[1], when.time);
       setText(existingTicket.querySelector(".inspira-ticket-main-subtitle"), ticketSubtitle(count));
       if (native.name) setText(existingTicket.querySelector("[data-ticket-name]"), native.name);
       if (native.until) setText(existingTicket.querySelector(".inspira-ticket-note"), native.until);
@@ -2175,11 +1900,11 @@
     ticketContainer.innerHTML = `
       <div class="inspira-ticket-hero-card">
         <div class="inspira-ticket-hero-media">
-          <img src="${EVENT.passImage}" alt="" class="inspira-ticket-hero-img" />
+          <img src="${EVENT.passImage || ""}" alt="" class="inspira-ticket-hero-img" />
           <div class="inspira-ticket-hero-scrim"></div>
           <div class="inspira-ticket-hero-overlay-text">
             <span class="inspira-ticket-hero-kicker">Student pass</span>
-            <h3 class="inspira-ticket-hero-title">${escapeHTML(EVENT.name)}</h3>
+            <h3 class="inspira-ticket-hero-title">${escapeHTML(EVENT.name || "")}</h3>
             <p class="inspira-ticket-hero-subtitle">${heroSub}</p>
           </div>
         </div>
@@ -4177,15 +3902,16 @@
   window.__INV_UX__ = true;
 
   var doc = document;
-  var CFG = Object.assign({
-    start: "2026-11-03T16:30:00+04:00",
-    end: "2026-11-03T19:00:00+04:00",
-    timeZone: "Asia/Dubai",
-    timeZoneLabel: "GST",
-    helpDesk: "Technology Help Desk"
-  }, window.INSPIRA_EVENT_CONFIG || {});
+  // Dates, time zone and help desk come from the platform (live data block at the top of this file).
+  var CFG = Object.assign({}, window.__INSPIRA_EVENT__(), window.INSPIRA_EVENT_CONFIG || {});
   var START = new Date(CFG.start).getTime();
   var END = new Date(CFG.end).getTime();
+  window.addEventListener("inspira:live", function () {
+    Object.assign(CFG, window.__INSPIRA_EVENT__(), window.INSPIRA_EVENT_CONFIG || {});
+    START = new Date(CFG.start).getTime();
+    END = new Date(CFG.end).getTime();
+    schedule();
+  });
   var BULLET = "•";
   var KEY_GUIDE = "inv_ux_guide_done";
   var KEY_VISITED = "inv_ux_visited";
@@ -4471,7 +4197,10 @@
       bar.querySelector(".lx-chips").innerHTML = html;
     }
 
-    var text = done === 0
+    var waiting = !listTotal && window.__INSPIRA_LIVE_STATE__ && window.__INSPIRA_LIVE_STATE__() === "loading";
+    var text = waiting
+      ? (done === 0 ? "Start exploring the universities below" : "You've explored " + done + " universities")
+      : done === 0
       ? "Start exploring: 0 of " + total + " universities visited"
       : done >= total
         ? "You've explored all " + total + " universities. Great job!"
@@ -4493,7 +4222,7 @@
   function fmtEnd() {
     try {
       return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: CFG.timeZone }).format(new Date(END)) + " " + CFG.timeZoneLabel;
-    } catch (e) { return "7:00 PM " + CFG.timeZoneLabel; }
+    } catch (e) { return ""; }
   }
   function untilText(ms) {
     var m = Math.max(1, Math.round(ms / 60000));
@@ -4504,6 +4233,7 @@
   }
   function status() {
     var now = Date.now();
+    if (!(START > 0)) return { cls: "lx-soon", text: "" };
     if (now < START) return { cls: "lx-soon", text: "Fair opens in " + untilText(START - now) };
     if (now < END) return { cls: "lx-live", text: "Live now · until " + fmtEnd() };
     return { cls: "lx-ended", text: "The fair has ended · thanks for joining" };
@@ -4636,39 +4366,4 @@
     });
   }
   setInterval(fix, 800);
-})();
-
-/* University Info, lobby and popups: swap the grey placeholder logo/banner for the fallback above (display only). */
-(function () {
-  "use strict";
-  if (window.__IMG_FALLBACK_LIVE__) return;
-  window.__IMG_FALLBACK_LIVE__ = true;
-  function nameOf(img) {
-    var m = (img.alt || "").match(/^(?:Logo for the booth|Banner image \d* ?for (?:the )?(?:booth|room))\s+(.+)$/i);
-    if (m) return m[1];
-    var box = img.closest(".exibitorCard, .roomCard, .companyProfileFeeds, .DelegateSidebar, .mobDelegateSidebar");
-    var h = box && box.querySelector(".orgName h6, h1, h2, h3, h4, h5, h6");
-    if (h) return h.textContent;
-    // a university page: its heading carries the name
-    if (!/^\/booth\//.test(location.pathname)) return "";
-    var hs = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
-    for (var i = 0; i < hs.length; i++) {
-      if (window.__INSPIRA_IMG_FALLBACK__(hs[i].textContent, "logo")) return hs[i].textContent;
-    }
-    return "";
-  }
-  function swap() {
-    var fb = window.__INSPIRA_IMG_FALLBACK__;
-    if (!fb) return;
-    Array.prototype.forEach.call(document.querySelectorAll('img[src*="exhibitor_default"], img[src*="exhibitor_cover"]'), function (img) {
-      var banner = /exhibitor_cover/.test(img.getAttribute("src"));
-      var url = fb(nameOf(img), banner ? "banner" : "logo");
-      if (!url) return;
-      img.setAttribute("src", url);
-      if (img.hasAttribute("srcset")) img.removeAttribute("srcset");
-      var box = banner && img.closest(".boothBanner.noMedia");
-      if (box) box.classList.add("bt-fallback-media");
-    });
-  }
-  setInterval(swap, 1000);
 })();
