@@ -5541,11 +5541,14 @@ html.bt-scrolled .headerWrapper {
   animation: none !important;
 }
 
+/* The platform caps profile images at 21px wide, which squeezed the logo to a thin strip: lifted here. */
 .roomsCardsList .orgProfile img {
-  width: 34px !important;
-  height: 34px !important;
+  width: 46px !important;
+  height: 46px !important;
+  max-width: none !important;
+  max-height: none !important;
   object-fit: contain !important;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .roomsCardsList .orgName {
@@ -8755,11 +8758,25 @@ html.bt-scrolled .headerWrapper {
   margin-left: 0;
 }
 
+/* The platform's own "...Read More" / "Show less" on long About texts, in the event colour like our links */
+.sponsorsProfileWrapper .aboutSponsors .readMore {
+  color: var(--bt-primary) !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+.sponsorsProfileWrapper .aboutSponsors .readMore:hover {
+  text-decoration: underline;
+}
+
+/* Cut by height, not line-clamp: line-clamp drew lines on top of each other when the text has lists or
+   paragraphs. The last line fades out. --bt-lh is the text's line height, set by custom.js. */
 .sponsorsProfileWrapper .aboutText.bt-clamp {
-  display: -webkit-box !important;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: var(--bt-lines, 8);
+  display: block !important;
+  max-height: calc(var(--bt-lines, 8) * var(--bt-lh, 1.6em));
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--bt-lh, 1.6em)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--bt-lh, 1.6em)), transparent);
 }
 
 .bt-copy {

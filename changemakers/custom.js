@@ -3315,15 +3315,38 @@
     if (!p) return;
     var btn = p.nextElementSibling && p.nextElementSibling.classList.contains('bt-more')
       ? p.nextElementSibling : null;
+    // The platform already cuts long texts itself ("...Read More" / "Show less"): keep that single toggle and leave
+    // ours off, so the page never shows two.
+    if (p.querySelector('.readMore') || (p.parentNode && p.parentNode.querySelector('.readMore'))) {
+      setClass(p, 'bt-clamp', false);
+      if (btn) btn.remove();
+      return;
+    }
     var lh = parseFloat(getComputedStyle(p).lineHeight) || 24;
     var expanded = !!p.__btExpanded;
 
-    var lines = Math.round(p.scrollHeight / lh);
+    // Count the lines of the full text, never the clamped one: a clamped text measures a line shorter, so a text
+    // right at the limit flipped between clamped and open on every update and the page shook while scrolling.
+    // A hidden copy is measured (ignored by the observer), only when the text or its width changes.
+    var key = p.textContent.length + '|' + p.clientWidth;
+    if (p.__btLinesKey !== key) {
+      var copy = p.cloneNode(true);
+      copy.setAttribute('data-bt', '');
+      copy.removeAttribute('id');
+      copy.classList.remove('bt-clamp');
+      copy.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;left:0;top:0;width:' + p.clientWidth + 'px';
+      p.parentNode.appendChild(copy);
+      p.__btLines = Math.round(copy.scrollHeight / lh);
+      copy.remove();
+      p.__btLinesKey = key;
+    }
+    var lines = p.__btLines;
     var needs = lines > CFG.aboutLines + 1;
 
     if (!needs) { setClass(p, 'bt-clamp', false); if (btn) btn.remove(); return; }
 
     if (p.style.getPropertyValue('--bt-lines') !== String(CFG.aboutLines)) p.style.setProperty('--bt-lines', String(CFG.aboutLines));
+    if (p.style.getPropertyValue('--bt-lh') !== lh + 'px') p.style.setProperty('--bt-lh', lh + 'px');
     setClass(p, 'bt-clamp', !expanded);
     if (!btn) {
       btn = doc.createElement('button');
