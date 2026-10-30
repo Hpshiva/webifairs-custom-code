@@ -12721,3 +12721,29 @@ body:has(.bottom-sheet__wrapper.open) .lx-dock {
 .pageSearchWrapper .searchInputWrapper.active .searchInput {
   opacity: 1 !important;
 }
+
+/* University page videos: the play icon is a white triangle as big as the button, on a pale event-colour
+   background, so it barely showed. A round event-colour button with a centred white triangle instead. */
+.videoOverlay .MuiIconButton-colorSoft {
+  width: 52px !important;
+  height: 52px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: var(--bt-grad-primary, var(--bt-primary)) !important;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .55), 0 0 0 3px rgba(255, 255, 255, .4) !important;
+  transition: transform .2s;
+}
+
+.videoOverlay .MuiIconButton-colorSoft svg {
+  width: 18px !important;
+  height: 22px !important;
+  margin-left: 4px;
+}
+
+.videoOverlay .MuiIconButton-colorSoft svg path {
+  fill: #fff !important;
+}
+
+.videoCard:hover .videoOverlay .MuiIconButton-colorSoft {
+  transform: scale(1.08);
+}
