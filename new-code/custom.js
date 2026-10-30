@@ -3735,3 +3735,34 @@
   setInterval(place, 500);
   window.addEventListener("resize", place);
 })();
+
+/* Room People panel wording: "Participants" reads "Hosts" and "Spectators" reads "Visitors". Display only: only text
+   that is exactly one of these labels changes, so names and chat stay as typed. The platform redraws these labels,
+   so they are set again after every change on the page. */
+(function () {
+  "use strict";
+  if (window.__ROOM_LABELS__) return;
+  window.__ROOM_LABELS__ = true;
+  var LABELS = {
+    "Participants": "Hosts",
+    "Spectators": "Visitors",
+    "Show Banned Spectators": "Show Banned Visitors"
+  };
+  function apply() {
+    var roots = document.querySelectorAll(".participantsGrid, .stickyRoomControls");
+    Array.prototype.forEach.call(roots, function (root) {
+      var walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      for (var n = walk.nextNode(); n; n = walk.nextNode()) {
+        var next = LABELS[n.nodeValue.trim()];
+        if (next) n.nodeValue = next;
+      }
+    });
+  }
+  var queued = false;
+  new MutationObserver(function () {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; apply(); });
+  }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  apply();
+})();
