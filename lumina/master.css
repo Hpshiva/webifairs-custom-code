@@ -12747,3 +12747,12 @@ body:has(.bottom-sheet__wrapper.open) .lx-dock {
 .videoCard:hover .videoOverlay .MuiIconButton-colorSoft {
   transform: scale(1.08);
 }
+
+/* University Info search results: the university's banner, which the platform leaves out there (custom.js). */
+.exibitorCard .boothBanner.noMedia.bt-search-media {
+  background: linear-gradient(to top, rgba(15, 17, 40, .62), rgba(15, 17, 40, 0) 70%), var(--bt-booth-img) center / cover no-repeat !important;
+}
+
+.exibitorCard .boothBanner.noMedia.bt-search-media .logoTextWrapper h3 {
+  color: #fff !important;
+}

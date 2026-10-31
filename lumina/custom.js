@@ -4424,3 +4424,42 @@
   }).observe(document.body, { childList: true, subtree: true, characterData: true });
   apply();
 })();
+
+/* University Info search: the platform's search results leave out the banner photo even though the university has
+   one, so those cards fell back to the plain gradient. The banner comes from the university list, matched by name;
+   a university with no banner keeps the gradient. Display only. */
+(function () {
+  "use strict";
+  if (window.__SEARCH_BANNERS__) return;
+  window.__SEARCH_BANNERS__ = true;
+  function key(text) {
+    return String(text || "").split("\u2022")[0].replace(/\s+/g, " ").trim().toLowerCase();
+  }
+  function apply() {
+    var cards = document.querySelectorAll(".exibitorCard .boothBanner.noMedia");
+    if (!cards.length) return;
+    var byName = {};
+    (window.__INSPIRA_UNIVERSITIES__ || []).forEach(function (u) {
+      if (u && u.name && u.banner && !/exhibitor_cover/.test(u.banner)) byName[key(u.name)] = u.banner;
+    });
+    Array.prototype.forEach.call(cards, function (box) {
+      var h = box.querySelector(".logoTextWrapper h3, h3");
+      var url = h && byName[key(h.textContent)];
+      var value = url ? 'url("' + url + '")' : "";
+      if (box.style.getPropertyValue("--bt-booth-img") !== value) {
+        if (value) box.style.setProperty("--bt-booth-img", value);
+        else box.style.removeProperty("--bt-booth-img");
+      }
+      if (box.classList.contains("bt-search-media") !== !!url) box.classList.toggle("bt-search-media", !!url);
+    });
+  }
+  var queued = false;
+  function schedule() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; apply(); });
+  }
+  new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["class"] });
+  window.addEventListener("inspira:live", schedule);
+  apply();
+})();
