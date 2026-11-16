@@ -2297,6 +2297,19 @@
     } catch (cErr) {}
   }
 
+  // A room is live once its owner has started it: the platform turns its button into an active "Enter" for
+  // other viewers (or sets an isLive flag on the card's React data). Hosts of a not-yet-started room are not live.
+  function isRoomLive(card) {
+    var btn = card.querySelector('.cardActions .MuiButton-root');
+    if (btn && !btn.__btFallback && /^enter$/i.test((btn.textContent || '').trim())) return true;
+    var fiberKey = Object.keys(card).filter(function (k) { return k.indexOf('__reactFiber') === 0; })[0];
+    for (var f = fiberKey && card[fiberKey], i = 0; f && i < 8; f = f.return, i++) {
+      var d = f.memoizedProps && f.memoizedProps.data;
+      if (d && 'isLive' in d) return d.isLive === 'YES' || d.isLive === true;
+    }
+    return false;
+  }
+
   function linkEnterButtons() {
     $$('.roomsCardsList .roomCard, .roomCard').forEach(function (card) {
       // 1. Remove obsolete overlay from previous code
@@ -2338,6 +2351,10 @@
         isStart = false;
         btn.__btFallback = true;
       }
+
+      // The visible label is drawn from this attribute by master.css: the platform shows "Start" only to a
+      // host whose room has not started yet; everyone else, and every viewer once the room is live, sees "Enter".
+      btn.setAttribute('data-bt-label', (isStart && !isRoomLive(card)) ? 'Start' : 'Enter');
 
       // Ensure button is active and styled
       if (btn.classList.contains('Mui-disabled')) btn.classList.remove('Mui-disabled');

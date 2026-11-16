@@ -11226,18 +11226,23 @@ html body {
   }
 }
 
-/* Rooms: show every card button as "Start" (platform renders "Start" for hosts, "Enter" otherwise) */
+/* Rooms: the card button label is drawn here (custom.js copies the platform's own word into data-bt-label:
+   "Start" for a host whose room has not started, "Enter" for everyone else and once the room is live) */
 .roomsCardsList .roomCard .cardActions .MuiButton-root {
   font-size: 0 !important;
 }
 
 .roomsCardsList .roomCard .cardActions .MuiButton-root::before {
-  content: "Start";
+  content: "Enter";
   font-family: var(--bt-font) !important;
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
   pointer-events: none;
+}
+
+.roomsCardsList .roomCard .cardActions .MuiButton-root[data-bt-label]::before {
+  content: attr(data-bt-label);
 }
 
 /* Rooms: platform reveals the room tag only on hover, which grows the card and pushes
