@@ -2297,11 +2297,10 @@
     } catch (cErr) {}
   }
 
-  // A room is live once its owner has started it: the platform turns its button into an active "Enter" for
-  // other viewers (or sets an isLive flag on the card's React data). Hosts of a not-yet-started room are not live.
+  // A room is live once the platform sets isLive on the card's React data. We rely only on that flag, not the
+  // button text: Rede Inspira force-enables every room button, so an attendee's button always reads "Enter"
+  // and would otherwise make every card look live.
   function isRoomLive(card) {
-    var btn = card.querySelector('.cardActions .MuiButton-root');
-    if (btn && !btn.__btFallback && /^enter$/i.test((btn.textContent || '').trim())) return true;
     var fiberKey = Object.keys(card).filter(function (k) { return k.indexOf('__reactFiber') === 0; })[0];
     for (var f = fiberKey && card[fiberKey], i = 0; f && i < 8; f = f.return, i++) {
       var d = f.memoizedProps && f.memoizedProps.data;
