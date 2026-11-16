@@ -2354,7 +2354,24 @@
 
       // The visible label is drawn from this attribute by master.css: the platform shows "Start" only to a
       // host whose room has not started yet; everyone else, and every viewer once the room is live, sees "Enter".
-      btn.setAttribute('data-bt-label', (isStart && !isRoomLive(card)) ? 'Start' : 'Enter');
+      var live = isRoomLive(card);
+      btn.setAttribute('data-bt-label', (isStart && !live) ? 'Start' : 'Enter');
+
+      // Live indicator on the card, matching the GEMS events: a pulsing dot + "Live now" once the room is live.
+      var nameBox = card.querySelector('.orgName');
+      if (nameBox) {
+        card.classList.toggle('bt-room-live', live);
+        var liveBadge = nameBox.querySelector('.bt-room-time[data-kind="live"]');
+        if (live && !liveBadge) {
+          liveBadge = doc.createElement('div');
+          liveBadge.className = 'bt-room-time';
+          liveBadge.setAttribute('data-kind', 'live');
+          liveBadge.innerHTML = '<i class="bt-live-dot" aria-hidden="true"></i><span>Live now</span>';
+          nameBox.appendChild(liveBadge);
+        } else if (!live && liveBadge) {
+          liveBadge.remove();
+        }
+      }
 
       // Ensure button is active and styled
       if (btn.classList.contains('Mui-disabled')) btn.classList.remove('Mui-disabled');
