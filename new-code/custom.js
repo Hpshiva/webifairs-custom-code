@@ -2297,17 +2297,35 @@
     } catch (cErr) {}
   }
 
-  // A room is live once the platform sets isLive on the card's React data. We rely only on that flag, not the
-  // button text: Rede Inspira force-enables every room button, so an attendee's button always reads "Enter"
-  // and would otherwise make every card look live.
-  function isRoomLive(card) {
+  // The card's platform data (isLive flag, roomStartMilli, room id, etc.) lives a few levels up the React tree.
+  function cardData(card) {
     var fiberKey = Object.keys(card).filter(function (k) { return k.indexOf('__reactFiber') === 0; })[0];
     for (var f = fiberKey && card[fiberKey], i = 0; f && i < 8; f = f.return, i++) {
       var d = f.memoizedProps && f.memoizedProps.data;
-      if (d && 'isLive' in d) return d.isLive === 'YES' || d.isLive === true;
+      if (d && 'isLive' in d) return d;
     }
-    return false;
+    return null;
   }
+
+  // A room is live once the platform sets isLive on the card's data. We rely only on that flag, not the button
+  // text: Rede Inspira force-enables every room button, so an attendee's button always reads "Enter" and would
+  // otherwise make every card look live.
+  function isRoomLive(card) {
+    var d = cardData(card);
+    return !!(d && (d.isLive === 'YES' || d.isLive === true));
+  }
+
+  // The room's scheduled start, shown in the viewer's own time zone (e.g. "18 Nov, 4:45 pm").
+  function roomStartText(card) {
+    var d = cardData(card);
+    var ms = d && d.roomStartMilli;
+    if (!ms) return '';
+    try {
+      return new Date(ms).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    } catch (e) { return ''; }
+  }
+
+  var BT_CLOCK = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
   function linkEnterButtons() {
     $$('.roomsCardsList .roomCard, .roomCard').forEach(function (card) {
@@ -2356,19 +2374,27 @@
       var live = isRoomLive(card);
       btn.setAttribute('data-bt-label', (isStart && !live) ? 'Start' : 'Enter');
 
-      // Live indicator on the card, matching the GEMS events: a pulsing dot + "Live now" once the room is live.
+      // Card time line, matching the GEMS events: the scheduled start time (clock icon), or a pulsing dot +
+      // "Live now" once the room is live.
       var nameBox = card.querySelector('.orgName');
       if (nameBox) {
         card.classList.toggle('bt-room-live', live);
-        var liveBadge = nameBox.querySelector('.bt-room-time[data-kind="live"]');
-        if (live && !liveBadge) {
-          liveBadge = doc.createElement('div');
-          liveBadge.className = 'bt-room-time';
-          liveBadge.setAttribute('data-kind', 'live');
-          liveBadge.innerHTML = '<i class="bt-live-dot" aria-hidden="true"></i><span>Live now</span>';
-          nameBox.appendChild(liveBadge);
-        } else if (!live && liveBadge) {
-          liveBadge.remove();
+        var label = live ? 'Live now' : roomStartText(card);
+        var timeEl = nameBox.querySelector('.bt-room-time');
+        if (label) {
+          if (!timeEl) {
+            timeEl = doc.createElement('div');
+            timeEl.className = 'bt-room-time';
+            nameBox.appendChild(timeEl);
+          }
+          var kind = live ? 'live' : 'time';
+          if (timeEl.getAttribute('data-kind') !== kind) {
+            timeEl.setAttribute('data-kind', kind);
+            timeEl.innerHTML = (live ? '<i class="bt-live-dot" aria-hidden="true"></i>' : BT_CLOCK) + '<span></span>';
+          }
+          if (timeEl.lastChild.textContent !== label) timeEl.lastChild.textContent = label;
+        } else if (timeEl) {
+          timeEl.remove();
         }
       }
 

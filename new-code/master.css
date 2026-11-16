@@ -11255,6 +11255,10 @@ html body {
   color: var(--bt-primary);
 }
 
+.roomsCardsList .bt-room-time svg {
+  flex: none;
+}
+
 .roomsCardsList .bt-room-time[data-kind="live"] {
   color: #12805C;
   font-weight: 700;
